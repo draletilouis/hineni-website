@@ -16,7 +16,7 @@ export function textFields() {
   // contact details: every WhatsApp button, mailto link and the footer use these
   add('Contact details', 'brand.email', 'Email for enquiries', brand, 'email', { kind: 'email', max: 120 });
   add('Contact details', 'brand.whatsapp', 'WhatsApp number', brand, 'whatsapp', {
-    kind: 'phone', max: 20, hint: 'Country code and number, digits only: 256700000000',
+    kind: 'phone', max: 20, hint: 'Country code and number, digits only: 256702116926',
     set: (v) => { brand.whatsapp = v.replace(/\D/g, ''); },
   });
   add('Contact details', 'brand.phone', 'Phone number, as it should read', brand, 'phone', { max: 40 });

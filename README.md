@@ -131,7 +131,7 @@ The film button plays the "Hineni Final" edit.
 
 The defaults are in `src/data/content.js`; once live, all of these can be changed in the portal (Words & details).
 
-1. **Contacts**: email, WhatsApp and phone are placeholders.
+1. **Contacts**: set to info@hinenisafaris.com and +256 702 116926 (WhatsApp and phone).
 2. **Guest stories**: the three stories are samples. They're hidden on the live site until each one's
    "Show on the website" switch is turned on, after replacing its words with a real guest's.
 3. **Policies in the FAQ** — check the answers about payment, cancellation and what's included

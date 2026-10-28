@@ -55,7 +55,7 @@ If a clip is refused with "won't play in a browser", export it again as MP4 (H.2
 All the wording on the website, in sections you open one at a time:
 
 - **Contact details:** email, WhatsApp number (country code and number, digits only), phone, and where you are.
-  **Change these before you launch**: they start as placeholders.
+  They're set to info@hinenisafaris.com and +256 702 116926.
 - **Front page:** the line under the photos at the top.
 - **Each trip:** name, length, best season, route, description and **price** (leave the price empty to show "Quote
   within 24 hours").

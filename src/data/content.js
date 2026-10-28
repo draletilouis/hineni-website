@@ -9,10 +9,10 @@ export const brand = {
   tagline: 'Uganda, to the world.',
   // the one-line answer to "what is this?" — shown in the hero on every screen size
   offer: 'Small-group safaris and hikes in Uganda — Murchison Falls, Queen Elizabeth, Fort Portal and the West Nile hills. Everything arranged.',
-  // TODO: replace with the company's real contacts
-  email: 'hello@hineni.travel',
-  whatsapp: '256700000000',
-  phone: '+256 700 000 000',
+  // the company's contacts (changeable in the admin portal: Words & details)
+  email: 'info@hinenisafaris.com',
+  whatsapp: '256702116926',
+  phone: '+256 702 116926',
   base: 'Kampala, Uganda',
 };
 
