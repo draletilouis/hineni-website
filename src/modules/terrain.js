@@ -492,23 +492,17 @@ export function initTerrain() {
       <button type="button" data-go="-1" aria-label="Previous stop"${pos < 0 ? ' disabled' : ''}>${icon('arrowLeft')}</button>
       <span class="eyebrow">${where}</span>
       <button type="button" data-go="1" aria-label="${pos < 0 ? 'Start the drive' : 'Drive to the next stop'}"${pos >= n ? ' disabled' : ''}>${icon('arrowRight')}</button></div>`;
-    const price = `<div class="journey__price">${it.price ? `<b>${it.price}</b> per person` : '<b>Quote within 24 hours</b>, one price for the whole trip'}</div>`;
-    const through = (list) => (list.length ? `<div class="journey__through"><span class="eyebrow">Through ${list.length === 1 ? '' : `${list.length} districts`}</span>${list.join(', ')}</div>` : '');
-    // max: long lists (the west has a lot to see) end in "+N more along the way"
-    const listed = (title, list, fmt, max = Infinity) => (list?.length ? `<div class="journey__through journey__plan"><span class="eyebrow">${title}</span>${list.slice(0, max).map(fmt).join(', ')}${list.length > max ? `, <i>+${list.length - max} more along the way</i>` : ''}</div>` : '');
-    const sightName = (e) => `${icon('sight')} ${e.name}${e.addon ? ' <i>(add-on)</i>' : ''}`;
+    const price = `<div class="journey__price">${it.price ? `<b>${it.price}</b> per person` : '<b>Quote within 24 hours</b><span class="journey__more">, one price for the whole trip</span>'}</div>`;
     if (pos < 0 || pos >= n) {
       const L = longest(trip);
       const km = r ? r.total - r.extraKm : null;
-      const facts = `<ul class="journey__facts"><li>${it.days}</li>${km ? `<li>${fmtKm(km)} km</li>` : ''}${L ? `<li>Longest drive ${L.leg.time}</li>` : ''}</ul>`;
+      const facts = `<p class="journey__facts">${it.days}.${km ? ` ${fmtKm(km)} km${L ? `, longest drive ${L.leg.time}` : ''}.` : ''}</p>`;
       return `<div class="journey__card-media"><img src="${photo(itineraries[ii].cover, 900)}" alt="" /></div>
         <div class="journey__card-body" style="--c:${t.color}">
-          <div class="eyebrow">${pos < 0 ? it.route : 'That\'s the whole route'}</div>
+          <div class="eyebrow journey__more">${pos < 0 ? it.route : 'That\'s the whole route'}</div>
           <h3>${it.name} <em>${it.em}</em></h3>
-          <p>${pos < 0 ? it.blurb : `${it.highlights.join(', ')}. ${it.season}.`}</p>
-          ${facts}${r ? through(r.districts) : ''}
-          ${r ? listed(`${r.stopovers.length} stopover${r.stopovers.length === 1 ? '' : 's'} on the way`, r.stopovers, (e) => e.name) : ''}
-          ${r ? listed(`${r.sights.length} sights nearby`, r.sights, sightName, 9) : ''}${price}
+          <p class="journey__more">${pos < 0 ? it.blurb : `${it.highlights.join(', ')}. ${it.season}.`}</p>
+          ${facts}${price}
           <div class="journey__actions">${pos < 0
             ? `<button type="button" class="btn btn--small btn--solid" data-play data-cursor="hover">Play the journey ${icon('play')}</button>${book(false)}`
             : `${book(true)}${days}`}</div>
@@ -525,9 +519,7 @@ export function initTerrain() {
         <div class="eyebrow">${t.label}, ${s.when}</div>
         <h3>${s.name}</h3>
         <p>${s.text}</p>
-        ${leg}${r && r.legDistricts[pos].length > 1 ? through(r.legDistricts[pos]) : ''}
-        ${r ? listed('Stopovers on the way', r.legStopovers[pos], (e) => `${e.when ? `${e.when} ` : ''}${e.name}`) : ''}
-        ${r ? listed('Passed on the way', r.legSights[pos], sightName) : ''}
+        ${leg}
         <div class="journey__actions">${book(true)}${days}</div>
         ${nav}
       </div>`;
@@ -582,19 +574,17 @@ export function initTerrain() {
       <span class="eyebrow">${where}</span>
       <button type="button" data-go="1" aria-label="${pos < 0 ? 'Start the drive' : 'Drive to the next place'}"${pos >= n ? ' disabled' : ''}>${icon('arrowRight')}</button></div>`;
     const send = `<a href="#enquire" class="btn btn--small btn--solid" data-send data-cursor="hover">${t.kind === 'explore' ? 'Plan a trip here' : 'Send us this route'}</a>`;
-    const ids = t.stops.map((st) => st.id);
     if (pos < 0 || pos >= n) {
       const reg = regionById[t.region];
-      const shots = photoCount(ids), withPhotos = t.stops.filter((st) => st.photos).length;
+      const withPhotos = t.stops.filter((st) => st.photos).length;
       const cover = t.stops.find((st) => st.photos)?.photos[0];
       return `${cover ? `<div class="journey__card-media"><img src="${photo(cover, 900)}" alt="" /></div>` : ''}
         <div class="journey__card-body" style="--c:${color}">
           <div class="eyebrow">${t.kind === 'explore' ? 'Explore a region' : 'Built by you'}${pos >= n ? ': the whole route' : ''}</div>
           <h3>${t.kind === 'explore' ? reg.name : 'Your route'}</h3>
           <p>${t.kind === 'explore' ? reg.blurb : 'Every place you picked, in the order that drives best. We can turn it into a trip.'}</p>
-          <ul class="journey__facts"><li>${n} places</li>${r ? `<li>${fmtKm(r.total)} km</li>` : ''}<li>${shots} photos from ${withPhotos}</li></ul>
+          <p class="journey__facts">${n} places${r ? `, ${fmtKm(r.total)} km` : ''}. Our photos from ${withPhotos} of them.</p>
           <div class="journey__through journey__plan"><span class="eyebrow">In order</span>${t.stops.map((st) => `${st.photos ? '' : `${icon('noPhoto')} `}${st.name}`).join(', ')}</div>
-          ${r ? `<div class="journey__through"><span class="eyebrow">Through ${r.districts.length} districts</span>${r.districts.join(', ')}</div>` : ''}
           <div class="journey__actions">${pos < 0
             ? `<button type="button" class="btn btn--small btn--solid" data-play data-cursor="hover">Drive it ${icon('play')}</button><button type="button" class="btn btn--small" data-mode="${t.kind}" data-cursor="hover">${t.kind === 'explore' ? 'Another region' : 'Change places'}</button>`
             : `${send}<button type="button" class="btn btn--small" data-play data-cursor="hover">Drive it again</button>`}</div>
@@ -611,7 +601,6 @@ export function initTerrain() {
         <h3>${st.name}</h3>
         <p>${st.text || ''}</p>
         ${leg}
-        ${r && r.legSights[pos]?.length ? `<div class="journey__through journey__plan"><span class="eyebrow">Passed on the way</span>${r.legSights[pos].map((e) => `${icon('sight')} ${e.name}`).join(', ')}</div>` : ''}
         <div class="journey__actions">${send}</div>
         ${nav}
       </div>`;

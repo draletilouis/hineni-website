@@ -36,8 +36,11 @@ body:has(.lightbox.is-open, .film.is-open) :is(.nav, .action-bar, .exp-cta) { op
   }
   .journey__head { text-shadow: 0 1px 12px rgb(0 0 0 / 0.6); }
   .journey__card.is-pick { display: none; }
-  .journey__card { bottom: calc(12px + env(safe-area-inset-bottom)); max-height: 46svh; }
-  /* the card scrolls; its buttons (Play the journey, Book) stay pinned to its bottom edge */
+  /* tall enough for the whole card with its photo; the map keeps the rest of the screen */
+  .journey__card { bottom: calc(12px + env(safe-area-inset-bottom)); max-height: 56svh; }
+  /* the two buttons size to their words, so both fit on one row */
+  .journey__actions .btn { flex: 1 1 auto; }
+  /* on a very short screen the card scrolls, and its buttons stay pinned to its bottom edge */
   .journey__card .journey__actions {
     position: sticky; bottom: 0; z-index: 1; margin: 12px -16px -14px; padding: 10px 16px 14px;
     background: linear-gradient(180deg, rgb(15 26 20 / 0) 0%, rgb(15 26 20 / 0.96) 22%);
