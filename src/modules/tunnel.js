@@ -218,7 +218,8 @@ export function initTunnel() {
   let hovered = null, flyIn = false;
   // declared before the trigger: a page reloaded below the album fires onLeave while it's being created
   let returnTo = null;
-  const screens = () => Math.min(mobile ? 5.5 : 6.5, Math.max(2.5, shown.length / 18));
+  // how many screens of scrolling the fly-through takes: about 36 photos a screen, so it moves briskly
+  const screens = () => Math.min(mobile ? 3 : 3.5, Math.max(1.5, shown.length / 36));
   const st = ScrollTrigger.create({
     trigger: section,
     start: 'top top',

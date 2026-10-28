@@ -70,7 +70,7 @@ export function initHero() {
 
   // phones: the next photo after HOLD, while the hero is on screen and nothing is open over it
   const auto = isMobile() && !rm;
-  const HOLD = 5000;
+  const HOLD = 3500;
   let timer = 0;
   function schedule() {
     clearTimeout(timer);
@@ -96,7 +96,8 @@ export function initHero() {
       gsap.set(from, { opacity: 0 });
       cur = n;
       busy = false;
-      load((n + 1) % N); // prefetch the next photo
+      load((n + 1) % N); // prefetch the next two photos, so a change never waits on the network
+      load((n + 2) % N);
       schedule(); // a full HOLD on every photo, however it got there
     } });
   }
@@ -109,6 +110,7 @@ export function initHero() {
     caption(0, 1);
     runBar(0);
     load(1);
+    load(2);
     schedule();
   }
 

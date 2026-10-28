@@ -590,6 +590,15 @@ if (fs.existsSync(DIST)) {
   const noindex = (req, res, next) => { res.set({ 'X-Robots-Tag': 'noindex', 'X-Frame-Options': 'DENY', 'Cache-Control': 'no-cache' }); next(); };
   app.get(['/admin', '/admin/'], noindex, (req, res) => res.sendFile(path.join(DIST, 'admin.html')));
   app.use('/assets', express.static(path.join(DIST, 'assets'), { immutable: true, maxAge: '365d' }));
+  // the page arrives with the published changes written into it, so it doesn't wait for a second
+  // request (GET /api/site) before showing anything. A preview still fetches the draft itself.
+  const page = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
+  app.get(['/', '/index.html'], (req, res, next) => {
+    if ('preview' in req.query) return next();
+    const { by, ...pub } = site;
+    const data = JSON.stringify(pub).replace(/</g, '\\u003c'); // can't close the <script> early
+    res.set('Cache-Control', 'no-cache').type('html').send(page.replace('</head>', `<script>window.__HINENI_SITE__=${data}</script></head>`));
+  });
   app.use(express.static(DIST, {
     maxAge: '7d',
     setHeaders: (res, file) => { if (file.endsWith('.html')) res.set('Cache-Control', 'no-cache'); },

@@ -14,6 +14,9 @@ import { places } from '../data/content.js';
 const wantsPreview = () => new URLSearchParams(location.search).has('preview');
 
 export async function loadSite(ms = 2500) {
+  // the server writes the published changes into the page (server/index.mjs): no request needed
+  const inline = window.__HINENI_SITE__;
+  if (!wantsPreview() && inline?.version === 1) return inline;
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), ms);
   try {
