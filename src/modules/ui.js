@@ -88,7 +88,7 @@ export function renderSections() {
         ${imgTag(e.photo, { sizes: i === 0 ? '(max-width: 1024px) 100vw, 60vw' : '(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 33vw' })}
         <div class="exp-card__top">
           <span class="exp-card__trip">${e.trip}</span>
-          ${e.video ? '<span class="exp-card__play" title="Has a video"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5v11l9-5.5z"/></svg></span>' : ''}
+          ${e.video ? `<button type="button" class="exp-card__play" data-clip="${e.video}" data-clip-cap="${e.title}" aria-label="Play the clip: ${e.title}" data-cursor="hover"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg></button>` : ''}
         </div>
       </div>
       <div class="exp-card__body">
@@ -307,12 +307,18 @@ function initLightbox() {
 }
 
 // ---------------------------------------------------------------- film modal
+// The Hineni film, and any clip a ▶ button asks for (`data-clip`, e.g. on the experience cards)
 function initFilm() {
   const modal = $('#film');
   const v = $('#filmVideo');
-  const open = (e) => {
+  const cap = modal.querySelector('.film__cap');
+  const filmCap = cap.textContent;
+  let current = '';
+  const open = (e, key = 'v-film', caption = filmCap) => {
     e && e.preventDefault();
-    if (!v.src) { v.poster = poster('v-film'); v.src = videoSrc('v-film', false); }
+    // the film always at full quality; short clips follow the screen and connection
+    if (current !== key) { current = key; v.poster = poster(key); v.src = key === 'v-film' ? videoSrc(key, false) : videoSrc(key); }
+    cap.textContent = caption;
     modal.classList.add('is-open');
     lockScroll(true);
     v.muted = false;
@@ -321,7 +327,14 @@ function initFilm() {
     document.dispatchEvent(new CustomEvent('film:open'));
   };
   const close = () => { modal.classList.remove('is-open'); v.pause(); lockScroll(false); };
-  document.querySelectorAll('[data-film]').forEach((b) => b.addEventListener('click', open));
+  document.querySelectorAll('[data-film]').forEach((b) => b.addEventListener('click', (e) => open(e)));
+  // caught on the way down, so the photo under the button doesn't also open the photo viewer
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-clip]');
+    if (!b) return;
+    e.stopPropagation();
+    open(e, b.dataset.clip, b.dataset.clipCap || '');
+  }, true);
   $('#filmClose').onclick = close;
   modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('is-open')) close(); });
@@ -653,6 +666,10 @@ function initChrome() {
   const bar = $('#actionBar');
   ScrollTrigger.create({ start: () => window.innerHeight * 0.7, end: 'max', onToggle: (st) => bar.classList.toggle('is-on', st.isActive) });
   ScrollTrigger.create({ trigger: '#enquire', start: 'top 80%', end: 'bottom top', onToggle: (st) => bar.classList.toggle('is-away', st.isActive) });
+  // …and out of the way on the map (its trip card has its own Book button), and under the trip tray in
+  // Experiences (phone.css): one bar at the bottom at a time
+  ScrollTrigger.create({ trigger: '#journey', start: 'top 60%', end: 'bottom 40%', onToggle: (st) => bar.classList.toggle('is-immersed', st.isActive) });
+  ScrollTrigger.create({ trigger: '#experiences', start: 'top 80%', end: 'bottom 20%', onToggle: (st) => document.body.classList.toggle('in-experiences', st.isActive) });
 
   // enquiry: pick WhatsApp or email first; the email field and the send button follow that choice
   const form = $('#enquireForm');

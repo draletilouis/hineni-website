@@ -112,7 +112,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
   transition: background 250ms ease-out;
 }
-.nav.is-solid { background: rgb(15 26 20 / 0.7); }
+/* 0.92, not lighter: over the cream sections a thinner glass turns mid-grey and the sage logo loses its contrast */
+.nav.is-solid { background: rgb(15 26 20 / 0.92); }
 .nav.is-mega, body.menu-open .nav { background: rgb(23 25 24 / 0.9); }
 .nav__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 40px; padding-left: 12px; }
 .nav__logo { font-family: var(--f-display); font-size: var(--t-lg); font-weight: 500; line-height: 1; color: var(--accent); }

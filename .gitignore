@@ -21,3 +21,6 @@ data/tile-cache/
 
 # local editor tooling
 .claude/
+
+# Vite's dependency cache
+.vite/

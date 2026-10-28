@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Phones: one thing at a time on a small screen.
+   Loaded after main.css. Each rule here fixes something found by clicking through the whole site
+   at 375 × 812: overlays that collided, bars that stacked, and sections that ran to several screens.
+   ========================================================================== */
+
+/* ---- Overlays own the screen: the photo viewer and the clip viewer are solid (the cream page showed
+   through), and while either is open the floating header, the WhatsApp / book bar and the trip tray
+   step aside. */
+.lightbox, .film { background: #0f1a14; }
+body:has(.lightbox.is-open, .film.is-open) :is(.nav, .action-bar, .exp-cta) { opacity: 0; pointer-events: none; }
+
+@media (max-width: 820px) {
+  /* "See … on the map" sat on top of Close: it moves to the bottom, above the caption */
+  .lightbox img { max-height: calc(100svh - 230px); }
+  .lightbox__map {
+    top: auto; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    max-width: calc(100% - 2 * var(--gutter)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    gap: 0.32em; /* a word space between "See", the place and "on the map", not a button gap */
+  }
+  .lightbox__cap { bottom: calc(24px + env(safe-area-inset-bottom)); padding: 0 var(--gutter); }
+  .film video { height: auto; max-height: calc(100svh - 160px); }
+  .film__close { top: calc(14px + env(safe-area-inset-top)); }
+
+  /* ---- One bar at the bottom at a time. The trip tray takes the WhatsApp / book bar's place while it's
+     on screen, and the bar steps aside on the map, where the trip card has its own Book button. */
+  .action-bar.is-immersed, body.in-experiences:has(.exp-cta.is-on) .action-bar { transform: translateY(140%); }
+  .exp-cta { bottom: calc(10px + env(safe-area-inset-bottom)); }
+  /* …and one Book button: the header's steps aside while the bar (which has one) is up */
+  body:has(.action-bar.is-on:not(.is-away):not(.is-immersed)) .nav__cta { display: none; }
+
+  /* ---- The map: readable title, one way to pick a trip (the chips), and the map stays visible */
+  .journey__stage::before {
+    content: ''; position: absolute; z-index: 2; inset: 0 0 auto; height: 240px; pointer-events: none;
+    background: linear-gradient(180deg, rgb(15 26 20 / 0.85) 0%, rgb(15 26 20 / 0.55) 55%, rgb(15 26 20 / 0) 100%);
+  }
+  .journey__head { text-shadow: 0 1px 12px rgb(0 0 0 / 0.6); }
+  .journey__card.is-pick { display: none; }
+  .journey__card { bottom: calc(12px + env(safe-area-inset-bottom)); max-height: 46svh; }
+  /* the card scrolls; its buttons (Play the journey, Book) stay pinned to its bottom edge */
+  .journey__card .journey__actions {
+    position: sticky; bottom: 0; z-index: 1; margin: 12px -16px -14px; padding: 10px 16px 14px;
+    background: linear-gradient(180deg, rgb(15 26 20 / 0) 0%, rgb(15 26 20 / 0.96) 22%);
+  }
+}
+
+@media (max-width: 560px) {
+  /* ---- Hero: the photo first. Swipe moves the slides (the arrows go), the slide keeps its name but not
+     the second line, the trust card loses its big photo, and the two buttons share a row. */
+  .slides-ui__arrow, .slides-ui__place { display: none; }
+  .hero__trust-img { display: none; }
+  .hero__ctas { flex-wrap: nowrap; gap: 8px; }
+  .hero__ctas .btn { flex: 1 1 0; min-width: 0; justify-content: center; padding-inline: 10px; white-space: nowrap; }
+  .hero__ctas .btn svg { flex: none; }
+
+  /* ---- Long stacks become swipe rows: experiences, wildlife and field notes were 4–6 screens each */
+  :is(.exp-grid, .wild-grid, .notes__grid) {
+    display: grid; grid-auto-flow: column; grid-auto-columns: 84%; grid-template-columns: none;
+    gap: 14px; padding: 4px var(--gutter) 10px; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none;
+  }
+  :is(.exp-grid, .wild-grid, .notes__grid)::-webkit-scrollbar { display: none; }
+  :is(.exp-grid, .wild-grid, .notes__grid) > * { scroll-snap-align: start; }
+  /* every experience is in the row, so "Show all" goes; the filters still narrow it */
+  .exp-card--wide { grid-column: auto; display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .exp-grid:not(.is-open):not(.is-filtered) .exp-card.is-extra:not([hidden]) { display: flex; }
+  .exp-more-wrap { display: none; }
+
+  /* ---- Day by day: the three trips as one row of compact tabs, the chosen one filled */
+  .itin__tabs { flex-wrap: nowrap; overflow-x: auto; gap: 8px; margin-right: 0; scrollbar-width: none; }
+  .itin__tabs::-webkit-scrollbar { display: none; }
+  .itin-tab { flex: 0 0 auto; padding: 10px 16px; gap: 2px; }
+  .itin-tab .eyebrow { font-size: 10px; }
+  .itin-tab strong { font-size: var(--t-md); white-space: nowrap; }
+  .itin-tab.is-active { background: var(--solid); border-color: var(--solid); color: var(--on-solid); }
+  .itin-tab.is-active strong em, .itin-tab.is-active .eyebrow { color: inherit; }
+  .itin-tab.is-active .eyebrow { opacity: 0.75; }
+}

@@ -34,3 +34,13 @@ loadSite().then((site) => {
 });
 
 window.addEventListener('load', () => ScrollTrigger.refresh());
+// lazy photos keep growing the page after load (the album wall, the swipe rows); re-measure whenever its
+// height changes, or every scroll-triggered effect further down fires at the old positions
+let pageH = 0, remeasure;
+new ResizeObserver(() => {
+  const h = document.documentElement.scrollHeight;
+  if (Math.abs(h - pageH) < 2) return;
+  pageH = h;
+  clearTimeout(remeasure);
+  remeasure = setTimeout(() => ScrollTrigger.refresh(), 250);
+}).observe(document.body);
