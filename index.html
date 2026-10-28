@@ -181,9 +181,9 @@
         <div>
           <p class="manifesto__text" id="manifestoText">
             Uganda is the Africa people forget to <em>imagine</em>. Tuskers
-            <span class="manifesto__inline-img"><img data-src="m-elephant-nile" alt="" loading="lazy" /></span>
+            <span class="manifesto__inline-img"><img data-manifesto="0" alt="" loading="lazy" /></span>
             wading in the Nile. Lions on the rift floor. Volcanic lakes
-            <span class="manifesto__inline-img"><img data-src="crater-reflect" alt="" loading="lazy" /></span>
+            <span class="manifesto__inline-img"><img data-manifesto="1" alt="" loading="lazy" /></span>
             stacked between green ridges. The world's longest river forced through a gap seven metres wide. We take small groups there — close, loud, and <em>unfiltered</em>.
           </p>
           <div class="manifesto__foot">
@@ -284,7 +284,7 @@
 
     <!-- QUOTE -->
     <section class="quote" id="quote">
-      <div class="quote__bg"><img src="/media/m-falls-top-1600.webp" srcset="/media/m-falls-top-900.webp 900w, /media/m-falls-top-1600.webp 1600w, /media/m-falls-top-2800.webp 2800w" sizes="100vw" alt="" loading="lazy" decoding="async" /></div>
+      <div class="quote__bg"><img id="quoteImg" sizes="100vw" alt="" loading="lazy" decoding="async" /></div>
       <blockquote>
         <p>The whole Nile, through a gap <em>seven metres wide.</em> You hear it a kilometre before you see it.</p>
         <cite class="eyebrow">Top of the Falls, Murchison Falls National Park</cite>
@@ -326,7 +326,7 @@
           <div class="field" id="emailField" hidden><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" /></div>
           <div class="form__row">
             <div class="field"><label for="f-trip">Trip</label>
-              <select id="f-trip" name="trip"><option value="murchison">Murchison Falls Explorer</option><option value="fortportal">Fort Portal &amp; Queen Elizabeth</option><option value="moyo">Moyo &amp; Mt. Buce hike</option><option value="both">Two trips as one week</option><option value="custom">Something custom</option></select>
+              <select id="f-trip" name="trip"></select>
             </div>
             <div class="field"><label for="f-date">Travel month</label><input id="f-date" name="date" type="month" /></div>
           </div>

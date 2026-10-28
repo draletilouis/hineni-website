@@ -97,6 +97,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+/* the admin's preview of unpublished changes (src/lib/site.js): a bar across the top, the nav below it */
+.preview-bar {
+  position: fixed; inset: 0 0 auto; z-index: 190; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s-2) var(--s-5);
+  min-height: 44px; padding: var(--s-2) var(--gutter); background: #a9c47f; color: #0f1a14; font-size: var(--t-sm);
+}
+.preview-bar a { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.has-preview-bar .nav { top: 56px; }
+.has-preview-bar .hero { padding-top: 140px; }
+
 /* ==========================================================================
    Navigation
    ========================================================================== */

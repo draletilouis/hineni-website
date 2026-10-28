@@ -13,22 +13,32 @@ npm run build      # production build in dist/
 npm start          # production: the site, /admin and the API from one Node process (PORT, default 8787)
 ```
 
-## Admin portal: updating the photos
+## Admin portal: the whole website without code
 
-Admins sign in at **/admin** and change the website's photos without touching code or rebuilding:
+Admins sign in at **/admin** and run the website themselves. The plain-language guide for them is
+[docs/admin-guide.md](docs/admin-guide.md). In short:
 
-- **Album photos**: upload photos (drag and drop, from a computer or a phone) into a trip, write captions,
-  set what they show (wildlife / landscapes / people), move them between trips, remove them from the website
-  and put them back. Uploads are turned into 900/1600/2000/2800 px WebP; the date the photo was taken comes
-  from the camera, and location data is stripped. Removed photos also leave the map.
-- **Spots on the page**: choose the photo for every fixed spot (the hero slides and their captions, the trust
-  card, trip cards and itinerary days, experiences, the About portrait), from the album or a fresh upload.
-  "Back to the original" undoes a change.
-- **Trips**: rename a trip or change its month, and add new trips; each trip is a chapter of the album.
+- **Draft, preview, publish**: every change goes into a draft. "Preview the website" opens `/?preview`, the site
+  with the draft applied and a bar saying so (signed-in admins only; everyone else gets the live site). Publish
+  puts it live; Discard throws the draft away.
+- **Album photos**: upload (drag and drop, computer or phone) into a trip, caption, set what they show, move
+  between trips, remove and put back, delete for good. Uploads become 900/1600/2000/2800 px WebP; the date taken
+  comes from the camera; location data is stripped. Removed photos also leave the map.
+- **Spots on the page**: the photo or clip for every fixed spot: hero slides and their captions, the trust card,
+  trip cards and itinerary days, experiences and their clips, the wildlife sightings, the photos in "The idea",
+  the big quote, guest stories, the About portrait and the film. "Back to the original" undoes a change.
+- **Clips**: upload MP4 (H.264) or WebM, up to 250 MB. The browser reads the clip and grabs the poster frame
+  (no video tools on the server), then the clip is chosen for a spot.
+- **Words & details**: contacts, the line under the hero, each trip's name, dates, price, route and blurb, guest
+  stories (with a show switch), the questions (each with a show switch), experiences, wildlife notes and About.
+  The fields are declared in `src/data/fields.js`; spots in `src/data/slots.js`.
+- **Trips**: rename, change the month, add new trips (each one a chapter of the album).
+- **Team**: add and remove admins, change your own password. These apply at once, outside the draft.
+- **History**: every published version (and the website as built), restorable into the draft. Restoring keeps
+  later uploads: their photos come back as removed, their clips unused.
 
-Changes show on the website at the next page load: the page fetches them from `GET /api/site` before it renders
-(`src/lib/site.js`). Without the server (a plain static host, or the API down), the site shows exactly what's in
-the code.
+The page fetches the published changes from `GET /api/site` before it renders (`src/lib/site.js`). Without the
+server (a plain static host, or the API down), the site shows exactly what's in the code.
 
 **Accounts** (passwords are stored as scrypt hashes):
 
@@ -42,10 +52,10 @@ On a brand-new server you can instead set `ADMIN_USER` / `ADMIN_PASSWORD` once; 
 from them if none exist (then remove them). For local development, `.env` holds a test account (`dev`).
 
 **Where things live**: everything admins change is in the data folder: the Railway volume in production,
-`storage/` locally (or `DATA_DIR`). It holds `site.json` (the changes), `uploads/` (the photos), `media/` (the
-site's own photos and clips, on Railway), `admins.json`, `sessions.json`, and `history/` (the last 100 versions of
-`site.json`; copy one back over `site.json` and restart to undo). The repository's own photos and `src/data/*.js`
-are never modified.
+`storage/` locally (or `DATA_DIR`). It holds `site.json` (what's live), `draft.json` (the draft), `uploads/`
+(photos and clips), `media/` (the site's own photos and clips, on Railway), `admins.json`, `sessions.json`, and
+`history/` (the last 100 published versions). The repository's own photos and `src/data/*.js` are never
+modified.
 
 ## Deploying on Railway
 
@@ -93,8 +103,8 @@ lasting 12 hours; every change also needs a header other sites can't send; capti
 uploads must decode as JPEG / PNG / WebP of at least 1000 px (40 MB max). HEIC from desktops isn't supported
 (iPhones convert to JPEG when uploading from the browser).
 
-Not editable from the portal (still in code): the map's web photos, the manifesto's inline photos, the guest
-stories' photos and all video clips.
+Not editable from the portal (still in code): the map and its web photos, the field notes, the park-fee
+ledger, the menus' structure and the page layout itself.
 
 ## What's on the page
 
@@ -119,12 +129,11 @@ The film button plays the "Hineni Final" edit.
 
 ## Before going live — please replace
 
-All copy is in `src/data/content.js`.
+The defaults are in `src/data/content.js`; once live, all of these can be changed in the portal (Words & details).
 
-1. **Contacts** — `brand.email`, `brand.whatsapp`, `brand.phone` are placeholders.
-2. **Guest stories** — the three `stories` entries are marked `sample: true`. They show with a red
-   "Sample" badge in dev and are **hidden in production builds** until you replace them with real
-   guests' words (the fear they had, and the moment it disappeared) and set `sample: false`.
+1. **Contacts**: email, WhatsApp and phone are placeholders.
+2. **Guest stories**: the three stories are samples. They're hidden on the live site until each one's
+   "Show on the website" switch is turned on, after replacing its words with a real guest's.
 3. **Policies in the FAQ** — check the answers about payment, cancellation and what's included
    match how you actually operate.
 4. **Park fees** — figures came from UWA reporting in Oct 2026; re-check before quoting.

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Hineni photo admin</title>
+  <title>Hineni website admin</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,8 +14,8 @@
   <!-- sign in -->
   <main class="login" id="login" hidden>
     <form class="login__card" id="loginForm" novalidate>
-      <div class="brand"><em>Hineni</em><span>Photo admin</span></div>
-      <h1>Sign in to update the website's photos</h1>
+      <div class="brand"><em>Hineni</em><span>Website admin</span></div>
+      <h1>Sign in to update the website</h1>
       <label class="field">Email<input name="user" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required /></label>
       <label class="field">Password<input name="password" type="password" autocomplete="current-password" required /></label>
       <p class="login__error" id="loginError" role="alert"></p>
@@ -27,11 +27,15 @@
   <!-- the portal -->
   <div class="app" id="app" hidden>
     <header class="top">
-      <div class="brand"><em>Hineni</em><span>Photo admin</span></div>
+      <div class="brand"><em>Hineni</em><span>Website admin</span></div>
       <nav class="tabs" role="tablist" aria-label="Sections">
         <button role="tab" data-tab="album" aria-selected="true">Album photos <span id="countAlbum"></span></button>
         <button role="tab" data-tab="spots" aria-selected="false">Spots on the page</button>
+        <button role="tab" data-tab="clips" aria-selected="false">Clips</button>
+        <button role="tab" data-tab="words" aria-selected="false">Words &amp; details</button>
         <button role="tab" data-tab="trips" aria-selected="false">Trips</button>
+        <button role="tab" data-tab="team" aria-selected="false">Team</button>
+        <button role="tab" data-tab="history" aria-selected="false">History</button>
       </nav>
       <div class="top__me">
         <a href="/" target="_blank" rel="noopener" class="btn btn--quiet">View website <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
@@ -40,13 +44,22 @@
       </div>
     </header>
     <p class="warning" id="serverWarning" role="alert" hidden></p>
+    <!-- every change is a draft until it's published -->
+    <div class="publish" id="publishBar">
+      <p class="publish__state" id="publishState" role="status" aria-live="polite"></p>
+      <div class="publish__acts">
+        <a class="btn btn--quiet" id="previewBtn" href="/?preview" target="_blank" rel="noopener">Preview the website <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+        <button class="btn btn--quiet" id="discardBtn" type="button">Discard changes</button>
+        <button class="btn btn--primary" id="publishBtn" type="button">Publish</button>
+      </div>
+    </div>
 
     <!-- ALBUM -->
     <section class="view" id="view-album" role="tabpanel">
       <div class="view__head">
         <div>
           <h2>Album photos</h2>
-          <p>Everything in the album and its grid view, plus the photos on the map. Changes show on the website the next time a page loads.</p>
+          <p>Everything in the album, plus the photos on the map. Your changes are kept as a draft: preview them, then publish to put them on the website.</p>
         </div>
       </div>
 
@@ -89,6 +102,39 @@
       <div id="spots"></div>
     </section>
 
+    <!-- CLIPS -->
+    <section class="view" id="view-clips" role="tabpanel" hidden>
+      <div class="view__head">
+        <div>
+          <h2>Clips</h2>
+          <p>Every video on the website: the wildlife sightings, the experience clips and the film. Upload a new clip here, then choose where it plays in Spots on the page.</p>
+        </div>
+      </div>
+      <div class="drop" id="clipDrop">
+        <input type="file" id="clipInput" accept="video/mp4,video/webm" multiple hidden />
+        <div class="drop__main">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 10l5-3v10l-5-3M4 6h11v12H4z"/></svg>
+          <div>
+            <strong>Drop clips here</strong> or <button type="button" class="link" id="chooseClips">choose from this device</button>
+            <small>MP4 (H.264) or WebM, up to 250 MB each. Short clips (under a minute) load fastest.</small>
+          </div>
+        </div>
+      </div>
+      <ul class="queue" id="clipQueue" aria-live="polite"></ul>
+      <div class="grid grid--clips" id="clips"></div>
+    </section>
+
+    <!-- WORDS -->
+    <section class="view" id="view-words" role="tabpanel" hidden>
+      <div class="view__head">
+        <div>
+          <h2>Words &amp; details</h2>
+          <p>Contact details, prices, trip descriptions, guest stories, questions and the rest of the wording. Each change is saved when you leave the box.</p>
+        </div>
+      </div>
+      <div id="words"></div>
+    </section>
+
     <!-- TRIPS -->
     <section class="view" id="view-trips" role="tabpanel" hidden>
       <div class="view__head">
@@ -105,6 +151,44 @@
         <button class="btn btn--primary" type="submit">Add trip</button>
       </form>
     </section>
+
+    <!-- TEAM -->
+    <section class="view" id="view-team" role="tabpanel" hidden>
+      <div class="view__head">
+        <div>
+          <h2>Team</h2>
+          <p>Who can sign in here. Changes on this page apply straight away; they aren't part of the draft.</p>
+        </div>
+      </div>
+      <ul class="team" id="team"></ul>
+      <div class="team__forms">
+        <form class="panel" id="teamAdd">
+          <h3>Add someone</h3>
+          <label class="field">Their email<input name="user" type="email" autocomplete="off" required /></label>
+          <label class="field">A password for them<input name="password" type="password" autocomplete="new-password" minlength="8" required /></label>
+          <p class="panel__hint">At least 8 characters. Send it to them separately; they can change it once signed in.</p>
+          <button class="btn btn--primary" type="submit">Add admin</button>
+        </form>
+        <form class="panel" id="passwordForm">
+          <h3>Change your password</h3>
+          <label class="field">Current password<input name="current" type="password" autocomplete="current-password" required /></label>
+          <label class="field">New password<input name="password" type="password" autocomplete="new-password" minlength="8" required /></label>
+          <label class="field">New password again<input name="again" type="password" autocomplete="new-password" minlength="8" required /></label>
+          <button class="btn btn--primary" type="submit">Change password</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="view-history" role="tabpanel" hidden>
+      <div class="view__head">
+        <div>
+          <h2>History</h2>
+          <p>Every version of the website you've published. Restoring one puts it in the draft, so you can preview it before publishing it again.</p>
+        </div>
+      </div>
+      <ol class="history" id="history"></ol>
+    </section>
   </div>
 
   <!-- photo picker for a spot -->
@@ -120,7 +204,7 @@
       <div class="chips" id="pickerChips" role="group" aria-label="Show photos from"></div>
       <div class="toolbar__right">
         <input type="search" id="pickerSearch" placeholder="Search captions" aria-label="Search captions" />
-        <label class="btn btn--upload">Upload a new one<input type="file" id="pickerFile" accept="image/jpeg,image/png,image/webp" hidden /></label>
+        <label class="btn btn--upload"><span id="pickerUploadLabel">Upload a new one</span><input type="file" id="pickerFile" accept="image/jpeg,image/png,image/webp" hidden /></label>
       </div>
     </div>
     <div class="picker__grid" id="pickerGrid"></div>

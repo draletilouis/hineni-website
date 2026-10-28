@@ -1,16 +1,18 @@
 // Hineni server: serves the built site, the admin portal (/admin) and its API.
 //
-//   GET  /api/site                 the live changes the site applies at start-up (public)
+//   GET  /api/site                 the live changes the site applies at start-up (public);
+//                                  ?preview=1 from a signed-in admin returns the unpublished draft instead
 //   POST /api/login, /api/logout   admin sign-in (HttpOnly session cookie)
-//   /api/admin/*                   photos, placements and trips (signed-in admins only)
-//   /uploads/*                     uploaded photos, as 900/1600/2000/2800 px webp
+//   /api/admin/*                   photos, clips, words, spots, trips, team and history (signed-in admins only)
+//   /uploads/*                     uploaded photos (900/1600/2000/2800 px webp) and clips (+ a poster)
 //   /media/*                       the site's own photos and clips (from DATA_DIR/media, else the build)
 //   GET  /api/health               for the host's health check
 //
-// Everything admins change lives in DATA_DIR: site.json, the uploads, the admin accounts and a history
-// of earlier site.json versions. On Railway that's the service's volume (RAILWAY_VOLUME_MOUNT_PATH), which
-// also holds the site's own media (pushed there with `npm run push-media`, so deploys stay small);
-// elsewhere ./storage. Back that folder up; nothing else changes.
+// Admins work on a draft (draft.json). Visitors only ever see the published version (site.json); Publish
+// copies the draft over it, keeping the version it replaces in history/. Everything lives in DATA_DIR:
+// site.json, draft.json, the uploads, the admin accounts and the history. On Railway that's the service's
+// volume (RAILWAY_VOLUME_MOUNT_PATH), which also holds the site's own media (pushed there with
+// `npm run push-media`, so deploys stay small); elsewhere ./storage. Back that folder up; nothing else changes.
 import express from 'express';
 import multer from 'multer';
 import sharp from 'sharp';
@@ -19,7 +21,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { loadAdmins, verifyPassword, ensureBootstrapAdmin } from './admins.mjs';
+import { loadAdmins, verifyPassword, ensureBootstrapAdmin, setAdmin, removeAdmin, validName } from './admins.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 try { process.loadEnvFile(path.join(ROOT, '.env')); } catch { /* no .env: use the real environment */ }
@@ -33,54 +35,84 @@ if (EPHEMERAL) console.error('WARNING: no Railway volume behind DATA_DIR. Upload
 const UPLOADS = path.join(DATA, 'uploads');
 const MEDIA = path.join(DATA, 'media');
 const HISTORY = path.join(DATA, 'history');
+const TMP = path.join(DATA, 'tmp');
 const SITE_FILE = path.join(DATA, 'site.json');
+const DRAFT_FILE = path.join(DATA, 'draft.json');
 const DIST = path.join(ROOT, 'dist');
 const PORT = Number(process.env.PORT) || 8787;
 const SIZES = [900, 1600, 2000, 2800];
 const SESSION_HOURS = 12;
 const TYPES = ['wildlife', 'land', 'people'];
+const CLIP_MB = 250;
 
 // sharp's cache keeps files open, and Windows won't delete an open file
 sharp.cache(false);
-// clean-up of photo files is best-effort: a leftover file is harmless, a crash isn't
-const removeFiles = (key) => Promise.all(SIZES.map((w) => fsp.rm(path.join(UPLOADS, `${key}-${w}.webp`), { force: true })))
+// clean-up of upload files is best-effort: a leftover file is harmless, a crash isn't
+const filesOf = (key) => [...SIZES.map((w) => `${key}-${w}.webp`), `${key}.mp4`, `${key}.webm`, `${key}-poster.webp`];
+const removeFiles = (key) => Promise.all(filesOf(key).map((f) => fsp.rm(path.join(UPLOADS, f), { force: true })))
   .catch((e) => console.warn(`[files] couldn't remove all of ${key}: ${e.code || e.message}`));
 
-fs.mkdirSync(UPLOADS, { recursive: true });
-fs.mkdirSync(HISTORY, { recursive: true });
-fs.mkdirSync(MEDIA, { recursive: true });
+for (const dir of [UPLOADS, HISTORY, MEDIA, TMP]) fs.mkdirSync(dir, { recursive: true });
 await ensureBootstrapAdmin(DATA);
 
-// photos that ship with the site (built by tools/build-media.mjs)
-const builtIn = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/data/media.json'), 'utf8')).photos;
+// photos and clips that ship with the site (built by tools/build-media.mjs)
+const shipped = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/data/media.json'), 'utf8'));
+const builtIn = shipped.photos;
+const builtInVideos = shipped.videos || {};
 const builtInTrips = ['moyo', 'murchison', 'fortportal'];
 
-// ---------------------------------------------------------------- the live site file
-const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {} });
-let site = fs.existsSync(SITE_FILE) ? { ...emptySite(), ...JSON.parse(fs.readFileSync(SITE_FILE, 'utf8')) } : emptySite();
+// ---------------------------------------------------------------- the published site and the draft
+const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {}, videos: {}, text: {} });
+const readSite = (file) => (fs.existsSync(file) ? { ...emptySite(), ...JSON.parse(fs.readFileSync(file, 'utf8')) } : null);
+const copy = (o) => structuredClone(o);
+let site = readSite(SITE_FILE) || emptySite(); // what visitors see
+let draft = readSite(DRAFT_FILE) || copy(site); // what admins are editing
+// the draft differs from the live site in anything but its time stamps
+const content = ({ updated, by, ...rest }) => JSON.stringify(rest);
+const pending = () => content(draft) !== content(site);
 
-// one write at a time; the previous version goes to history/ first (the last 100 are kept)
+// one write at a time, through a temporary file so a crash never leaves half a file
 let writing = Promise.resolve();
-function saveSite(user) {
-  site.updated = Date.now();
-  site.by = user;
-  const snapshot = JSON.stringify(site, null, 2);
+const writeJSON = (file, data) => {
+  const text = JSON.stringify(data, null, 2);
   writing = writing.then(async () => {
-    if (fs.existsSync(SITE_FILE)) {
-      await fsp.copyFile(SITE_FILE, path.join(HISTORY, `site-${new Date().toISOString().replace(/[:.]/g, '-')}.json`));
-      const old = (await fsp.readdir(HISTORY)).sort();
-      await Promise.all(old.slice(0, Math.max(0, old.length - 100)).map((f) => fsp.rm(path.join(HISTORY, f))));
-    }
-    await fsp.writeFile(`${SITE_FILE}.tmp`, snapshot);
-    await fsp.rename(`${SITE_FILE}.tmp`, SITE_FILE);
+    await fsp.writeFile(`${file}.tmp`, text);
+    await fsp.rename(`${file}.tmp`, file);
   });
   return writing;
+};
+function saveDraft(user) {
+  draft.updated = Date.now();
+  draft.by = user;
+  return writeJSON(DRAFT_FILE, draft);
+}
+// publishing: the version it replaces goes to history/ first (the last 100 are kept). The first
+// publish keeps the website as built, so there is always a way back to it.
+async function publish(user) {
+  await writing;
+  await fsp.writeFile(path.join(HISTORY, `site-${new Date().toISOString().replace(/[:.]/g, '-')}.json`), JSON.stringify(site, null, 2));
+  const old = (await fsp.readdir(HISTORY)).filter((f) => f.endsWith('.json')).sort();
+  await Promise.all(old.slice(0, Math.max(0, old.length - 100)).map((f) => fsp.rm(path.join(HISTORY, f))));
+  const before = site;
+  site = copy(draft);
+  site.updated = Date.now();
+  site.by = user;
+  await writeJSON(SITE_FILE, site);
+  draft.updated = site.updated;
+  await saveDraft(user);
+  // files of uploads deleted in the draft go once the live site no longer shows them
+  for (const kind of ['photos', 'videos']) {
+    for (const key of Object.keys(before[kind] || {})) if (!site[kind][key] && !draft[kind][key]) await removeFiles(key);
+  }
 }
 
-const tripIds = () => [...builtInTrips, ...Object.keys(site.trips).filter((id) => !builtInTrips.includes(id))];
-const isPhoto = (key) => typeof key === 'string' && (key in builtIn || key in site.photos);
-// captions end up in the page's HTML: plain text only, one line, sensible length
-const clean = (v, max = 160) => String(v ?? '').replace(/[<>\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+const tripIds = () => [...builtInTrips, ...Object.keys(draft.trips).filter((id) => !builtInTrips.includes(id))];
+const isPhoto = (key) => typeof key === 'string' && (key in builtIn || key in draft.photos);
+const isVideo = (key) => typeof key === 'string' && (key in builtInVideos || key in draft.videos);
+// captions and words end up in the page's HTML: plain text only, one line, sensible length.
+// Straight double quotes become curly ones, so words can never close an HTML attribute.
+const clean = (v, max = 160) => String(v ?? '').replace(/[<>\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().replace(/"/g, '”').slice(0, max);
+const usedInSpots = (key) => Object.values(draft.slots).some((s) => s.photo === key || s.video === key);
 
 // ---------------------------------------------------------------- sessions and sign-in
 // sessions survive restarts and redeploys; only a hash of each token is stored
@@ -101,7 +133,7 @@ function sessionOf(req) {
   const token = readCookie(req, 'hn_admin');
   const s = token && sessions.get(hashToken(token));
   if (!s) return null;
-  // expired, or the account was removed (npm run admin -- remove) since signing in
+  // expired, or the account was removed since signing in
   if (s.expires < Date.now() || !loadAdmins(DATA).some((a) => a.user === s.user)) { sessions.delete(hashToken(token)); saveSessions(); return null; }
   return s;
 }
@@ -133,6 +165,12 @@ app.use(express.json({ limit: '64kb' }));
 app.use((req, res, next) => { req.body ??= {}; next(); });
 
 app.get('/api/site', (req, res) => {
+  // a signed-in admin previewing sees the draft; everyone else, the published site
+  if (req.query.preview && sessionOf(req)) {
+    res.set('Cache-Control', 'no-store');
+    const { by, ...d } = draft;
+    return res.json({ ...d, preview: true });
+  }
   res.set('Cache-Control', 'no-cache');
   const { by, ...pub } = site;
   res.json(pub);
@@ -152,7 +190,7 @@ app.post('/api/login', async (req, res) => {
     const count = (f && f.until > Date.now() - 15 * 60000 ? f.count : 0) + 1;
     failures.set(ip, { count, until: count >= 5 ? Date.now() + 15 * 60000 : 0 });
     await new Promise((r) => setTimeout(r, 400));
-    return res.status(401).json({ error: 'That name and password don\'t match.' });
+    return res.status(401).json({ error: 'That email and password don\'t match.' });
   }
   failures.delete(ip);
   const token = crypto.randomBytes(32).toString('base64url');
@@ -180,12 +218,30 @@ const admin = express.Router();
 admin.use(requireAdmin);
 app.use('/api/admin', admin);
 
+// the draft, plus whether it differs from what's live
 admin.get('/site', (req, res) => {
   res.set('Cache-Control', 'no-store');
-  res.json(site);
+  res.json({ ...draft, pending: pending(), live: { updated: site.updated, by: site.by } });
 });
 
-// ---- upload: one photo per request (the portal sends them one by one, with progress)
+// ---- publish / discard the draft
+admin.post('/publish', async (req, res) => {
+  if (!pending()) return res.json({ ok: true, nothing: true });
+  await publish(req.admin);
+  res.json({ ok: true });
+});
+admin.post('/discard', async (req, res) => {
+  const before = draft;
+  draft = copy(site);
+  await saveDraft(req.admin);
+  // uploads that only the discarded draft had
+  for (const kind of ['photos', 'videos']) {
+    for (const key of Object.keys(before[kind] || {})) if (!site[kind][key]) await removeFiles(key);
+  }
+  res.json({ ok: true });
+});
+
+// ---- photo upload: one photo per request (the portal sends them one by one, with progress)
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 40 * 1024 * 1024, files: 1, fields: 10 } });
 
 // When the photo was taken: the camera's own clock (EXIF), read as Uganda time unless the photo
@@ -238,8 +294,8 @@ admin.post('/photos', (req, res) => {
         if (width === 2000 || !dims) dims = { w: info.width, h: info.height };
       }
       const photo = { key, alt: '', trip, type, w: dims.w, h: dims.h, t: takenAt(meta, req.body.lastModified), up: 1, added: Date.now(), by: req.admin };
-      site.photos[key] = photo;
-      await saveSite(req.admin);
+      draft.photos[key] = photo;
+      await saveDraft(req.admin);
       res.json({ photo });
     } catch (e) {
       console.error('[upload]', e);
@@ -263,9 +319,9 @@ admin.patch('/photos/:key', async (req, res) => {
     if (!TYPES.includes(req.body.type)) return res.status(400).json({ error: 'Unknown type.' });
     change.type = req.body.type;
   }
-  if (site.photos[key]) Object.assign(site.photos[key], change);
-  else site.edits[key] = { ...site.edits[key], ...change };
-  await saveSite(req.admin);
+  if (draft.photos[key]) Object.assign(draft.photos[key], change);
+  else draft.edits[key] = { ...draft.edits[key], ...change };
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 
@@ -274,47 +330,116 @@ admin.post('/photos/:key/remove', async (req, res) => {
   const { key } = req.params;
   if (!isPhoto(key)) return res.status(404).json({ error: 'No such photo.' });
   // (the portal also checks the spots' original photos, which only the site's code knows)
-  if (Object.values(site.slots).some((s) => s.photo === key)) return res.status(409).json({ error: 'It\'s chosen for a spot on the page. Pick another photo there first.' });
-  if (!site.hidden.includes(key)) site.hidden.push(key);
-  await saveSite(req.admin);
+  if (usedInSpots(key)) return res.status(409).json({ error: 'It\'s chosen for a spot on the page. Pick another photo there first.' });
+  if (!draft.hidden.includes(key)) draft.hidden.push(key);
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 admin.post('/photos/:key/restore', async (req, res) => {
-  site.hidden = site.hidden.filter((k) => k !== req.params.key);
-  await saveSite(req.admin);
+  draft.hidden = draft.hidden.filter((k) => k !== req.params.key);
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
-// an uploaded photo, removed first, can be deleted for good (photos that ship with the site can't)
+// an uploaded photo, removed first, can be deleted for good (photos that ship with the site can't).
+// Its files go now if the live site never had it, else when the deletion is published.
 admin.delete('/photos/:key', async (req, res) => {
   const { key } = req.params;
-  if (!site.photos[key]) return res.status(404).json({ error: 'Only uploaded photos can be deleted.' });
-  if (!site.hidden.includes(key)) return res.status(409).json({ error: 'Remove it from the website first.' });
-  if (Object.values(site.slots).some((s) => s.photo === key)) return res.status(409).json({ error: 'It\'s still chosen for a spot on the page.' });
-  delete site.photos[key];
-  site.hidden = site.hidden.filter((k) => k !== key);
-  await saveSite(req.admin);
-  await removeFiles(key);
+  if (!draft.photos[key]) return res.status(404).json({ error: 'Only uploaded photos can be deleted.' });
+  if (!draft.hidden.includes(key)) return res.status(409).json({ error: 'Remove it from the website first.' });
+  if (usedInSpots(key)) return res.status(409).json({ error: 'It\'s still chosen for a spot on the page.' });
+  delete draft.photos[key];
+  draft.hidden = draft.hidden.filter((k) => k !== key);
+  await saveDraft(req.admin);
+  if (!site.photos[key]) await removeFiles(key);
   res.json({ ok: true });
 });
 
-// ---- placements: which photo (and hero caption) each spot on the page shows
+// ---- clips: one video per request, with a poster frame the portal grabs from it in the browser
+const clipUpload = multer({ dest: TMP, limits: { fileSize: CLIP_MB * 1024 * 1024, files: 2, fields: 10 } });
+const CLIP_TYPES = { 'video/mp4': 'mp4', 'video/webm': 'webm' };
+admin.post('/videos', (req, res) => {
+  clipUpload.fields([{ name: 'video', maxCount: 1 }, { name: 'poster', maxCount: 1 }])(req, res, async (err) => {
+    const tmp = [...(req.files?.video || []), ...(req.files?.poster || [])].map((f) => f.path);
+    const cleanup = () => Promise.all(tmp.map((p) => fsp.rm(p, { force: true })));
+    if (err) { await cleanup(); return res.status(400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? `That clip is over ${CLIP_MB} MB. Export a shorter or smaller MP4.` : 'Upload failed.' }); }
+    const video = req.files?.video?.[0];
+    const poster = req.files?.poster?.[0];
+    const ext = video && CLIP_TYPES[video.mimetype];
+    if (!video || !poster) { await cleanup(); return res.status(400).json({ error: 'No clip received.' }); }
+    if (!ext) { await cleanup(); return res.status(400).json({ error: 'Use an MP4 (H.264) or WebM clip: other formats don\'t play in every browser.' }); }
+    const title = clean(req.body.title || video.originalname, 80).replace(/\.[a-z0-9]+$/i, '');
+    const key = `u-${slug(title || 'clip')}-${crypto.randomBytes(3).toString('hex')}`;
+    try {
+      await sharp(poster.path).rotate().resize({ width: 1280, withoutEnlargement: true }).webp({ quality: 80 }).toFile(path.join(UPLOADS, `${key}-poster.webp`));
+      await fsp.rename(video.path, path.join(UPLOADS, `${key}.${ext}`));
+      const num = (v, max) => { const n = Number(v); return n > 0 && n < max ? Math.round(n * 10) / 10 : 0; };
+      const clip = { key, title, ext, w: num(req.body.w, 10000), h: num(req.body.h, 10000), dur: num(req.body.dur, 36000), up: 1, added: Date.now(), by: req.admin };
+      draft.videos[key] = clip;
+      await saveDraft(req.admin);
+      res.json({ video: clip });
+    } catch (e) {
+      console.error('[clip]', e);
+      await removeFiles(key);
+      res.status(500).json({ error: 'Couldn\'t save that clip.' });
+    } finally {
+      await cleanup();
+    }
+  });
+});
+admin.patch('/videos/:key', async (req, res) => {
+  const clip = draft.videos[req.params.key];
+  if (!clip) return res.status(404).json({ error: 'Only uploaded clips can be renamed.' });
+  if ('title' in req.body) clip.title = clean(req.body.title, 80);
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+admin.delete('/videos/:key', async (req, res) => {
+  const { key } = req.params;
+  if (!draft.videos[key]) return res.status(404).json({ error: 'Only uploaded clips can be deleted.' });
+  if (usedInSpots(key)) return res.status(409).json({ error: 'It\'s still chosen for a spot on the page. Pick another clip there first.' });
+  delete draft.videos[key];
+  await saveDraft(req.admin);
+  if (!site.videos[key]) await removeFiles(key);
+  res.json({ ok: true });
+});
+
+// ---- placements: which photo or clip (and hero caption) each spot on the page shows
 admin.put('/slots/:id', async (req, res) => {
   const { id } = req.params;
   if (!/^[a-z0-9._-]{1,64}$/i.test(id)) return res.status(400).json({ error: 'Bad spot.' });
-  const next = { ...site.slots[id] };
+  const next = { ...draft.slots[id] };
   if ('photo' in req.body) {
     if (!isPhoto(req.body.photo)) return res.status(400).json({ error: 'No such photo.' });
-    if (site.hidden.includes(req.body.photo)) return res.status(400).json({ error: 'That photo is removed from the website. Restore it first.' });
+    if (draft.hidden.includes(req.body.photo)) return res.status(400).json({ error: 'That photo is removed from the website. Restore it first.' });
     next.photo = req.body.photo;
   }
+  if ('video' in req.body) {
+    if (!isVideo(req.body.video)) return res.status(400).json({ error: 'No such clip.' });
+    next.video = req.body.video;
+  }
   for (const f of ['title', 'place']) if (f in req.body) next[f] = clean(req.body[f], 80);
-  site.slots[id] = next;
-  await saveSite(req.admin);
+  draft.slots[id] = next;
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 admin.delete('/slots/:id', async (req, res) => {
-  delete site.slots[req.params.id];
-  await saveSite(req.admin);
+  delete draft.slots[req.params.id];
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+
+// ---- words: contact details, prices, stories, questions… (which fields exist is the site's code: src/data/fields.js)
+admin.put('/text/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!/^[a-z0-9._-]{1,80}$/i.test(id)) return res.status(400).json({ error: 'Bad field.' });
+  if (typeof req.body.value !== 'string') return res.status(400).json({ error: 'No text received.' });
+  draft.text[id] = clean(req.body.value, 2000);
+  await saveDraft(req.admin);
+  res.json({ ok: true, value: draft.text[id] });
+});
+admin.delete('/text/:id', async (req, res) => {
+  delete draft.text[req.params.id];
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 
@@ -340,32 +465,93 @@ admin.post('/trips', async (req, res) => {
   if (!t.title || !t.start) return res.status(400).json({ error: 'A trip needs a name and a month.' });
   let id = slug(t.title);
   while (tripIds().includes(id)) id = `${slug(t.title)}-${crypto.randomBytes(2).toString('hex')}`;
-  site.trips[id] = { ...t, custom: 1 };
-  await saveSite(req.admin);
-  res.json({ id, trip: site.trips[id] });
+  draft.trips[id] = { ...t, custom: 1 };
+  await saveDraft(req.admin);
+  res.json({ id, trip: draft.trips[id] });
 });
 admin.patch('/trips/:id', async (req, res) => {
   const { id } = req.params;
   if (!tripIds().includes(id)) return res.status(404).json({ error: 'No such trip.' });
-  try { site.trips[id] = { ...site.trips[id], ...tripFields(req.body) }; } catch (e) { return res.status(400).json({ error: e.message }); }
-  await saveSite(req.admin);
+  try { draft.trips[id] = { ...draft.trips[id], ...tripFields(req.body) }; } catch (e) { return res.status(400).json({ error: e.message }); }
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 admin.delete('/trips/:id', async (req, res) => {
   const { id } = req.params;
-  if (!site.trips[id]?.custom) return res.status(400).json({ error: 'Only trips added here can be deleted.' });
-  const count = Object.values(site.photos).filter((p) => p.trip === id).length
-    + Object.values(site.edits).filter((e) => e.trip === id).length;
+  if (!draft.trips[id]?.custom) return res.status(400).json({ error: 'Only trips added here can be deleted.' });
+  const count = Object.values(draft.photos).filter((p) => p.trip === id).length
+    + Object.values(draft.edits).filter((e) => e.trip === id).length;
   if (count) return res.status(409).json({ error: 'Move or delete its photos first.' });
-  delete site.trips[id];
-  await saveSite(req.admin);
+  delete draft.trips[id];
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 // built-in trips: drop the admin's rename and go back to the original
 admin.post('/trips/:id/reset', async (req, res) => {
-  if (site.trips[req.params.id]?.custom) return res.status(400).json({ error: 'Nothing to reset.' });
-  delete site.trips[req.params.id];
-  await saveSite(req.admin);
+  if (draft.trips[req.params.id]?.custom) return res.status(400).json({ error: 'Nothing to reset.' });
+  delete draft.trips[req.params.id];
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+
+// ---- the team: who can sign in (changes here apply at once; they aren't part of the draft)
+admin.get('/team', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ admins: loadAdmins(DATA).map((a) => ({ user: a.user, created: a.created, me: a.user === req.admin })) });
+});
+admin.post('/team', async (req, res) => {
+  const user = clean(req.body.user, 64).toLowerCase();
+  const password = String(req.body.password ?? '');
+  if (!validName(user)) return res.status(400).json({ error: 'Use their email address.' });
+  if (loadAdmins(DATA).some((a) => a.user === user)) return res.status(409).json({ error: `${user} can already sign in.` });
+  try { await setAdmin(DATA, user, password); } catch (e) { return res.status(400).json({ error: e.message }); }
+  res.json({ ok: true });
+});
+admin.delete('/team/:user', (req, res) => {
+  const user = String(req.params.user).toLowerCase();
+  if (user === req.admin) return res.status(400).json({ error: 'You can\'t remove yourself. Ask another admin to.' });
+  if (!removeAdmin(DATA, user)) return res.status(404).json({ error: 'No such admin.' });
+  res.json({ ok: true });
+});
+admin.post('/team/password', async (req, res) => {
+  const me = loadAdmins(DATA).find((a) => a.user === req.admin);
+  if (!await verifyPassword(String(req.body.current ?? ''), me)) return res.status(400).json({ error: 'Your current password isn\'t right.' });
+  try { await setAdmin(DATA, req.admin, String(req.body.password ?? '')); } catch (e) { return res.status(400).json({ error: e.message }); }
+  res.json({ ok: true });
+});
+
+// ---- history: the published versions, each one restorable into the draft
+const historyName = (n) => /^site-[0-9TZ-]+\.json$/.test(n);
+admin.get('/history', async (req, res) => {
+  const names = (await fsp.readdir(HISTORY)).filter(historyName).sort().reverse().slice(0, 50);
+  const versions = [];
+  for (const name of names) {
+    try {
+      const v = JSON.parse(await fsp.readFile(path.join(HISTORY, name), 'utf8'));
+      versions.push({ id: name, updated: v.updated || 0, by: v.by || '' });
+    } catch { /* unreadable file: skip */ }
+  }
+  res.set('Cache-Control', 'no-store');
+  res.json({ live: { updated: site.updated, by: site.by || '' }, versions });
+});
+admin.post('/history/:id/restore', async (req, res) => {
+  const { id } = req.params;
+  if (!historyName(id) || !fs.existsSync(path.join(HISTORY, id))) return res.status(404).json({ error: 'No such version.' });
+  const v = readSite(path.join(HISTORY, id));
+  // uploads deleted since then have no files any more: leave them out rather than show broken images
+  for (const kind of ['photos', 'videos']) {
+    for (const key of Object.keys(v[kind])) if (!draft[kind][key] && !site[kind][key]) delete v[kind][key];
+  }
+  // uploads added since stay in the library, so restoring never loses them: their photos come back
+  // removed ("Put back" or "Delete for good" in the album), their clips unused
+  for (const src of [site, draft]) {
+    for (const [key, p] of Object.entries(src.photos)) if (!v.photos[key]) { v.photos[key] = p; if (!v.hidden.includes(key)) v.hidden.push(key); }
+    for (const [key, c] of Object.entries(src.videos)) if (!v.videos[key]) v.videos[key] = c;
+    // and the trips those photos belong to
+    for (const [id, t] of Object.entries(src.trips)) if (t.custom && !v.trips[id]) v.trips[id] = t;
+  }
+  draft = { ...v, updated: Date.now() };
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 

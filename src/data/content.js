@@ -412,6 +412,11 @@ export const itineraries = [
 // The "Make it yours" card after the trips
 export const customTrip = { photo: 'm-top-sign' };
 
+// the two photos set into the words of "The idea", the big quote's background and the film
+export const manifestoPhotos = ['m-elephant-nile', 'crater-reflect'];
+export const quote = { photo: 'm-falls-top' };
+export const film = { key: 'v-film' };
+
 export const stories = [
   { photo: 'm-laugh-1', name: 'Guest name', trip: 'Murchison, July 2026', sample: true,
     fear: 'I was worried a group trip would feel like a bus tour.',
@@ -466,7 +471,8 @@ const exp = (id, icon, sub) => {
   const e = experiences.find((x) => x.id === id);
   return { label: e.title, sub: sub || e.trip, icon, photo: e.photo, href: '#experiences', data: { 'exp-cat': e.cat } };
 };
-export const navMenus = {
+// built when the page renders (not at import), so trip and experience names edited in the portal show here too
+export const navMenus = () => ({
   trips: [
     { title: 'Pick a trip', items: [
       ...itineraries.map((it, i) => ({
@@ -486,4 +492,4 @@ export const navMenus = {
       exp('game-drive', 'paw', 'Murchison and Queen Elizabeth'), exp('chimps', 'leaf', 'Kibale, add to any trip'), exp('nights', 'music'),
     ] },
   ],
-};
+});

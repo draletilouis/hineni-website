@@ -51,14 +51,19 @@ export const slowNet = () => {
   return !!c && (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || ''));
 };
 
+// clips uploaded in the admin portal (keys start "u-") come as one file, MP4 or WebM, with a poster
 export function videoSrc(key, small = isMobile() || slowNet()) {
+  if (key.startsWith('u-')) return `${UPLOADS}${key}.${manifest.videos[key]?.ext || 'mp4'}`;
   return `${BASE}${key}${small ? '-sm' : ''}.mp4`;
 }
 export function poster(key) {
-  return `${BASE}${key}-poster.webp`;
+  return `${base(key)}${key}-poster.webp`;
 }
 export function videoMeta(key) {
   return manifest.videos[key];
+}
+export function addVideos(videos = {}) {
+  Object.assign(manifest.videos, videos);
 }
 
 export function makeVideo(key, { small, preload = 'metadata', loop = true, withPoster = true } = {}) {

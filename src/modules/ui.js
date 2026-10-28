@@ -2,6 +2,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   brand, heroReel, experiences, experienceCats, fieldNotes, itineraries, stories, faqs, ledger, about, places, regions, customTrip, navMenus,
+  manifestoPhotos, quote, film,
 } from '../data/content.js';
 import { catalogue, photoTrips, photoTypes, albumChapters, checkRepeats } from '../data/photos.js';
 import { photo, photoMeta, imgTag, srcset, makeVideo, poster, videoSrc, safePlay, reducedMotion } from '../lib/media.js';
@@ -34,8 +35,15 @@ export function renderSections() {
     $('#albumWhen').textContent = `Shot on phones, ${first === last ? first : y1 && last.endsWith(y1) ? `${m1} to ${last}` : `${first} to ${last}`}`;
   }
 
-  // manifesto inline images
-  document.querySelectorAll('[data-src]').forEach((img) => { img.src = photo(img.dataset.src, 900); });
+  // the photos set into the words of "The idea", and the big quote's background (both chosen in the portal)
+  document.querySelectorAll('[data-manifesto]').forEach((img) => { img.src = photo(manifestoPhotos[+img.dataset.manifesto], 900); });
+  const q = $('#quoteImg');
+  q.src = photo(quote.photo, 1600);
+  q.srcset = srcset(quote.photo);
+
+  // the form's trips, named as the portal has them
+  $('#f-trip').innerHTML = itineraries.map((it) => `<option value="${it.id}">${it.name} ${it.em}</option>`).join('')
+    + '<option value="both">Two trips as one week</option><option value="custom">Something custom</option>';
 
   // trips at a glance
   const priceLine = (it) => it.price
@@ -176,7 +184,7 @@ export function renderSections() {
   }
 
   // FAQs
-  $('#faqList').innerHTML = faqs.map((f, i) => `
+  $('#faqList').innerHTML = faqs.filter((f) => !f.hidden).map((f, i) => `
     <details class="faq"${i === 0 ? ' open' : ''}>
       <summary data-cursor="hover"><span>${f.q}</span><i></i></summary>
       <p>${f.a}</p>
@@ -314,10 +322,10 @@ function initFilm() {
   const cap = modal.querySelector('.film__cap');
   const filmCap = cap.textContent;
   let current = '';
-  const open = (e, key = 'v-film', caption = filmCap) => {
+  const open = (e, key = film.key, caption = filmCap) => {
     e && e.preventDefault();
     // the film always at full quality; short clips follow the screen and connection
-    if (current !== key) { current = key; v.poster = poster(key); v.src = key === 'v-film' ? videoSrc(key, false) : videoSrc(key); }
+    if (current !== key) { current = key; v.poster = poster(key); v.src = key === film.key ? videoSrc(key, false) : videoSrc(key); }
     cap.textContent = caption;
     modal.classList.add('is-open');
     lockScroll(true);
@@ -545,7 +553,7 @@ function initMega(nav) {
   const wrap = $('#navMega');
   const triggers = [...nav.querySelectorAll('[data-mega]')];
   const desktop = window.matchMedia('(min-width: 1025px)');
-  $('#navMegaInner').innerHTML = Object.entries(navMenus).map(([id, cols]) => `
+  $('#navMegaInner').innerHTML = Object.entries(navMenus()).map(([id, cols]) => `
     <div class="mega" id="mega-${id}" data-menu="${id}" style="--cols: ${cols.length}" hidden>
       ${cols.map((c) => `
         <div class="mega__col">
