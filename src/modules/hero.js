@@ -43,7 +43,15 @@ export function initHero() {
     if (ready[i]) return ready[i];
     const img = imgs[i];
     if (img.dataset.srcset) { img.srcset = img.dataset.srcset; img.src = img.dataset.src; delete img.dataset.srcset; }
-    ready[i] = img.decode().then(() => true).catch(() => img.complete && img.naturalWidth > 0);
+    // decode() can stay pending while the browser isn't painting (a background tab, a paused phone):
+    // once the file has loaded, give it a moment and go on regardless, so the slideshow never sticks
+    const loaded = () => img.complete && img.naturalWidth > 0;
+    const fallback = new Promise((res) => {
+      const settle = () => setTimeout(() => res(loaded()), 400);
+      if (img.complete) settle();
+      else { img.addEventListener('load', settle, { once: true }); img.addEventListener('error', () => res(false), { once: true }); }
+    });
+    ready[i] = Promise.race([img.decode().then(() => true, loaded), fallback]);
     return ready[i];
   }
   load(0);
@@ -70,7 +78,7 @@ export function initHero() {
 
   // phones: the next photo after HOLD, while the hero is on screen and nothing is open over it
   const auto = isMobile() && !rm;
-  const HOLD = 3500;
+  const HOLD = 5000;
   let timer = 0;
   function schedule() {
     clearTimeout(timer);
