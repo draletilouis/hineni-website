@@ -1,0 +1,9 @@
+node_modules/
+dist/
+storage/
+data/
+tools/
+docs/
+public/media/
+.env
+.claude/

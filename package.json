@@ -1,0 +1,30 @@
+{
+  "name": "kijani-trails",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "server": "node --watch-path=server server/index.mjs",
+    "build": "vite build",
+    "start": "node server/index.mjs",
+    "preview": "vite preview --host",
+    "admin": "node server/admin-cli.mjs",
+    "media": "node tools/build-media.mjs",
+    "push-media": "node server/push-media.mjs"
+  },
+  "dependencies": {
+    "exif-reader": "2.0.2",
+    "express": "5.1.0",
+    "gsap": "3.13.0",
+    "multer": "2.0.2",
+    "sharp": "0.33.5",
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "vite": "6.3.5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

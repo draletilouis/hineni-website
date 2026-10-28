@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Hineni photo admin</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- sign in -->
+  <main class="login" id="login" hidden>
+    <form class="login__card" id="loginForm" novalidate>
+      <div class="brand"><em>Hineni</em><span>Photo admin</span></div>
+      <h1>Sign in to update the website's photos</h1>
+      <label class="field">Name<input name="user" autocomplete="username" autocapitalize="none" spellcheck="false" required /></label>
+      <label class="field">Password<input name="password" type="password" autocomplete="current-password" required /></label>
+      <p class="login__error" id="loginError" role="alert"></p>
+      <button class="btn btn--primary" type="submit">Sign in</button>
+      <p class="login__help">No account? Ask whoever runs the website to add you.</p>
+    </form>
+  </main>
+
+  <!-- the portal -->
+  <div class="app" id="app" hidden>
+    <header class="top">
+      <div class="brand"><em>Hineni</em><span>Photo admin</span></div>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button role="tab" data-tab="album" aria-selected="true">Album photos <span id="countAlbum"></span></button>
+        <button role="tab" data-tab="spots" aria-selected="false">Spots on the page</button>
+        <button role="tab" data-tab="trips" aria-selected="false">Trips</button>
+      </nav>
+      <div class="top__me">
+        <a href="/" target="_blank" rel="noopener" class="btn btn--quiet">View website <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+        <span class="top__user" id="meName"></span>
+        <button class="btn btn--quiet" id="logout" type="button">Sign out</button>
+      </div>
+    </header>
+    <p class="warning" id="serverWarning" role="alert" hidden></p>
+
+    <!-- ALBUM -->
+    <section class="view" id="view-album" role="tabpanel">
+      <div class="view__head">
+        <div>
+          <h2>Album photos</h2>
+          <p>Everything in the album and its grid view, plus the photos on the map. Changes show on the website the next time a page loads.</p>
+        </div>
+      </div>
+
+      <div class="drop" id="drop">
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple hidden />
+        <div class="drop__main">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+          <div>
+            <strong>Drop photos here</strong> or <button type="button" class="link" id="chooseFiles">choose from this device</button>
+            <small>JPEG, PNG or WebP, the full-size originals (up to 40 MB each). Location data is removed.</small>
+          </div>
+        </div>
+        <div class="drop__opts">
+          <label class="field field--inline">From the trip<select id="upTrip"></select></label>
+          <label class="field field--inline">They show<select id="upType"></select></label>
+        </div>
+      </div>
+      <ul class="queue" id="queue" aria-live="polite"></ul>
+
+      <div class="toolbar">
+        <div class="chips" id="albumChips" role="group" aria-label="Show photos from"></div>
+        <div class="toolbar__right">
+          <select id="albumType" aria-label="What the photos show"></select>
+          <input type="search" id="albumSearch" placeholder="Search captions" aria-label="Search captions" />
+        </div>
+      </div>
+      <p class="toolbar__count" id="albumCount"></p>
+      <div class="grid" id="albumGrid"></div>
+      <div class="more"><button class="btn" id="albumMore" type="button" hidden>Show more</button></div>
+    </section>
+
+    <!-- SPOTS -->
+    <section class="view" id="view-spots" role="tabpanel" hidden>
+      <div class="view__head">
+        <div>
+          <h2>Spots on the page</h2>
+          <p>Each of these places on the website shows one chosen photo. Swap any of them for another photo from the album, or upload a new one. Each photo works best in one spot only.</p>
+        </div>
+      </div>
+      <div id="spots"></div>
+    </section>
+
+    <!-- TRIPS -->
+    <section class="view" id="view-trips" role="tabpanel" hidden>
+      <div class="view__head">
+        <div>
+          <h2>Trips</h2>
+          <p>Each trip is a chapter of the album, in the order the trips ran. Add a trip here, then upload its photos in Album photos.</p>
+        </div>
+      </div>
+      <div class="trips" id="trips"></div>
+      <form class="trip-add" id="tripAdd">
+        <h3>Add a trip</h3>
+        <label class="field">Name<input name="title" maxlength="60" placeholder="e.g. Kidepo Valley" required /></label>
+        <label class="field">When it ran<input name="start" type="month" required /></label>
+        <button class="btn btn--primary" type="submit">Add trip</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- photo picker for a spot -->
+  <dialog class="picker" id="picker" aria-labelledby="pickerTitle">
+    <div class="picker__head">
+      <div>
+        <h3 id="pickerTitle">Choose a photo</h3>
+        <p id="pickerHint"></p>
+      </div>
+      <button class="btn btn--quiet" type="button" data-close aria-label="Close"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="pickerChips" role="group" aria-label="Show photos from"></div>
+      <div class="toolbar__right">
+        <input type="search" id="pickerSearch" placeholder="Search captions" aria-label="Search captions" />
+        <label class="btn btn--upload">Upload a new one<input type="file" id="pickerFile" accept="image/jpeg,image/png,image/webp" hidden /></label>
+      </div>
+    </div>
+    <div class="picker__grid" id="pickerGrid"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/src/admin/admin.js"></script>
+</body>
+</html>

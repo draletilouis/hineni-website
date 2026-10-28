@@ -1,0 +1,1196 @@
+{
+ "photos": {
+  "lioness": {
+   "key": "lioness",
+   "i": 1275,
+   "alt": "Lioness striding across the Kasenyi plains",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790403847022
+  },
+  "leopard": {
+   "key": "leopard",
+   "i": 1090,
+   "alt": "Leopard moving through tall grass",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790399224564
+  },
+  "leopard-2": {
+   "key": "leopard-2",
+   "i": 1092,
+   "alt": "Leopard watching from the grass",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790399227332
+  },
+  "elephants-kazinga": {
+   "key": "elephants-kazinga",
+   "i": 1446,
+   "alt": "Elephant herd drinking on the Kazinga Channel shore",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790412977314
+  },
+  "kob-dawn": {
+   "key": "kob-dawn",
+   "i": 1050,
+   "alt": "Uganda kob at pink dawn",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790397243161
+  },
+  "hippo-head": {
+   "key": "hippo-head",
+   "i": 1154,
+   "alt": "Hippo close-up in green bush",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790401093974
+  },
+  "hippo-side": {
+   "key": "hippo-side",
+   "i": 1165,
+   "alt": "Hippo grazing on the savannah",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790401152419
+  },
+  "elephant-euphorbia": {
+   "key": "elephant-euphorbia",
+   "i": 964,
+   "alt": "Elephant beneath a candelabra euphorbia",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790395015435
+  },
+  "lion-male": {
+   "key": "lion-male",
+   "i": 1295,
+   "alt": "Black-maned lion resting at a thicket edge",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790404089851
+  },
+  "fish-eagle": {
+   "key": "fish-eagle",
+   "i": 1426,
+   "alt": "African fish eagle on a treetop",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790411912449
+  },
+  "buffalo-herd": {
+   "key": "buffalo-herd",
+   "i": 1197,
+   "alt": "Cape buffalo herd across the plains",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790401894023
+  },
+  "lioness-rest": {
+   "key": "lioness-rest",
+   "i": 1263,
+   "alt": "Lioness resting on red earth",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790403779110
+  },
+  "elephant-pair": {
+   "key": "elephant-pair",
+   "i": 1362,
+   "alt": "Elephants at the roadside",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790409160630
+  },
+  "elephants-bank": {
+   "key": "elephants-bank",
+   "i": 1456,
+   "alt": "Elephants walking down to the channel",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790413051026
+  },
+  "waterbuck": {
+   "key": "waterbuck",
+   "i": 1430,
+   "alt": "Waterbuck on the channel bank",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790412020916
+  },
+  "buffalo-egret": {
+   "key": "buffalo-egret",
+   "i": 1224,
+   "alt": "Buffalo with a cattle egret",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790402240849
+  },
+  "hippo-wallow": {
+   "key": "hippo-wallow",
+   "i": 1235,
+   "alt": "Hippo pod in a mud wallow",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790402412464
+  },
+  "lioness-vehicle": {
+   "key": "lioness-vehicle",
+   "i": 1268,
+   "alt": "Lioness lying in front of a safari vehicle",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790403800574
+  },
+  "kob-herd": {
+   "key": "kob-herd",
+   "i": 1213,
+   "alt": "Uganda kob herd on the move",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790401981417
+  },
+  "buffalo-stare": {
+   "key": "buffalo-stare",
+   "i": 1193,
+   "alt": "Buffalo staring from golden grass",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790401875359
+  },
+  "elephant-mist": {
+   "key": "elephant-mist",
+   "i": 972,
+   "alt": "Elephant in bush with misty mountains",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790395046880
+  },
+  "hippo-water": {
+   "key": "hippo-water",
+   "i": 1172,
+   "alt": "Hippo eyes above the water",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790401339378
+  },
+  "cruise-buffalo": {
+   "key": "cruise-buffalo",
+   "i": 1418,
+   "alt": "Cruise boat passing buffalo on the channel",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790411806648
+  },
+  "elephant-line": {
+   "key": "elephant-line",
+   "i": 1442,
+   "alt": "Elephant herd lined up at the water's edge",
+   "w": 2000,
+   "h": 1506,
+   "t": 1790412914189
+  },
+  "rwenzori": {
+   "key": "rwenzori",
+   "i": 777,
+   "alt": "Clouds pouring over the Rwenzori slopes",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790350613730
+  },
+  "crater-dusk": {
+   "key": "crater-dusk",
+   "i": 754,
+   "alt": "Crater lakes at dusk with the Rwenzori behind",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790350224820
+  },
+  "crater-storm": {
+   "key": "crater-storm",
+   "i": 769,
+   "alt": "Winding crater lake under storm clouds",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790350588645
+  },
+  "crater-sweep": {
+   "key": "crater-sweep",
+   "i": 1776,
+   "alt": "Lake Kyaninga from the crater rim",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790498921852
+  },
+  "crater-summit": {
+   "key": "crater-summit",
+   "i": 1769,
+   "alt": "Crater lake under a stormy sky",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790498868064
+  },
+  "falls-curtain": {
+   "key": "falls-curtain",
+   "i": 331,
+   "alt": "Waterfall curtain at Nyakasura",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790343907595
+  },
+  "falls-dark": {
+   "key": "falls-dark",
+   "i": 299,
+   "alt": "Forest waterfall with a hiker",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790343798964
+  },
+  "falls-wide": {
+   "key": "falls-wide",
+   "i": 287,
+   "alt": "Multi-strand waterfall over a green pool",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790343724246
+  },
+  "hills-tree": {
+   "key": "hills-tree",
+   "i": 464,
+   "alt": "Rolling Tooro hills and a lone tree",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790345588705
+  },
+  "storm-sunset": {
+   "key": "storm-sunset",
+   "i": 852,
+   "alt": "Storm sunset over the valley",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790351069578
+  },
+  "deck": {
+   "key": "deck",
+   "i": 1759,
+   "alt": "Floating deck on a jungle crater lake",
+   "w": 1128,
+   "h": 2000,
+   "t": 1790498561136
+  },
+  "salt-lake": {
+   "key": "salt-lake",
+   "i": 1306,
+   "alt": "Bunyampaka salt lake at Kasenyi",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790406422719
+  },
+  "pink-valley": {
+   "key": "pink-valley",
+   "i": 920,
+   "alt": "Pink sunset over a crater lake valley",
+   "w": 2000,
+   "h": 1506,
+   "t": 1790351413008
+  },
+  "mirror-lake": {
+   "key": "mirror-lake",
+   "i": 1640,
+   "alt": "Mirror-calm crater lake",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790497600251
+  },
+  "flowers-lake": {
+   "key": "flowers-lake",
+   "i": 1754,
+   "alt": "Wildflowers above a crater lake",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790498424466
+  },
+  "rainforest": {
+   "key": "rainforest",
+   "i": 428,
+   "alt": "Sunburst through rainforest canopy",
+   "w": 1506,
+   "h": 2000,
+   "t": 1790344604371
+  },
+  "kazinga-clouds": {
+   "key": "kazinga-clouds",
+   "i": 1436,
+   "alt": "Kazinga Channel under big clouds",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790412686738
+  },
+  "safari-4x4": {
+   "key": "safari-4x4",
+   "i": 1075,
+   "alt": "Safari 4x4 on a red dirt track",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790398835296
+  },
+  "van-road": {
+   "key": "van-road",
+   "i": 977,
+   "alt": "Pop-top safari van on murram road",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790395132563
+  },
+  "cave": {
+   "key": "cave",
+   "i": 192,
+   "alt": "Amabere cave stalactites",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790343289625
+  },
+  "equator": {
+   "key": "equator",
+   "i": 1488,
+   "alt": "The Equator monument",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790419065677
+  },
+  "town": {
+   "key": "town",
+   "i": 1596,
+   "alt": "Fort Portal rooftops",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790493908050
+  },
+  "lone-tree": {
+   "key": "lone-tree",
+   "i": 472,
+   "alt": "Lone tree on a hill ridge",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790345622420
+  },
+  "acacia": {
+   "key": "acacia",
+   "i": 1032,
+   "alt": "Flat-top acacia over grassland",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790396536129
+  },
+  "euphorbia-plain": {
+   "key": "euphorbia-plain",
+   "i": 1035,
+   "alt": "Euphorbia on the savannah, mountains behind",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790396633742
+  },
+  "dawn-savannah": {
+   "key": "dawn-savannah",
+   "i": 952,
+   "alt": "Dawn over the savannah",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790394561995
+  },
+  "arms-lake": {
+   "key": "arms-lake",
+   "i": 1652,
+   "alt": "Hiker facing a crater lake",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790497664933
+  },
+  "sunset-figure": {
+   "key": "sunset-figure",
+   "i": 877,
+   "alt": "Lone figure facing the sunset",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790351143381
+  },
+  "crater-reflect": {
+   "key": "crater-reflect",
+   "i": 1665,
+   "alt": "Crater lake reflecting the sky",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790497817912
+  },
+  "rim-hikers": {
+   "key": "rim-hikers",
+   "i": 1840,
+   "alt": "Hikers on the crater rim",
+   "w": 2000,
+   "h": 1128,
+   "t": 1790499552827
+  },
+  "mountains": {
+   "key": "mountains",
+   "i": 781,
+   "alt": "Mountain range above a green valley",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790350620624
+  },
+  "sunrays": {
+   "key": "sunrays",
+   "i": 1104,
+   "alt": "Sun rays over the plains",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790399730835
+  },
+  "crater-crew": {
+   "key": "crater-crew",
+   "i": 808,
+   "alt": "The whole crew cheering on the crater rim above the lake",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790350866833
+  },
+  "ridge-joy": {
+   "key": "ridge-joy",
+   "i": 768,
+   "alt": "Arms open to the view from the crater ridge",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790350585342
+  },
+  "falls-joy": {
+   "key": "falls-joy",
+   "i": 323,
+   "alt": "Arms wide under Nyakasura Falls",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790343880301
+  },
+  "falls-dance": {
+   "key": "falls-dance",
+   "i": 327,
+   "alt": "Dancing in the spray of the falls",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790343901536
+  },
+  "equator-couple": {
+   "key": "equator-couple",
+   "i": 1548,
+   "alt": "A couple laughing at the Equator",
+   "w": 1500,
+   "h": 2000,
+   "t": 1790419470484
+  },
+  "live-band": {
+   "key": "live-band",
+   "i": 1582,
+   "alt": "Live band night in Fort Portal",
+   "w": 2000,
+   "h": 1500,
+   "t": 1790449489692
+  },
+  "m-group-boat": {
+   "key": "m-group-boat",
+   "album": "album3",
+   "i": 318,
+   "alt": "Our group grinning in life jackets on the Nile",
+   "w": 2000,
+   "h": 1500,
+   "t": 1783163280467
+  },
+  "m-elephant-nile": {
+   "key": "m-elephant-nile",
+   "album": "album3",
+   "i": 347,
+   "alt": "Tusker feeding in the Nile",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783163753358
+  },
+  "m-elephant-face": {
+   "key": "m-elephant-face",
+   "album": "album3",
+   "i": 383,
+   "alt": "Elephant facing the boat at the water's edge",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783164196430
+  },
+  "m-falls-head": {
+   "key": "m-falls-head",
+   "album": "album3",
+   "i": 541,
+   "alt": "Murchison Falls head-on from the river",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783168223274
+  },
+  "m-falls-cliff": {
+   "key": "m-falls-cliff",
+   "album": "album3",
+   "i": 560,
+   "alt": "Murchison Falls and the red cliffs",
+   "w": 2000,
+   "h": 1500,
+   "t": 1783168424169
+  },
+  "m-falls-top": {
+   "key": "m-falls-top",
+   "album": "album3",
+   "i": 1182,
+   "alt": "The Nile forcing through the Murchison gorge",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783237124145
+  },
+  "m-giraffes-dusk": {
+   "key": "m-giraffes-dusk",
+   "album": "album3",
+   "i": 736,
+   "alt": "Rothschild's giraffes at dusk",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783172045000
+  },
+  "m-hyena": {
+   "key": "m-hyena",
+   "album": "album3",
+   "i": 864,
+   "alt": "Spotted hyena on the open plains",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783227427000
+  },
+  "m-giraffes": {
+   "key": "m-giraffes",
+   "album": "album3",
+   "i": 1093,
+   "alt": "Rothschild's giraffes with an antelope",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783231586553
+  },
+  "m-hartebeest": {
+   "key": "m-hartebeest",
+   "album": "album3",
+   "i": 742,
+   "alt": "Jackson's hartebeest on a termite mound",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783172100000
+  },
+  "m-elephants-acacia": {
+   "key": "m-elephants-acacia",
+   "album": "album3",
+   "i": 815,
+   "alt": "Elephant herd under acacias and palms",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783226548000
+  },
+  "m-ranger": {
+   "key": "m-ranger",
+   "album": "album3",
+   "i": 1226,
+   "alt": "UWA ranger with a guest at the falls",
+   "w": 2000,
+   "h": 740,
+   "t": 1783237487740
+  },
+  "m-friends": {
+   "key": "m-friends",
+   "album": "album3",
+   "i": 845,
+   "alt": "Friends laughing in the safari vehicle",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783226971733
+  },
+  "m-laugh-1": {
+   "key": "m-laugh-1",
+   "album": "album3",
+   "i": 1002,
+   "alt": "Guest laughing out of the vehicle window",
+   "w": 1125,
+   "h": 2000,
+   "t": 1783230300000
+  },
+  "m-laugh-2": {
+   "key": "m-laugh-2",
+   "album": "album3",
+   "i": 1078,
+   "alt": "Guest laughing in the open-roof vehicle",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783230784000
+  },
+  "m-excited": {
+   "key": "m-excited",
+   "album": "album3",
+   "i": 822,
+   "alt": "Guests spotting wildlife",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783226669596
+  },
+  "m-top-sign": {
+   "key": "m-top-sign",
+   "album": "album3",
+   "i": 1127,
+   "alt": "The group at the Top of Murchison Falls",
+   "w": 2000,
+   "h": 1500,
+   "t": 1783236385747
+  },
+  "m-photographer": {
+   "key": "m-photographer",
+   "album": "album3",
+   "i": 549,
+   "alt": "Guest photographing the falls from the boat",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783168298802
+  },
+  "m-arms-falls": {
+   "key": "m-arms-falls",
+   "album": "album3",
+   "i": 1214,
+   "alt": "Arms wide above the falls",
+   "w": 2000,
+   "h": 740,
+   "t": 1783237416690
+  },
+  "m-gate-dance": {
+   "key": "m-gate-dance",
+   "album": "album3",
+   "i": 193,
+   "alt": "Dancing under the park gate",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783157107408
+  },
+  "m-van-laugh": {
+   "key": "m-van-laugh",
+   "album": "album3",
+   "i": 239,
+   "alt": "Two guests laughing in the van",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783158418288
+  },
+  "m-croc": {
+   "key": "m-croc",
+   "album": "album3",
+   "i": 643,
+   "alt": "Giant Nile crocodile on the bank",
+   "w": 2000,
+   "h": 1500,
+   "t": 1783169527000
+  },
+  "m-croc-tree": {
+   "key": "m-croc-tree",
+   "album": "album3",
+   "i": 627,
+   "alt": "Crocodile basking under a dead tree",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783169415000
+  },
+  "m-sunrise-roof": {
+   "key": "m-sunrise-roof",
+   "album": "album3",
+   "i": 999,
+   "alt": "Silhouette reaching for the sunrise",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783230292000
+  },
+  "m-sunrise-guest": {
+   "key": "m-sunrise-guest",
+   "album": "album3",
+   "i": 882,
+   "alt": "Guest watching sunrise from the vehicle",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783227746501
+  },
+  "m-kob-palms": {
+   "key": "m-kob-palms",
+   "album": "album3",
+   "i": 798,
+   "alt": "Uganda kob in borassus palm savannah",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783226039139
+  },
+  "b-elder-nile": {
+   "key": "b-elder-nile",
+   "album": "album4",
+   "i": 392,
+   "alt": "A local guide with his spear above the ridges and the Albert Nile",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777894738518
+  },
+  "b-edge-nile": {
+   "key": "b-edge-nile",
+   "album": "album4",
+   "i": 395,
+   "alt": "At the edge of Mt. Buce, folded ridges and the Nile below",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777894757010
+  },
+  "b-ridges-nile": {
+   "key": "b-ridges-nile",
+   "album": "album4",
+   "i": 391,
+   "alt": "Folded ridges and the Albert Nile winding across the plain",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777894725589
+  },
+  "b-hat-nile": {
+   "key": "b-hat-nile",
+   "album": "album4",
+   "i": 290,
+   "alt": "Looking down on the Albert Nile from Mt. Buce",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777890955218
+  },
+  "b-summit-joy": {
+   "key": "b-summit-joy",
+   "album": "album4",
+   "i": 281,
+   "alt": "Arm up in triumph on the summit of Mt. Buce",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777890795990
+  },
+  "b-dance": {
+   "key": "b-dance",
+   "album": "album4",
+   "i": 79,
+   "alt": "Dancing in the meadow below the Ilo and Oce ridges",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777879015876
+  },
+  "b-cheer": {
+   "key": "b-cheer",
+   "album": "album4",
+   "i": 84,
+   "alt": "The hiking crew cheering in front of the mountains",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777879063686
+  },
+  "b-village-trail": {
+   "key": "b-village-trail",
+   "album": "album4",
+   "i": 96,
+   "alt": "Village women carrying loads on the red-earth trail to the mountain",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777879505042
+  },
+  "b-summit-crew": {
+   "key": "b-summit-crew",
+   "album": "album4",
+   "i": 411,
+   "alt": "Hikers and local guides on the summit rocks",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777894959260
+  },
+  "b-grin": {
+   "key": "b-grin",
+   "album": "album4",
+   "i": 433,
+   "alt": "A big grin at the top",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777895496424
+  },
+  "b-panorama": {
+   "key": "b-panorama",
+   "album": "album4",
+   "i": 271,
+   "alt": "Summit panorama over the plains of West Nile",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777890750387
+  },
+  "y-arms-nile": {
+   "key": "y-arms-nile",
+   "album": "album5",
+   "i": 117,
+   "alt": "Arms wide at the Albert Nile ferry landing",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777736111312
+  },
+  "y-ferry-clouds": {
+   "key": "y-ferry-clouds",
+   "album": "album5",
+   "i": 124,
+   "alt": "Storm clouds over the Albert Nile from the ferry",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777737630415
+  },
+  "y-ferry-sunset": {
+   "key": "y-ferry-sunset",
+   "album": "album5",
+   "i": 132,
+   "alt": "Crossing the Albert Nile on the ferry at sunset",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777738037427
+  },
+  "y-dusk-hills": {
+   "key": "y-dusk-hills",
+   "album": "album5",
+   "i": 145,
+   "alt": "Pink dusk over the hills of West Nile",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777738448496
+  },
+  "y-canoe": {
+   "key": "y-canoe",
+   "album": "album5",
+   "i": 422,
+   "alt": "Fishermen in a canoe on the Nile at dusk",
+   "w": 1500,
+   "h": 2000,
+   "t": 1778252884849
+  },
+  "y-nile-dusk": {
+   "key": "y-nile-dusk",
+   "album": "album5",
+   "i": 438,
+   "alt": "Watching the Albert Nile at dusk",
+   "w": 1500,
+   "h": 2000,
+   "t": 1778253005046
+  },
+  "y-grass-cow": {
+   "key": "y-grass-cow",
+   "album": "album5",
+   "i": 455,
+   "alt": "Big sky, green hills and long-horned cattle near Moyo",
+   "w": 2000,
+   "h": 1500,
+   "t": 1778253488516
+  },
+  "y-grill": {
+   "key": "y-grill",
+   "album": "album5",
+   "i": 395,
+   "alt": "Goat muchomo on a drum grill",
+   "w": 2000,
+   "h": 1500,
+   "t": 1778234777072
+  },
+  "y-fire": {
+   "key": "y-fire",
+   "album": "album5",
+   "i": 274,
+   "alt": "Laughing round the bonfire",
+   "w": 1500,
+   "h": 2000,
+   "t": 1778092451375
+  },
+  "y-mangoes": {
+   "key": "y-mangoes",
+   "album": "album5",
+   "i": 158,
+   "alt": "Fresh mangoes on the veranda",
+   "w": 1500,
+   "h": 2000,
+   "t": 1777794719279
+  },
+  "y-roadstop": {
+   "key": "y-roadstop",
+   "album": "album5",
+   "i": 22,
+   "alt": "A roadside stop on the way north, rock kopjes behind",
+   "w": 2000,
+   "h": 1500,
+   "t": 1777734700095
+  },
+  "y-nile-smile": {
+   "key": "y-nile-smile",
+   "album": "album5",
+   "i": 440,
+   "alt": "All smiles on the Nile shore",
+   "w": 1500,
+   "h": 2000,
+   "t": 1778253023529
+  }
+ },
+ "videos": {
+  "v-hero-water": {
+   "key": "v-hero-water",
+   "i": 1439,
+   "w": 1280,
+   "h": 720,
+   "dur": 19.7,
+   "t": 1790412866000
+  },
+  "v-hero-elephant": {
+   "key": "v-hero-elephant",
+   "i": 960,
+   "w": 1280,
+   "h": 720,
+   "dur": 9.5,
+   "t": 1790394995000
+  },
+  "v-hero-storm": {
+   "key": "v-hero-storm",
+   "i": 752,
+   "w": 1280,
+   "h": 720,
+   "dur": 24.8,
+   "t": 1790350192000
+  },
+  "v-hero-falls": {
+   "key": "v-hero-falls",
+   "i": 286,
+   "w": 1280,
+   "h": 720,
+   "dur": 19.6,
+   "t": 1790343696000
+  },
+  "v-hero-sunrise": {
+   "key": "v-hero-sunrise",
+   "i": 975,
+   "w": 1280,
+   "h": 720,
+   "dur": 12.5,
+   "t": 1790395088000
+  },
+  "v-elephants-drink": {
+   "key": "v-elephants-drink",
+   "i": 1444,
+   "w": 720,
+   "h": 1280,
+   "dur": 30.8,
+   "t": 1790412920000
+  },
+  "v-lake-pan": {
+   "key": "v-lake-pan",
+   "i": 751,
+   "w": 720,
+   "h": 1280,
+   "dur": 19.8,
+   "t": 1790350136000
+  },
+  "v-leopard": {
+   "key": "v-leopard",
+   "i": 1089,
+   "w": 720,
+   "h": 1280,
+   "dur": 26.5,
+   "t": 1790399222000
+  },
+  "v-hippo": {
+   "key": "v-hippo",
+   "i": 1409,
+   "w": 720,
+   "h": 1280,
+   "dur": 13.5,
+   "t": 1790411077000
+  },
+  "v-buffalo": {
+   "key": "v-buffalo",
+   "i": 1192,
+   "w": 720,
+   "h": 1280,
+   "dur": 10.6,
+   "t": 1790401870000
+  },
+  "v-kob": {
+   "key": "v-kob",
+   "i": 1054,
+   "w": 720,
+   "h": 1280,
+   "dur": 8.3,
+   "t": 1790397250000
+  },
+  "v-crater": {
+   "key": "v-crater",
+   "i": 742,
+   "w": 720,
+   "h": 1280,
+   "dur": 25.9,
+   "t": 1790349990000
+  },
+  "v-falls": {
+   "key": "v-falls",
+   "i": 355,
+   "w": 720,
+   "h": 1280,
+   "dur": 11.5,
+   "t": 1790344002000
+  },
+  "v-hippo-pod": {
+   "key": "v-hippo-pod",
+   "i": 1413,
+   "w": 720,
+   "h": 1280,
+   "dur": 25.5,
+   "t": 1790411109000
+  },
+  "v-drive": {
+   "key": "v-drive",
+   "i": 956,
+   "w": 720,
+   "h": 1280,
+   "dur": 16.8,
+   "t": 1790394896000
+  },
+  "v-forest": {
+   "key": "v-forest",
+   "i": 1611,
+   "w": 720,
+   "h": 1280,
+   "dur": 40,
+   "t": 1790496127000
+  },
+  "v-salt": {
+   "key": "v-salt",
+   "i": 1308,
+   "w": 1280,
+   "h": 720,
+   "dur": 13.4,
+   "t": 1790406454000
+  },
+  "v-film": {
+   "key": "v-film",
+   "album": "album2",
+   "i": 0,
+   "w": 720,
+   "h": 1280,
+   "dur": 119.7,
+   "t": 1788374722000
+  },
+  "v-m-tusker": {
+   "key": "v-m-tusker",
+   "album": "album3",
+   "i": 387,
+   "w": 720,
+   "h": 1280,
+   "dur": 45,
+   "t": 1783164214000
+  },
+  "v-m-elephant-nile": {
+   "key": "v-m-elephant-nile",
+   "album": "album3",
+   "i": 354,
+   "w": 720,
+   "h": 1280,
+   "dur": 37.3,
+   "t": 1783163802000
+  },
+  "v-m-croc": {
+   "key": "v-m-croc",
+   "album": "album3",
+   "i": 655,
+   "w": 1280,
+   "h": 720,
+   "dur": 7.5,
+   "t": 1783169569000
+  },
+  "v-m-hyena-road": {
+   "key": "v-m-hyena-road",
+   "album": "album3",
+   "i": 860,
+   "w": 720,
+   "h": 1280,
+   "dur": 13.7,
+   "t": 1783227404000
+  },
+  "v-m-hyena-close": {
+   "key": "v-m-hyena-close",
+   "album": "album3",
+   "i": 869,
+   "w": 720,
+   "h": 1280,
+   "dur": 2.9,
+   "t": 1783227447000
+  },
+  "v-m-giraffes": {
+   "key": "v-m-giraffes",
+   "album": "album3",
+   "i": 1086,
+   "w": 720,
+   "h": 1280,
+   "dur": 14.2,
+   "t": 1783231557000
+  },
+  "v-m-buffalo-birds": {
+   "key": "v-m-buffalo-birds",
+   "album": "album3",
+   "i": 935,
+   "w": 720,
+   "h": 1280,
+   "dur": 9.4,
+   "t": 1783229482000
+  },
+  "v-m-falls-wide": {
+   "key": "v-m-falls-wide",
+   "album": "album3",
+   "i": 557,
+   "w": 1280,
+   "h": 720,
+   "dur": 18.3,
+   "t": 1783168396000
+  },
+  "v-m-falls-chasm": {
+   "key": "v-m-falls-chasm",
+   "album": "album3",
+   "i": 1196,
+   "w": 1280,
+   "h": 720,
+   "dur": 13.9,
+   "t": 1783237296000
+  },
+  "v-m-falls-mist": {
+   "key": "v-m-falls-mist",
+   "album": "album3",
+   "i": 532,
+   "w": 720,
+   "h": 1280,
+   "dur": 2.8,
+   "t": 1783168163000
+  },
+  "v-m-hippo": {
+   "key": "v-m-hippo",
+   "album": "album3",
+   "i": 447,
+   "w": 720,
+   "h": 1280,
+   "dur": 8.7,
+   "t": 1783165251000
+  },
+  "v-m-buffalo-nile": {
+   "key": "v-m-buffalo-nile",
+   "album": "album3",
+   "i": 503,
+   "w": 720,
+   "h": 1280,
+   "dur": 18.3,
+   "t": 1783167072000
+  }
+ }
+}

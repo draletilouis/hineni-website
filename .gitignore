@@ -1,0 +1,23 @@
+node_modules/
+dist/
+data/raw-video/
+tools/node_modules/
+tools/thumbs*/
+tools/sheets*/
+tools/strips/
+tools/*.jpg
+
+# admin portal: live photos, accounts and local secrets
+storage/
+.env
+
+# originals and caches: the processed copies in public/media are what the site uses.
+# The guests' original photos can carry GPS location data, so they stay off a public repo.
+data/raw-photos/
+data/web-raw/
+data/web-cache/
+data/route-cache/
+data/tile-cache/
+
+# local editor tooling
+.claude/

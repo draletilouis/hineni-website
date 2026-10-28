@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hineni: small-group safaris in Uganda to Murchison Falls, Queen Elizabeth and Fort Portal</title>
+  <meta name="description" content="Lion, leopard, hyena and tuskers on the Nile. Small-group trips to Murchison Falls, Queen Elizabeth National Park and the crater lakes of Fort Portal — shot by our own travellers." />
+  <meta name="theme-color" content="#0f1a14" />
+  <meta property="og:title" content="Hineni — Uganda, to the world" />
+  <meta property="og:description" content="Real trips, real travellers. Murchison Falls, Queen Elizabeth NP and the crater lakes of Fort Portal." />
+  <meta property="og:image" content="/media/m-falls-head-2000.webp" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- the hero poster is the first thing painted; fetch it before anything else -->
+  <link rel="preload" as="image" href="/media/elephants-bank-2000.webp" media="(min-width: 821px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/media/m-falls-head-2000.webp" media="(max-width: 820px)" fetchpriority="high" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/main.css" />
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Nav: a floating glass bar; on desktop, Trips and Experiences open a mega menu inside it -->
+  <header class="nav" id="nav">
+    <div class="nav__bar">
+      <a href="#top" class="nav__logo" data-cursor="hover"><em>Hineni</em></a>
+      <nav class="nav__links" aria-label="Main">
+        <a href="#trips" data-mega="trips" aria-expanded="false" aria-controls="mega-trips">Trips</a>
+        <a href="#experiences" data-mega="experiences" aria-expanded="false" aria-controls="mega-experiences">Experiences</a>
+        <a href="#gallery">Album</a>
+        <a href="#game">Wildlife</a>
+        <a href="#journey">Route map</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav__right">
+        <a href="#enquire" class="btn btn--small btn--solid nav__cta" data-cursor="hover">Book a trip<span class="trip-badge" id="tripBadge" aria-label="experiences added">0</span></a>
+        <button class="menu-btn" id="menuBtn" aria-label="Menu"><i></i><i></i></button>
+      </div>
+    </div>
+    <div class="nav__mega" id="navMega" inert><div class="nav__mega-inner" id="navMegaInner"></div></div>
+  </header>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#trips"><em>Trips</em> &amp; prices</a>
+    <a href="#experiences">Experiences</a>
+    <a href="#gallery">The album</a>
+    <a href="#game">Wildlife</a>
+    <a href="#journey">Route map</a>
+    <a href="#itinerary">Day by day</a>
+    <a href="#faq">FAQ</a>
+    <a href="#enquire"><em>Book a trip</em></a>
+  </div>
+
+  <!-- phones: booking is always one tap away once you're past the hero -->
+  <div class="action-bar" id="actionBar">
+    <a href="#" data-wa class="action-bar__wa" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>
+      WhatsApp us</a>
+    <a href="#trips" class="action-bar__book">See trips &amp; book</a>
+  </div>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero__gl" id="heroGL"></div>
+      <div class="hero__top">
+        <!-- slideshow controls: counter, caption, progress, arrows, up-next thumbnails -->
+        <div class="slides-ui" id="slidesUi">
+          <div class="slides-ui__count"><b id="slideNum">01</b><span id="slideTotal">/ 10</span></div>
+          <div class="slides-ui__cap">
+            <span class="slides-ui__title" id="slideTitle"></span>
+            <span class="slides-ui__place eyebrow" id="slidePlace"></span>
+          </div>
+          <div class="hero__progress" id="heroProgress"></div>
+          <div class="slides-ui__nav">
+            <button class="slides-ui__arrow" id="slidePrev" aria-label="Previous photo" data-cursor="hover">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.6"/></svg></button>
+            <button class="slides-ui__arrow" id="slideNext" aria-label="Next photo" data-cursor="hover">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.6"/></svg></button>
+            <div class="slides-ui__thumbs" id="slideThumbs"></div>
+          </div>
+        </div>
+      </div>
+      <div class="hero__content">
+        <div>
+          <h1 class="hero__title">Here <em>I am.</em></h1>
+          <!-- real people above the fold -->
+          <a class="hero__trust" href="#about" data-cursor="hover">
+            <img class="hero__trust-img" id="heroTrustImg" alt="Our July 2026 group on the Nile boat cruise" />
+            <div>
+              <div class="hero__faces" id="heroFaces"></div>
+              <p><strong>Real guests, real trips.</strong> Every frame here was shot by our travellers in 2026.</p>
+            </div>
+          </a>
+        </div>
+        <div class="hero__aside">
+          <p class="hero__offer" id="heroOffer" data-hero-fade></p>
+          <p class="hero__sub" data-hero-fade>A tusker at the Nile's edge. Hyenas on the dawn track. Murchison Falls in your face. The crater lakes of Fort Portal as a storm rolls in.</p>
+          <div class="hero__ctas" data-hero-fade>
+            <a href="#trips" class="btn btn--solid" data-cursor="hover">See the trips
+              <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+            <button class="btn" data-film data-cursor="hover">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5v11l9-5.5z"/></svg>Watch the film</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRIPS AT A GLANCE — what a client came for, one screen below the hero -->
+    <section class="trips is-light" id="trips">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Choose your trip</div>
+          <h2>Three journeys,<br />ready to <em>book</em></h2>
+        </div>
+        <p>Each runs as a small private group with your own driver-guide. Pick one, stretch it, or ask us to combine two into a week.</p>
+      </div>
+      <div class="trips__grid" id="tripsGrid"></div>
+    </section>
+
+    <!-- EXPERIENCES — a core offer, not an add-on: filter, browse, add to your trip -->
+    <section class="experiences is-light" id="experiences">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">More than a safari</div>
+          <h2>The fun is in<br />the <em>in-between</em></h2>
+        </div>
+        <p>Waterfalls you stand under, crater rims you cheer from, boat rides, live music and the Equator. Every trip mixes the wildlife with these.</p>
+      </div>
+      <div class="exp-filters" id="expFilters" role="tablist" aria-label="Filter experiences"></div>
+      <div class="exp-grid" id="expGrid"></div>
+      <div class="exp-more-wrap"><button class="btn exp-more" id="expMore" type="button" data-cursor="hover">Show all experiences</button></div>
+      <div class="exp-cta" id="expCta">
+        <p><span id="expCount">0</span> <span id="expNoun">experiences</span> in your trip</p>
+        <a href="#enquire" class="btn btn--solid" data-cursor="hover">Plan my trip with these</a>
+      </div>
+    </section>
+
+    <!-- THE ALBUM: every photo of ours lives here, as one filterable wall.
+         Photos elsewhere on the page open here in the viewer ([data-album-key]). -->
+    <section class="gallery is-light" id="gallery">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow" id="albumIntro">The album: three trips, 111 photos</div>
+          <h2>Nothing <em>staged.</em><br />All of it real.</h2>
+        </div>
+        <p id="albumWhen">Shot on phones, May to September 2026</p>
+      </div>
+      <div class="gal-filters" id="galFilters"></div>
+      <div class="gal-grid" id="galGrid"></div>
+      <div class="exp-more-wrap"><button class="btn exp-more" id="galMore" type="button">Show all photos</button></div>
+    </section>
+    <!-- large desktop screens: the album as a 3D fly-through, and the wall above becomes its "Grid view" panel -->
+    <template id="albumTunnel">
+    <section class="tunnel" id="gallery" aria-label="The album">
+      <div class="tunnel__stage" id="tunnelStage">
+        <div class="tunnel__gl" id="tunnelGL"></div>
+        <div class="tunnel__title">
+          <div>
+            <div class="eyebrow" id="albumIntro">The album: three trips, 111 photos</div>
+            <h2>Nothing <em>staged.</em><br />All of it real.</h2>
+            <p class="eyebrow" id="albumWhen">Shot on phones, May to September 2026</p>
+          </div>
+        </div>
+        <div class="album__chips" id="albumChips" role="group" aria-label="Show a trip"></div>
+        <div class="album__chapter" id="albumChapter" aria-live="polite"></div>
+        <div class="album__count eyebrow" id="albumCount"></div>
+        <div class="tunnel__caption" id="tunnelCaption"></div>
+        <button type="button" class="album__back btn btn--small" id="albumBack" hidden><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> <span>Back</span></button>
+        <a class="skip" href="#manifesto">Skip <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+      </div>
+    </section>
+    </template>
+
+    <!-- MANIFESTO -->
+    <section class="manifesto" id="manifesto">
+      <div class="manifesto__grid">
+        <div class="eyebrow">The idea</div>
+        <div>
+          <p class="manifesto__text" id="manifestoText">
+            Uganda is the Africa people forget to <em>imagine</em>. Tuskers
+            <span class="manifesto__inline-img"><img data-src="m-elephant-nile" alt="" loading="lazy" /></span>
+            wading in the Nile. Lions on the rift floor. Volcanic lakes
+            <span class="manifesto__inline-img"><img data-src="crater-reflect" alt="" loading="lazy" /></span>
+            stacked between green ridges. The world's longest river forced through a gap seven metres wide. We take small groups there — close, loud, and <em>unfiltered</em>.
+          </p>
+          <div class="manifesto__foot">
+            <div class="stat"><div class="stat__num" data-count="4209">0</div><div class="stat__label eyebrow">Photos & clips from three trips</div></div>
+            <div class="stat"><div class="stat__num" data-count="12">0</div><div class="stat__label eyebrow">Big species, none from stock photos</div></div>
+            <div class="stat"><div class="stat__num">3–4</div><div class="stat__label eyebrow">Days per trip, door to door</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE WILDLIFE: one card per sighting; clips play only when you press play -->
+    <section class="game" id="game">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">The wildlife</div>
+          <h2>What we saw <em>on the drives</em></h2>
+        </div>
+        <p>Eight sightings from our 2026 trips, filmed on our guests' phones.</p>
+      </div>
+      <div class="wild-grid" id="gameGrid"></div>
+    </section>
+
+    <!-- JOURNEY — 3D terrain: all three trips, pick one to fly its route -->
+    <section class="journey" id="journey" aria-label="Route map">
+      <div class="journey__stage" id="journeyStage">
+        <div class="journey__gl" id="journeyGL"></div>
+        <div class="journey__labels" id="journeyLabels"></div>
+        <div class="journey__head">
+          <div class="eyebrow">Route map</div>
+          <h2>Where each trip <em>takes you</em></h2>
+          <div class="journey__trips" id="journeyTrips" role="group" aria-label="Show a trip on the map"></div>
+        </div>
+        <div class="journey__compass eyebrow">Uganda<br /><b id="journeyCoord">1°22′N 32°17′E</b></div>
+        <div class="journey__steps"><ol id="journeySteps" aria-label="Stops on this trip"></ol></div>
+        <article class="journey__card" id="journeyCard" aria-live="polite"></article>
+      </div>
+      <p class="journey__credits">Imagery: <a href="https://s2maps.eu" target="_blank" rel="noopener">Sentinel-2 cloudless</a> by EOX IT Services GmbH (modified Copernicus Sentinel data, 2016 and 2017). Elevation: <a href="https://registry.opendata.aws/terrain-tiles" target="_blank" rel="noopener">Terrain Tiles</a> (SRTM, NASA and USGS). Roads, districts and places © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors. Routing by <a href="https://project-osrm.org" target="_blank" rel="noopener">OSRM</a>.</p>
+    </section>
+
+    <!-- ABOUT — the story, real people (trust pillar 1) -->
+    <section class="about is-light" id="about">
+      <div class="about__grid">
+        <div class="about__photos" id="aboutPhotos"></div>
+        <div class="about__copy">
+          <div class="eyebrow">Who we are</div>
+          <h2 id="aboutTitle"></h2>
+          <div id="aboutText"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIELD NOTES — expertise (trust pillar 2) -->
+    <section class="notes is-light" id="notes">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Field notes</div>
+          <h2>What your guide<br /><em>knows</em></h2>
+        </div>
+        <p>The difference between seeing a leopard and driving past one is knowing where to look. A few things we teach on every drive.</p>
+      </div>
+      <div class="notes__grid" id="notesGrid"></div>
+    </section>
+
+    <!-- ITINERARIES -->
+    <section class="itinerary is-light" id="itinerary">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Signature trips</div>
+          <h2>Exactly the trips<br />in these <em>photos</em></h2>
+        </div>
+        <p id="itinBlurb"></p>
+      </div>
+      <div class="itin__tabs" id="itinTabs" role="tablist"></div>
+      <div class="itin-facts" id="itinFacts"></div>
+      <div class="itin__grid" id="itinGrid">
+        <div class="itin__media" id="itinMedia"></div>
+        <div id="itinDays"></div>
+      </div>
+    </section>
+
+    <!-- LEDGER -->
+    <section class="ledger is-light" aria-label="Facts">
+      <div class="ledger__grid" id="ledger"></div>
+    </section>
+
+    <!-- STORIES — social proof (trust pillar 3) -->
+    <section class="stories is-light" id="stories">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Guest stories</div>
+          <h2>What they were<br /><em>afraid of</em></h2>
+        </div>
+        <p>Everyone arrives with a worry. Here's what our travellers were nervous about — and the moment it stopped mattering.</p>
+      </div>
+      <div class="stories__grid" id="storiesGrid"></div>
+    </section>
+
+    <!-- QUOTE -->
+    <section class="quote" id="quote">
+      <div class="quote__bg"><img src="/media/m-falls-top-1600.webp" srcset="/media/m-falls-top-900.webp 900w, /media/m-falls-top-1600.webp 1600w, /media/m-falls-top-2800.webp 2800w" sizes="100vw" alt="" loading="lazy" decoding="async" /></div>
+      <blockquote>
+        <p>The whole Nile, through a gap <em>seven metres wide.</em> You hear it a kilometre before you see it.</p>
+        <cite class="eyebrow">Top of the Falls, Murchison Falls National Park</cite>
+      </blockquote>
+    </section>
+
+    <!-- FAQ — every silent question (trust pillar 4) -->
+    <section class="faqs is-light" id="faq">
+      <div class="faqs__grid">
+        <div>
+          <div class="eyebrow">Before you book</div>
+          <h2>Every question<br />you're too polite<br />to <em>ask</em></h2>
+          <p class="faqs__lead">What happens after you pay, what if plans change, and who's on the other end of the phone. Straight answers.</p>
+        </div>
+        <div class="faqs__list" id="faqList"></div>
+      </div>
+    </section>
+
+    <!-- ENQUIRE -->
+    <section class="enquire is-light" id="enquire">
+      <div class="enquire__grid">
+        <div>
+          <div class="eyebrow">Ready?</div>
+          <h2>Let's plan<br />your <em>safari</em></h2>
+          <p class="enquire__lead">Tell us when you'd like to travel and what you want to see. A guide, not a call centre, will reply within a day with a route, timings and one price that includes permits. You don't pay anything to ask.</p>
+          <div class="enquire__contacts" id="contacts"></div>
+        </div>
+        <form class="form" id="enquireForm" novalidate>
+          <div class="form__row">
+            <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" required autocomplete="name" /></div>
+            <fieldset class="field via">
+              <legend>Reply to me on</legend>
+              <div class="via__options">
+                <label><input type="radio" name="via" value="whatsapp" checked /><span>WhatsApp</span></label>
+                <label><input type="radio" name="via" value="email" /><span>Email</span></label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="field" id="emailField" hidden><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" /></div>
+          <div class="form__row">
+            <div class="field"><label for="f-trip">Trip</label>
+              <select id="f-trip" name="trip"><option value="murchison">Murchison Falls Explorer</option><option value="fortportal">Fort Portal &amp; Queen Elizabeth</option><option value="moyo">Moyo &amp; Mt. Buce hike</option><option value="both">Two trips as one week</option><option value="custom">Something custom</option></select>
+            </div>
+            <div class="field"><label for="f-date">Travel month</label><input id="f-date" name="date" type="month" /></div>
+          </div>
+          <div class="field"><label for="f-guests">Guests</label>
+            <select id="f-guests" name="guests"><option>1–2</option><option selected>3–6</option><option>7–12</option><option>13+ (group)</option></select>
+          </div>
+          <div class="field">
+            <span class="field__label">Experiences in your trip</span>
+            <div class="picks" id="tripPicks"></div>
+          </div>
+          <fieldset class="field">
+            <legend>I'd also like to see</legend>
+            <div class="chips" id="chips"></div>
+          </fieldset>
+          <div class="field"><label for="f-msg">Anything else?</label><textarea id="f-msg" name="message" placeholder="Birthday trip, photography, kids, budget…"></textarea></div>
+          <div class="form__foot">
+            <div class="form__actions">
+              <button class="btn btn--solid" type="submit" id="sendBtn" data-cursor="hover">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-wa-icon><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>
+                <span id="sendLabel">Send on WhatsApp</span></button>
+            </div>
+          </div>
+          <div class="form__done">
+            <div class="eyebrow">Enquiry ready</div>
+            <h3>Thank you.</h3>
+            <p id="doneMsg">Your message is ready — just press send. A guide will reply within 24 hours.</p>
+            <p><a id="doneWa" href="#" target="_blank" rel="noopener" style="color:var(--accent)">Open WhatsApp again</a> or <a id="doneMail" href="#" style="color:var(--accent)">send it by email</a></p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__grid">
+      <div>
+        <h5 class="eyebrow">Hineni</h5>
+        <p class="footer__lead">Small-group safaris and road trips across Uganda. Every photo of our trips was taken by our own travellers.</p>
+      </div>
+      <div><h5 class="eyebrow">Explore</h5><ul><li><a href="#trips">Trips</a></li><li><a href="#experiences">Experiences</a></li><li><a href="#game">Wildlife</a></li><li><a href="#journey">Route map</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div><h5 class="eyebrow">Parks</h5><ul><li>Murchison Falls NP</li><li>Queen Elizabeth NP</li><li>Kibale Forest NP</li><li>Rwenzori Mountains</li></ul></div>
+      <div><h5 class="eyebrow">Contact</h5><ul id="footContacts"></ul></div>
+    </div>
+    <div class="footer__base eyebrow"><span>© <span id="year"></span> Hineni, Kampala, Uganda</span><a href="#top" class="footer__top">Back to top <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></a></div>
+  </footer>
+
+  <!-- Film -->
+  <div class="film" id="film" role="dialog" aria-modal="true" aria-label="Hineni film">
+    <video id="filmVideo" playsinline controls preload="none"></video>
+    <button class="film__close btn btn--small" id="filmClose">Close <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="film__cap eyebrow">Kampala to Murchison, July 2026</div>
+  </div>
+
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button class="lightbox__close btn btn--small" id="lbClose">Close <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="lightbox__nav prev" id="lbPrev" aria-label="Previous"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <img id="lbImg" alt="" />
+    <button class="lightbox__nav next" id="lbNext" aria-label="Next"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <div class="lightbox__cap eyebrow" id="lbCap"></div>
+    <a href="#journey" class="lightbox__map btn btn--small" id="lbMap" data-map-place="" hidden data-cursor="hover">See <span id="lbMapName"></span> on the map <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

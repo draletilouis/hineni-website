@@ -1,0 +1,11 @@
+# What `railway up` leaves behind: the media goes to the volume (npm run push-media), and the rest
+# is local tooling and raw downloads. Keeps each deploy a few MB.
+node_modules/
+dist/
+storage/
+data/
+tools/
+docs/
+public/media/
+.env
+.claude/

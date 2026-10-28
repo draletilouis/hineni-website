@@ -1,0 +1,1004 @@
+{
+ "items": [
+  {
+   "i": 8,
+   "video": false,
+   "cat": "transport",
+   "subject": "Four hikers with walking sticks by the 4x4 beside a thatched mud hut at the trailhead",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 20,
+   "video": false,
+   "cat": "people",
+   "subject": "Three hikers leaning on the car with sticks, thatched hut behind",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 26,
+   "video": false,
+   "cat": "people",
+   "subject": "Full group of five with the Mt Buce hike sign in the bush before setting off",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 31,
+   "video": false,
+   "cat": "transport",
+   "subject": "View from the car window of hills and woodland on the drive in",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 40,
+   "video": false,
+   "cat": "people",
+   "subject": "Four hikers with sticks in tall grass at the start, savanna behind",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 42,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers heading down the trail toward distant blue hills",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 43,
+   "video": false,
+   "cat": "view",
+   "subject": "Woodland and hills under clear blue sky",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 47,
+   "video": false,
+   "cat": "trail",
+   "subject": "Group setting off up the path with walking sticks",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 59,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hiker in maroon shirt stepping along a rocky stream path in lush foliage",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 64,
+   "video": false,
+   "cat": "trail",
+   "subject": "Wooden rest shelter under acacia in green savanna",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 72,
+   "video": false,
+   "cat": "people",
+   "subject": "Group in grassland with the Ilo/Oce mountain ridges rising behind",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 77,
+   "video": false,
+   "cat": "joy",
+   "subject": "Group dancing and goofing in the meadow with mountains behind",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 79,
+   "video": false,
+   "cat": "joy",
+   "subject": "Hiker in yellow throws his arms up dancing, mountains and blue sky behind",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 84,
+   "video": false,
+   "cat": "joy",
+   "subject": "Group cheering with arms raised in front of the green mountain range",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 88,
+   "video": false,
+   "cat": "joy",
+   "subject": "Five hikers arms up celebrating, mountains behind",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 90,
+   "video": false,
+   "cat": "view",
+   "subject": "Forested Mt Buce ridge above green bush, hiker in blue cap in foreground",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 92,
+   "video": false,
+   "cat": "view",
+   "subject": "Rolling forested hills under deep blue sky",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 96,
+   "video": false,
+   "cat": "culture",
+   "subject": "Local women carrying loads on their heads along a red dirt road toward the mountain",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 101,
+   "video": false,
+   "cat": "culture",
+   "subject": "Hikers following women carrying head-loads down the track",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 104,
+   "video": false,
+   "cat": "culture",
+   "subject": "Woman carrying a basket on her head through the bush",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 106,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers with daypacks walking a red-earth path through woodland",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 108,
+   "video": false,
+   "cat": "trail",
+   "subject": "Red-earth trail with hikers and a local woman carrying a load ahead",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 113,
+   "video": false,
+   "cat": "nature",
+   "subject": "Fan-palm savanna and lush ground cover below forested slopes",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 118,
+   "video": false,
+   "cat": "people",
+   "subject": "Hiker in bucket hat resting beside a huge fallen log in savanna",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 120,
+   "video": false,
+   "cat": "joy",
+   "subject": "Big grin from hiker leaning over a fallen tree trunk",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 122,
+   "video": false,
+   "cat": "people",
+   "subject": "Group sitting together resting in dappled shade",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 125,
+   "video": false,
+   "cat": "culture",
+   "subject": "Rural homestead with wooden granaries and stools on swept red earth",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 130,
+   "video": false,
+   "cat": "culture",
+   "subject": "Hiker in a village compound with wooden granary stands",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 138,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers disappearing into green woodland along the path",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 142,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hiker in blue vest on the narrow path through dense bush",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 146,
+   "video": false,
+   "cat": "view",
+   "subject": "Grassy wooded hillside with boulders under blue sky",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 149,
+   "video": false,
+   "cat": "view",
+   "subject": "Green forested hillside rising above a clearing",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 151,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers crossing a hand-hoed cultivated field toward the hills",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 153,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers walking through fields toward wooded slopes",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 156,
+   "video": false,
+   "cat": "view",
+   "subject": "Densely forested hill dome above a cleared meadow",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 157,
+   "video": false,
+   "cat": "trail",
+   "subject": "Line of hikers pushing through tall grass toward the forest",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 159,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers scrambling up a steep grassy slope, one reaching for the next",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 162,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers threading through tall green grass up the slope",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 166,
+   "video": false,
+   "cat": "people",
+   "subject": "Hiker smiling while resting on the climb",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 171,
+   "video": false,
+   "cat": "people",
+   "subject": "Three hikers resting on rocks, laughing in the shade",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 173,
+   "video": false,
+   "cat": "nature",
+   "subject": "Wild orange fruits among green leaves on the forest floor",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 176,
+   "video": false,
+   "cat": "view",
+   "subject": "Two hikers in tall grass below a forested ridge",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 183,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hiker in yellow bushwhacking through dense green undergrowth",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 193,
+   "video": false,
+   "cat": "joy",
+   "subject": "Selfie with hikers behind pulling funny poses in tall grass",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 194,
+   "video": false,
+   "cat": "view",
+   "subject": "Wispy clouds over endless green plains from high on the ridge",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 196,
+   "video": false,
+   "cat": "view",
+   "subject": "Hikers on the ridge with the long blue escarpment stretching away",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 198,
+   "video": false,
+   "cat": "view",
+   "subject": "Group pauses on the ridge looking out over vast plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 201,
+   "video": false,
+   "cat": "view",
+   "subject": "Hikers in yellow and maroon on the ridge with forested valley beyond",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 204,
+   "video": false,
+   "cat": "trail",
+   "subject": "Group scrambling up a steep rocky grass slope",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 207,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker looking out over the green plains under big sky",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 210,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker hands on hips surveying wide green plains and clouds",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 214,
+   "video": false,
+   "cat": "view",
+   "subject": "Wide panorama of forested slopes dropping to the plains",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 219,
+   "video": false,
+   "cat": "view",
+   "subject": "Plains stretching to the horizon with a river channel below",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 220,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker crouched at the overlook above the Albert Nile valley plains",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 224,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker gazing over the vast plain with fair-weather clouds",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 230,
+   "video": false,
+   "cat": "nile",
+   "subject": "Hiker in yellow 47 shirt looking out over the Albert Nile and plains",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 232,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker in yellow jersey taking in the view from the ridge",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 235,
+   "video": false,
+   "cat": "joy",
+   "subject": "Laughing hiker in bucket hat with friend on the ridge",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 242,
+   "video": false,
+   "cat": "nile",
+   "subject": "Over-the-shoulder view of the river winding through the plains",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 246,
+   "video": false,
+   "cat": "view",
+   "subject": "Two hikers on the ridge looking at steep green slopes and plains",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 256,
+   "video": false,
+   "cat": "view",
+   "subject": "Two hikers gazing out over the plains from the summit",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 264,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker in bucket hat overlooking the vast valley below",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 265,
+   "video": false,
+   "cat": "people",
+   "subject": "Hiker pointing out landmarks across the plains",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 271,
+   "video": false,
+   "cat": "view",
+   "subject": "Summit panorama over endless green plains under blue sky",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 274,
+   "video": false,
+   "cat": "view",
+   "subject": "Summit panorama with a lone tree and plains to the horizon",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 277,
+   "video": false,
+   "cat": "view",
+   "subject": "Hikers on the summit ridge with plains far below",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 281,
+   "video": false,
+   "cat": "summit",
+   "subject": "Hiker throws an arm up in triumph on the summit under huge blue sky",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 283,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker in yellow jersey overlooking plains and the Nile from the summit",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 284,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker in yellow pointing across the plains from the summit",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 286,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker with backpack at the edge, plains and river beyond",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 290,
+   "video": false,
+   "cat": "nile",
+   "subject": "Hiker in bucket hat looking down on the Albert Nile winding through the plains",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 292,
+   "video": false,
+   "cat": "nile",
+   "subject": "Hiker with stick across shoulders above the Nile valley",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 295,
+   "video": false,
+   "cat": "nile",
+   "subject": "Albert Nile meanders across green plains under puffy clouds",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 299,
+   "video": false,
+   "cat": "nile",
+   "subject": "Hiker gazing at the Nile plain and cloud line",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 302,
+   "video": false,
+   "cat": "summit",
+   "subject": "Hiker points his stick out across the plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 307,
+   "video": false,
+   "cat": "summit",
+   "subject": "Walking stick raised high against the sky above the plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 312,
+   "video": false,
+   "cat": "culture",
+   "subject": "Local guide with spear standing at the edge over the plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 315,
+   "video": false,
+   "cat": "summit",
+   "subject": "Local guide with spear and hiker on the summit rocks under clouds",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 316,
+   "video": false,
+   "cat": "joy",
+   "subject": "Smiling hiker seated on the summit raising his stick",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 319,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker at the overlook with forest and plains below",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 321,
+   "video": false,
+   "cat": "summit",
+   "subject": "Hiker standing on a rock with stick, plains to the horizon",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 326,
+   "video": false,
+   "cat": "view",
+   "subject": "Ridges of Mt Buce spurring down toward the plains",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 330,
+   "video": false,
+   "cat": "joy",
+   "subject": "Seated hiker raising his stick skyward on the summit",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 334,
+   "video": false,
+   "cat": "culture",
+   "subject": "Local elder with machete standing behind a grinning hiker on the summit",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 336,
+   "video": false,
+   "cat": "culture",
+   "subject": "Portrait of local elder holding a spear",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 342,
+   "video": false,
+   "cat": "people",
+   "subject": "Two hikers sitting together on the summit grass",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 347,
+   "video": false,
+   "cat": "view",
+   "subject": "Summit panorama: plains and river channels to the horizon",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 352,
+   "video": false,
+   "cat": "nature",
+   "subject": "Hiker framed through twisting branches against blue sky",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 357,
+   "video": false,
+   "cat": "view",
+   "subject": "Hikers at the cliff edge pointing out the plains far below",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 360,
+   "video": false,
+   "cat": "view",
+   "subject": "Two hikers at the cliff edge overlooking the vast valley",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 364,
+   "video": false,
+   "cat": "view",
+   "subject": "Hikers in yellow and navy pointing over the plains from the edge",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 373,
+   "video": false,
+   "cat": "view",
+   "subject": "Hiker at the cliff edge with the patterned plains far below",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 376,
+   "video": false,
+   "cat": "view",
+   "subject": "Rocky cliff face of Mt Buce dropping to distant plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 380,
+   "video": false,
+   "cat": "view",
+   "subject": "Rock outcrop and cliff edge framing the plains below",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 383,
+   "video": false,
+   "cat": "view",
+   "subject": "Rugged rock face on the mountain side",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 384,
+   "video": true,
+   "cat": "summit",
+   "subject": "Video: summit pan over grass and plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 385,
+   "video": true,
+   "cat": "summit",
+   "subject": "Video: summit pan of sky, clouds and plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 386,
+   "video": false,
+   "cat": "nile",
+   "subject": "Looking down on a green ridge spur with the Albert Nile behind",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 388,
+   "video": false,
+   "cat": "view",
+   "subject": "Forested ridges folding down to the plains",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 389,
+   "video": false,
+   "cat": "view",
+   "subject": "Steep green ridge spur, hiker in cap, river beyond",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 391,
+   "video": false,
+   "cat": "nile",
+   "subject": "Folded ridges and the Albert Nile winding across the plain",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 392,
+   "video": false,
+   "cat": "culture",
+   "subject": "Local elder with spear overlooking ridges and the Albert Nile",
+   "score": 5,
+   "orient": "landscape"
+  },
+  {
+   "i": 394,
+   "video": false,
+   "cat": "summit",
+   "subject": "Local guide with spear on the edge above folded ridges",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 395,
+   "video": false,
+   "cat": "nile",
+   "subject": "Hiker with stick at the edge, folded ridges and Nile below",
+   "score": 5,
+   "orient": "landscape"
+  },
+  {
+   "i": 398,
+   "video": false,
+   "cat": "culture",
+   "subject": "Elder with walking stick above the Nile valley",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 404,
+   "video": false,
+   "cat": "view",
+   "subject": "Guide with machete silhouetted against the vast plain",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 408,
+   "video": false,
+   "cat": "summit",
+   "subject": "Sunburst over the summit with a hiker seated on rocks",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 411,
+   "video": false,
+   "cat": "summit",
+   "subject": "Hikers and local guides on the summit rocks under blue sky",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 412,
+   "video": false,
+   "cat": "view",
+   "subject": "Plain with the mountain shadow falling across it",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 415,
+   "video": false,
+   "cat": "people",
+   "subject": "Group sitting on the summit with local guide holding spear",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 417,
+   "video": false,
+   "cat": "people",
+   "subject": "Resting group on the summit grass, guide standing with spear",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 426,
+   "video": false,
+   "cat": "joy",
+   "subject": "Laughing hikers sitting together on the summit",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 429,
+   "video": false,
+   "cat": "joy",
+   "subject": "Smiling hiker raising his stick on the summit",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 433,
+   "video": false,
+   "cat": "joy",
+   "subject": "Huge happy grin from hiker in cap on the summit",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 436,
+   "video": false,
+   "cat": "people",
+   "subject": "Hiker in bucket hat and shades relaxing on the summit",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 444,
+   "video": false,
+   "cat": "nature",
+   "subject": "Lush lily-like plants on the forest floor",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 454,
+   "video": false,
+   "cat": "people",
+   "subject": "Shirtless hiker with stick in green forest on the descent",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 474,
+   "video": false,
+   "cat": "trail",
+   "subject": "Tired hikers resting on timber planks at the trail end",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 477,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hikers relaxing at the trailhead in evening light",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 479,
+   "video": false,
+   "cat": "joy",
+   "subject": "Smiling hiker with towel on his shoulders in golden light",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 480,
+   "video": false,
+   "cat": "trail",
+   "subject": "Hiker walking back through grass in late golden light",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 481,
+   "video": false,
+   "cat": "joy",
+   "subject": "Beaming hiker with towel, end of the hike",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 484,
+   "video": false,
+   "cat": "joy",
+   "subject": "Two hikers laughing in the car on the ride home",
+   "score": 3,
+   "orient": "landscape"
+  }
+ ],
+ "heroCandidates": [
+  392,
+  395,
+  391,
+  290,
+  357,
+  79,
+  281,
+  230,
+  386,
+  84
+ ],
+ "bestVideos": [
+  384,
+  385
+ ]
+}

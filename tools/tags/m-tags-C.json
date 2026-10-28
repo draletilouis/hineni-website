@@ -1,0 +1,687 @@
+{
+ "items": [
+  {
+   "i": 915,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "raptor (likely African fish eagle) in flight against grey sky",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 919,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "raptor in flight, wings spread, grey sky over treeline",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 924,
+   "video": true,
+   "cat": "savannah",
+   "subject": "acacia-dotted savannah from moving game-drive vehicle",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 926,
+   "video": true,
+   "cat": "vehicle",
+   "subject": "safari vehicle ahead on dirt track through tall grass",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 929,
+   "video": true,
+   "cat": "vehicle",
+   "subject": "following safari jeep down grassy savannah track",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 931,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "distant Rothschild's giraffes among borassus palms",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 932,
+   "video": true,
+   "cat": "savannah",
+   "subject": "wide open savannah with lone acacia, hazy sky",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 933,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "Cape buffalo grazing in golden grass",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 934,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "buffalo herd moving across savannah",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 935,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "Cape buffalo with swirling flock of birds overhead",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 936,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "buffalo herd scattered on open plain",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 937,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "buffalo close-up with oxpeckers/egrets on backs",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 938,
+   "video": true,
+   "cat": "people",
+   "subject": "driver-guide at the wheel, savannah track through windscreen",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 940,
+   "video": true,
+   "cat": "vehicle",
+   "subject": "savannah view through open-roof game-drive vehicle",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 943,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "Uganda kob male on open plain near Lake Albert delta",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 944,
+   "video": true,
+   "cat": "savannah",
+   "subject": "open delta plains from vehicle",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 957,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "traveller arms raised on grassland, Lake Albert behind",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 958,
+   "video": false,
+   "cat": "people",
+   "subject": "two friends laughing together on lakeshore grassland",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 999,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "silhouette on vehicle roof reaching toward hazy sun",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1006,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "silhouette atop safari vehicle against sun",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1002,
+   "video": false,
+   "cat": "people",
+   "subject": "woman laughing, leaning out of safari vehicle",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1041,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "joyful traveller arms wide on savannah by Lake Albert",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1059,
+   "video": false,
+   "cat": "people",
+   "subject": "two travellers sitting on roof rack of safari vehicle",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1069,
+   "video": false,
+   "cat": "people",
+   "subject": "friends on vehicle roof, smiling traveller below",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1078,
+   "video": false,
+   "cat": "people",
+   "subject": "man laughing in open-roof safari vehicle",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1086,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "herd of Rothschild's giraffes browsing on savannah",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1089,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "giraffe in savannah woodland",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1090,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "Rothschild's giraffe framed by tree trunk",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1091,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "giraffes grazing among bushes",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1092,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "group of giraffes on golden savannah",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1093,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "Rothschild's giraffes with antelope in foreground",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 1095,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "giraffe close with antelope below (video)",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1097,
+   "video": false,
+   "cat": "wildlife",
+   "subject": "giraffe tall above bushes with antelope foreground",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1103,
+   "video": true,
+   "cat": "vehicle",
+   "subject": "inside pop-up roof safari vehicle looking out",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1106,
+   "video": true,
+   "cat": "river",
+   "subject": "Nile through forest canopy",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1107,
+   "video": true,
+   "cat": "falls",
+   "subject": "Nile rapids at Top of the Falls through forest",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1108,
+   "video": true,
+   "cat": "river",
+   "subject": "forested Nile gorge",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1110,
+   "video": false,
+   "cat": "people",
+   "subject": "group at \"I am at the Top of Murchison Falls\" frame",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1127,
+   "video": false,
+   "cat": "people",
+   "subject": "group jumping and laughing at Top of the Falls sign",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1147,
+   "video": false,
+   "cat": "people",
+   "subject": "armed UWA ranger leading group on trail",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1155,
+   "video": true,
+   "cat": "people",
+   "subject": "ranger guide briefing the group in forest",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1158,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "group walking forest path to the falls",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1162,
+   "video": true,
+   "cat": "falls",
+   "subject": "thundering white water seen through trees",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1163,
+   "video": true,
+   "cat": "falls",
+   "subject": "churning falls rapids with forest beyond",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1164,
+   "video": true,
+   "cat": "falls",
+   "subject": "top of the falls cascade from viewpoint",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1166,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "traveller with falls cascade behind",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1171,
+   "video": false,
+   "cat": "falls",
+   "subject": "wide white-water cascade with acacia",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1173,
+   "video": false,
+   "cat": "falls",
+   "subject": "falls cascade beside viewpoint path",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 1174,
+   "video": false,
+   "cat": "falls",
+   "subject": "falls framed by overhanging branch",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1176,
+   "video": true,
+   "cat": "falls",
+   "subject": "falls glimpsed through foliage",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1182,
+   "video": false,
+   "cat": "falls",
+   "subject": "Murchison Falls chasm, rocks and spray",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 1183,
+   "video": true,
+   "cat": "falls",
+   "subject": "Murchison Falls plunging through rock chasm (video)",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 1184,
+   "video": true,
+   "cat": "people-scenic",
+   "subject": "couple at railing viewing the gorge",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1185,
+   "video": true,
+   "cat": "falls",
+   "subject": "falls gorge and forest",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1186,
+   "video": true,
+   "cat": "falls",
+   "subject": "Murchison Falls with viewing crowd on rocks for scale",
+   "score": 5,
+   "orient": "portrait"
+  },
+  {
+   "i": 1187,
+   "video": true,
+   "cat": "falls",
+   "subject": "falls spray with visitors on ledge",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1189,
+   "video": true,
+   "cat": "river",
+   "subject": "Nile gorge below the falls",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1190,
+   "video": true,
+   "cat": "falls",
+   "subject": "falls through rock chasm, close",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1192,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "traveller arms raised facing the falls",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1195,
+   "video": true,
+   "cat": "falls",
+   "subject": "falls cascade close-up (video)",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1196,
+   "video": true,
+   "cat": "falls",
+   "subject": "falls chasm and spray (video)",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1204,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "woman arms wide at falls railing",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 1211,
+   "video": false,
+   "cat": "falls",
+   "subject": "falls cascade from railing",
+   "score": 3,
+   "orient": "landscape"
+  },
+  {
+   "i": 1214,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "man from behind arms wide facing the falls",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1226,
+   "video": false,
+   "cat": "people",
+   "subject": "smiling UWA ranger at the falls",
+   "score": 4,
+   "orient": "landscape"
+  },
+  {
+   "i": 1228,
+   "video": true,
+   "cat": "falls",
+   "subject": "falls up close, white water over rocks",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1229,
+   "video": true,
+   "cat": "falls",
+   "subject": "Nile rapids at Top of the Falls",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1237,
+   "video": false,
+   "cat": "forest",
+   "subject": "Murchison Falls National Park entrance sign",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1239,
+   "video": true,
+   "cat": "forest",
+   "subject": "forest road through the park",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1240,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "elephant facing camera in tall grass by forest (verify: may be statue)",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1243,
+   "video": false,
+   "cat": "people-scenic",
+   "subject": "traveller at Murchison Falls NP gate arch",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1246,
+   "video": true,
+   "cat": "wildlife",
+   "subject": "olive baboons crossing park road",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1247,
+   "video": true,
+   "cat": "people",
+   "subject": "woman smiling in safari vehicle",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1249,
+   "video": false,
+   "cat": "people",
+   "subject": "woman laughing in safari vehicle",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1261,
+   "video": false,
+   "cat": "lodge",
+   "subject": "lodge room interior",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1267,
+   "video": false,
+   "cat": "sunset",
+   "subject": "sunset reflected in vehicle side mirror",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1280,
+   "video": true,
+   "cat": "boat",
+   "subject": "Nile boat cruise from deck, banks ahead",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1282,
+   "video": true,
+   "cat": "people-scenic",
+   "subject": "friends on Nile cruise, elephant on bank behind",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1287,
+   "video": true,
+   "cat": "boat",
+   "subject": "traveller on boat with Nile banks",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1297,
+   "video": true,
+   "cat": "people",
+   "subject": "friends laughing in safari vehicle",
+   "score": 4,
+   "orient": "portrait"
+  },
+  {
+   "i": 1300,
+   "video": true,
+   "cat": "people",
+   "subject": "smiling traveller in open-roof vehicle",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1307,
+   "video": true,
+   "cat": "vehicle",
+   "subject": "pop-up roof safari vehicle",
+   "score": 3,
+   "orient": "portrait"
+  },
+  {
+   "i": 1312,
+   "video": true,
+   "cat": "people-scenic",
+   "subject": "traveller at railing with falls behind",
+   "score": 3,
+   "orient": "portrait"
+  }
+ ],
+ "heroCandidates": [
+  1182,
+  1186,
+  1093,
+  1183,
+  935,
+  1090
+ ],
+ "bestVideos": [
+  1186,
+  1183,
+  934,
+  935,
+  1086,
+  1246,
+  1162,
+  1282,
+  926
+ ]
+}
