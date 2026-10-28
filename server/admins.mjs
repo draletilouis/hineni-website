@@ -16,11 +16,12 @@ function saveAdmins(dir, admins) {
   fs.writeFileSync(file(dir), JSON.stringify(admins, null, 2), { mode: 0o600 });
 }
 
-export const validName = (user) => /^[a-z0-9._-]{2,32}$/.test(user);
+// a plain name (2–32 characters) or an email address
+export const validName = (user) => /^[a-z0-9._-]{2,32}$/.test(user) || (/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(user) && user.length <= 64);
 
 export async function setAdmin(dir, user, password) {
-  if (!validName(user)) throw new Error('Names are 2–32 characters: a–z, 0–9, dot, dash or underscore.');
-  if (password.length < 10) throw new Error('Use a password of at least 10 characters.');
+  if (!validName(user)) throw new Error('Use an email address, or a name of 2–32 characters: a–z, 0–9, dot, dash or underscore.');
+  if (password.length < 8) throw new Error('Use a password of at least 8 characters.');
   const salt = crypto.randomBytes(16).toString('base64');
   const hash = (await scrypt(password, salt)).toString('base64');
   const admins = loadAdmins(dir).filter((a) => a.user !== user);
