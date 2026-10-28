@@ -203,6 +203,7 @@ body.menu-open .mobile-menu { clip-path: inset(0 0 0 0); }
   position: relative; min-height: max(560px, 100svh); overflow: hidden; background: #000;
   display: flex; flex-direction: column; justify-content: space-between; gap: 32px;
   padding: 96px var(--gutter) clamp(28px, 7vh, 80px);
+  touch-action: pan-y; /* sideways swipes change the photo (hero.js); up and down still scroll */
 }
 .hero__gl { position: absolute; inset: 0; }
 .hero__gl canvas, .journey__gl canvas { width: 100% !important; height: 100% !important; }

@@ -1,6 +1,7 @@
 // Hero: a full-screen slideshow of the best photos, shown as real images — the browser
 // renders them natively at full sharpness (responsive srcset), with a 250ms crossfade.
-// It moves only when asked: arrows, thumbnails, swipe and the keyboard.
+// On computers it moves only when asked: arrows, thumbnails and the keyboard. Phones have no arrows or
+// thumbnails, so there it moves on its own every few seconds, and a swipe moves it too.
 import { gsap } from 'gsap';
 import { heroReel } from '../data/content.js';
 import { isMobile, photo, srcset, reducedMotion } from '../lib/media.js';
@@ -66,6 +67,19 @@ export function initHero() {
   // ---- sequencing
   let cur = 0, busy = false;
   const inView = () => hero.getBoundingClientRect().bottom > 0;
+
+  // phones: the next photo after HOLD, while the hero is on screen and nothing is open over it
+  const auto = isMobile() && !rm;
+  const HOLD = 5000;
+  let timer = 0;
+  function schedule() {
+    clearTimeout(timer);
+    if (!auto) return;
+    timer = setTimeout(() => {
+      const idle = inView() && !document.hidden && !busy && !document.querySelector('.lightbox.is-open, .film.is-open');
+      if (idle) go(cur + 1, 1); else schedule();
+    }, HOLD);
+  }
   async function go(target, dir) {
     if (busy) return;
     const n = ((target % N) + N) % N;
@@ -83,6 +97,7 @@ export function initHero() {
       cur = n;
       busy = false;
       load((n + 1) % N); // prefetch the next photo
+      schedule(); // a full HOLD on every photo, however it got there
     } });
   }
 
@@ -94,6 +109,7 @@ export function initHero() {
     caption(0, 1);
     runBar(0);
     load(1);
+    schedule();
   }
 
   // ---- input
@@ -103,7 +119,10 @@ export function initHero() {
     const b = e.target.closest('.slides-ui__thumb');
     if (b) go(+b.dataset.i, +b.dataset.i > cur ? 1 : -1);
   });
+  // swipe: the hero lets the browser scroll up and down only (touch-action: pan-y in main.css), so
+  // a sideways swipe reaches here instead of being taken over as a scroll
   let sx = null, sy = 0;
+  hero.addEventListener('pointercancel', () => { sx = null; });
   hero.addEventListener('pointerdown', (e) => {
     if (e.target.closest('a, button')) return;
     sx = e.clientX; sy = e.clientY;
