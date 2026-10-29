@@ -31,14 +31,14 @@ const TAGS = `
   m-elephant-face wildlife    crater-sweep land          crater-crew people         b-edge-nile land
   lioness wildlife            m-falls-head land          y-arms-nile people         m-group-boat people
   m-giraffes-dusk wildlife    rwenzori land              falls-joy people           b-ridges-nile land
-  leopard wildlife            pink-valley land           b-summit-joy people        elephant-euphorbia wildlife
+  pink-valley land           b-summit-joy people        elephant-euphorbia wildlife
   m-top-sign people           falls-curtain land         m-croc wildlife            y-dusk-hills land
   kob-dawn wildlife           equator-couple people      storm-sunset land          b-dance people
   hippo-head wildlife         m-hyena wildlife           flowers-lake land          m-friends people
   y-ferry-sunset land         buffalo-herd wildlife      m-falls-top land           y-fire people
   fish-eagle wildlife         live-band people           b-panorama land            m-elephants-acacia wildlife
   lion-male wildlife          m-sunrise-roof people      crater-dusk land           b-summit-crew people
-  elephants-bank wildlife     m-falls-cliff land         y-nile-smile people        leopard-2 wildlife
+  elephants-bank wildlife     m-falls-cliff land         y-nile-smile people
   b-elder-nile land           ridge-joy people           m-giraffes wildlife        y-canoe land
   elephants-kazinga wildlife  m-photographer people      y-ferry-clouds land        falls-dance people
   m-croc-tree wildlife        b-village-trail people     mirror-lake land           kob-herd wildlife

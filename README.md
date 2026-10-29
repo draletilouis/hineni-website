@@ -116,7 +116,7 @@ ledger, the menus' structure and the page layout itself.
 | Preloader | Counts real asset loading (fonts + first hero clip), then a curtain wipe |
 | Hero | Full-screen slideshow of the best photos (landscape set on desktop, portrait set on phones), shown as real images at full resolution with a crossfade and gentle zoom; arrows, thumbnails, swipe and keyboard. Real guest faces above the fold. |
 | Manifesto | Words light up as you scroll, with inline photo "pills" |
-| The Game | Pinned viewfinder sequence (REC, live timecode, GPS): lion, leopard, hyena, tusker, croc, buffalo, giraffe, hippo — hard cuts, flash frames, camera shake |
+| The Game | Pinned viewfinder sequence (REC, live timecode, GPS): lion, waterbuck, hyena, tusker, croc, buffalo, giraffe, hippo — hard cuts, flash frames, camera shake |
 | The Route | Procedural 3D model of the Albertine Rift from real coordinates (Rwenzori, Lake Albert, the Nile & Murchison Falls, crater lakes, Equator). Scroll flies the camera stop to stop while the route draws itself. |
 | Who we are | The "Hineni = here I am" story with real group photos |
 | Experiences | Filterable grid of 12 experiences; "+ Add to my trip" carries picks into the booking form; clips play on hover |

@@ -64,8 +64,8 @@ export const heroReel = {
 
 // The wildlife: one card per sighting. `key` is a clip (played on request), `photo` a still.
 export const game = [
-  { photo: 'lioness', word: 'Lion', kicker: '01 — The pride', time: '09:31', geo: '0°04′S 30°02′E', place: 'Kasenyi Plains, Queen Elizabeth NP', note: 'Lionesses working the kob grounds at first light.' },
-  { key: 'v-leopard', word: 'Leopard', kicker: '02 — The ghost', time: '08:37', geo: '0°05′S 30°01′E', place: 'Kasenyi Plains, Queen Elizabeth NP', note: 'Rosettes in the grass. Gone in a breath.', outline: true },
+  { photo: 'lioness', word: 'Lion', kicker: '01 — The pride', time: '09:23', geo: '0°04′S 30°02′E', place: 'Kasenyi Plains, Queen Elizabeth NP', note: 'Resting by the track after the morning hunt, a few metres from the cars.' },
+  { photo: 'waterbuck', word: 'Waterbuck', kicker: '02 — The shore', time: '11:40', geo: '0°10′S 29°57′E', place: 'Kazinga Channel, Queen Elizabeth NP', note: 'Down at the edge of the water, watching our boat go by.', outline: true },
   { key: 'v-m-hyena-road', word: 'Hyena', kicker: '03 — The clan', time: '07:40', geo: '2°17′N 31°26′E', place: 'Buligi, Murchison Falls NP', note: 'Two of them, lying in the road, waiting for us.' },
   { key: 'v-m-tusker', word: 'Six tonnes', kicker: '04 — Right of way', time: '14:52', geo: '2°16′N 31°36′E', place: 'Victoria Nile', note: 'A tusker walks down to drink. Engines off. Nobody speaks.' },
   { key: 'v-m-croc', word: 'Crocodile', kicker: '05 — Older than the river', time: '15:40', geo: '2°16′N 31°34′E', place: 'Victoria Nile', note: 'Five metres of patience on the sandbank.', outline: true },
@@ -238,7 +238,7 @@ export const places = [
   { id: 'bigodi', name: 'Bigodi Wetland Sanctuary', region: 'fortportal', lat: 0.404, lon: 30.4113, addon: true, web: ['w-bigodi', 'w-bigodi-2'], note: 'A community-run swamp walk for birds and monkeys, next to Kibale.' },
 
   // Queen Elizabeth & the Rwenzori foothills
-  { id: 'kasenyi', name: 'Kasenyi Plains', region: 'qenp', lat: -0.04, lon: 30.08, photos: ['lioness', 'lioness-vehicle', 'lion-male', 'leopard', 'kob-dawn', 'kob-herd', 'buffalo-herd', 'buffalo-stare'], note: 'The dawn drive above Lake George: lion, leopard, buffalo and thousands of kob.' },
+  { id: 'kasenyi', name: 'Kasenyi Plains', region: 'qenp', lat: -0.04, lon: 30.08, photos: ['lioness', 'lioness-vehicle', 'lion-male', 'kob-dawn', 'kob-herd', 'buffalo-herd', 'buffalo-stare'], note: 'The dawn drive above Lake George: lion, buffalo and thousands of kob.' },
   { id: 'bunyampaka', name: 'Bunyampaka salt lake', region: 'qenp', lat: -0.0402, lon: 30.1304, photos: ['salt-lake'], note: 'Salt mined by hand in the dry season, for the table and for cattle licks.' },
   { id: 'kazinga', name: 'Kazinga Channel', region: 'qenp', lat: -0.165, lon: 29.95, photos: ['elephants-kazinga', 'elephant-line', 'elephants-bank', 'hippo-water', 'hippo-wallow', 'cruise-buffalo', 'kazinga-clouds', 'waterbuck'], note: 'Two hours on the water between Lakes George and Edward: hippos by the hundred, elephant at the edge.' },
   { id: 'equator', name: 'The Equator at Kikorongo', region: 'qenp', lat: 0.0, lon: 29.9992, photos: ['equator', 'equator-couple'], note: 'One foot in each hemisphere.' },
@@ -304,7 +304,7 @@ export const experiences = [
   { id: 'deck', cat: 'water', title: 'Crater-lake lunch & swim', trip: 'Fort Portal', photo: 'deck', feel: 'Slow morning, cold water',
     text: 'A lakeside lunch at Kyaninga and a floating deck on a jungle-walled crater lake.' },
   { id: 'game-drive', cat: 'wildlife', title: 'Dawn game drives', trip: 'Both trips', photo: 'lioness-vehicle', video: 'v-drive', feel: 'Roof up, eyes wide',
-    text: 'Out of the gate before sunrise for lion, leopard, hyena and buffalo, when the cats are still hunting.' },
+    text: 'Out of the gate before sunrise for lion, hyena, buffalo and elephant, when the cats are still hunting.' },
   { id: 'chimps', cat: 'wildlife', title: 'Rainforest & chimps', trip: 'Kibale add-on', photo: 'rainforest', video: 'v-forest', feel: 'Hush, then chaos',
     text: 'Kibale holds over 1,500 chimpanzees, about an hour from Fort Portal. Add a tracking morning to any trip.' },
   { id: 'tea-road', cat: 'culture', title: 'Tea-country road trip', trip: 'Fort Portal', photo: 'ridge-joy', feel: 'Windows down, music up',
@@ -320,7 +320,7 @@ export const fieldNotes = [
   { photo: 'lioness-rest', title: 'Why we leave before 5', tag: 'Lion',
     text: 'Lions do most of their hunting in the dark and at first light. By mid-morning they\'re flat out in a thicket. So in September we were out of Fort Portal at 4:50 and in the park by 6:50.' },
   { photo: 'kob-herd', title: 'Watch the kob, not the grass', tag: 'Reading the bush',
-    text: 'When a herd of kob stops grazing and every head turns the same way, something is moving. Half our leopard and lion sightings start with antelope staring.' },
+    text: 'When a herd of kob stops grazing and every head turns the same way, something is moving. Most of our lion sightings start with antelope staring.' },
   { photo: 'm-elephants-acacia', title: 'Ears tell you everything', tag: 'Elephant',
     text: 'Slow flapping is an elephant cooling down. Ears spread wide, head up, trunk swinging — that\'s a warning. We cut the engine, give space, and let her decide.' },
   // the guide's lessons from the September 2026 game drive
@@ -430,7 +430,7 @@ export const stories = [
     moment: 'A tusker walked down to the river right next to our boat. Nobody said a word.' },
   { photo: 'arms-lake', name: 'Guest name', trip: 'Fort Portal, September 2026', sample: true,
     fear: 'Waking at 4 am sounded like a terrible idea.',
-    moment: 'Then a leopard walked out of the grass at 8:37 and I stopped complaining forever.' },
+    moment: 'Then a lioness walked out of the grass at 9:24 and I stopped complaining forever.' },
 ];
 
 // Pillar 4 — answer every silent question before the guest has to ask it.
