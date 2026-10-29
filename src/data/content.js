@@ -217,7 +217,7 @@ export const places = [
   { id: 'kampala', name: 'Kampala', region: 'road', lat: 0.3476, lon: 32.5825, photos: ['m-van-laugh', 'van-road'], note: 'Where every trip starts — pick-up at your door.' },
   { id: 'wamala', name: 'Lake Wamala', region: 'road', lat: 0.3287, lon: 31.8969, note: 'A wide, shallow lake in the hills south of Mityana.' },
   { id: 'nakayima', name: 'Nakayima Tree', region: 'road', lat: 0.5738, lon: 31.3775, web: ['w-nakayima', 'w-nakayima-2'], note: 'A huge sacred tree on Mubende hill, tied to the Bachwezi legends.' },
-  { id: 'reptiles', name: 'Uganda Reptiles Village', region: 'road', lat: 0.1047, lon: 32.4744, photos: ['r-chameleon-smile', 'r-tortoise', 'r-snake-hands', 'r-chameleon', 'r-gate', 'r-group'], note: 'Chameleons, tortoises and snakes up close with the keepers, off the Entebbe road. We planted trees there too.' },
+  { id: 'reptiles', name: 'Uganda Reptiles Village', region: 'road', lat: 0.1047, lon: 32.4744, photos: ['r-group', 'r-chameleon', 'r-tortoise', 'r-snake-hands', 'r-chameleon-smile', 'r-gate'], note: 'Chameleons, tortoises and snakes up close with the keepers, off the Entebbe road. We planted trees there too.' },
   { id: 'ziwa', name: 'Ziwa Rhino Sanctuary', region: 'road', lat: 1.4483, lon: 32.0778, addon: true, web: ['w-ziwa', 'w-ziwa-2'], note: 'Uganda\'s only wild rhinos, tracked on foot with a ranger.' },
 
   // Fort Portal & the crater lakes
