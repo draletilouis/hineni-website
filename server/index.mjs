@@ -62,7 +62,8 @@ const builtInVideos = shipped.videos || {};
 const builtInTrips = ['moyo', 'murchison', 'fortportal'];
 
 // ---------------------------------------------------------------- the published site and the draft
-const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {}, videos: {}, text: {} });
+// replaced: old photo or clip key -> the one that now shows wherever it did (src/lib/site.js applies it)
+const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {}, videos: {}, text: {}, replaced: {} });
 const readSite = (file) => (fs.existsSync(file) ? { ...emptySite(), ...JSON.parse(fs.readFileSync(file, 'utf8')) } : null);
 const copy = (o) => structuredClone(o);
 let site = readSite(SITE_FILE) || emptySite(); // what visitors see
@@ -113,6 +114,8 @@ const isVideo = (key) => typeof key === 'string' && (key in builtInVideos || key
 // Straight double quotes become curly ones, so words can never close an HTML attribute.
 const clean = (v, max = 160) => String(v ?? '').replace(/[<>\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().replace(/"/g, '”').slice(0, max);
 const usedInSpots = (key) => Object.values(draft.slots).some((s) => s.photo === key || s.video === key);
+// a photo or clip replaced by another: what shows in its place now (following a chain of replacements)
+const current = (key) => { for (let i = 0; i < 20 && draft.replaced[key]; i++) key = draft.replaced[key]; return key; };
 
 // ---------------------------------------------------------------- sessions and sign-in
 // sessions survive restarts and redeploys; only a hash of each token is stored
@@ -335,8 +338,23 @@ admin.post('/photos/:key/remove', async (req, res) => {
   await saveDraft(req.admin);
   res.json({ ok: true });
 });
+// a newly uploaded photo takes an old one's place everywhere: its spots, the album and the map. The old
+// one is removed (so "Put back" undoes it), and the new one sits where it did in the album.
+admin.post('/photos/:key/replace', async (req, res) => {
+  const { key } = req.params;
+  const to = req.body.with;
+  if (!isPhoto(key) || !draft.photos[to]) return res.status(404).json({ error: 'No such photo.' });
+  if (key === to || current(to) === key) return res.status(400).json({ error: 'Choose a different photo.' });
+  const old = draft.photos[key] || { ...builtIn[key], ...draft.edits[key] };
+  if (old.t) draft.photos[to].t = old.t;
+  draft.replaced[key] = to;
+  if (!draft.hidden.includes(key)) draft.hidden.push(key);
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
 admin.post('/photos/:key/restore', async (req, res) => {
   draft.hidden = draft.hidden.filter((k) => k !== req.params.key);
+  delete draft.replaced[req.params.key]; // back in its own spots, too
   await saveDraft(req.admin);
   res.json({ ok: true });
 });
@@ -390,6 +408,21 @@ admin.patch('/videos/:key', async (req, res) => {
   const clip = draft.videos[req.params.key];
   if (!clip) return res.status(404).json({ error: 'Only uploaded clips can be renamed.' });
   if ('title' in req.body) clip.title = clean(req.body.title, 80);
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+// a newly uploaded clip plays wherever an old one did
+admin.post('/videos/:key/replace', async (req, res) => {
+  const { key } = req.params;
+  const to = req.body.with;
+  if (!isVideo(key) || !draft.videos[to]) return res.status(404).json({ error: 'No such clip.' });
+  if (key === to || current(to) === key) return res.status(400).json({ error: 'Choose a different clip.' });
+  draft.replaced[key] = to;
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+admin.post('/videos/:key/restore', async (req, res) => {
+  delete draft.replaced[req.params.key];
   await saveDraft(req.admin);
   res.json({ ok: true });
 });

@@ -21,6 +21,9 @@ Admins sign in at **/admin** and run the website themselves. The plain-language 
 - **Draft, preview, publish**: every change goes into a draft. "Preview the website" opens `/?preview`, the site
   with the draft applied and a bar saying so (signed-in admins only; everyone else gets the live site). Publish
   puts it live; Discard throws the draft away.
+- **Replace**: tap a photo in Album photos, or a clip in Clips, and choose the new file. It shows wherever the old one did
+  (spots, album, map) through `site.replaced` (old key -> new key, applied in `src/lib/site.js`); the old photo is
+  removed, and "Put back" undoes the swap.
 - **Album photos**: upload (drag and drop, computer or phone) into a trip, caption, set what they show, move
   between trips, remove and put back, delete for good. Uploads become 900/1600/2000/2800 px WebP; the date taken
   comes from the camera; location data is stripped. Removed photos also leave the map.

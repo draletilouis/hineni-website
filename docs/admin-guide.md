@@ -23,6 +23,9 @@ Changed your mind? **Discard changes** throws the draft away and puts everything
 
 **Album photos** holds every photo on the website, grouped by trip.
 
+- **Replace a photo:** tap it and choose the new one from your phone or computer. The new photo shows everywhere
+  the old one did (the album, the map and any spot on the page) and keeps its caption, trip and type. The old
+  one goes under **Removed**: **Put back** there undoes the swap.
 - **Add photos:** drag them onto the box at the top, or choose them from your computer or phone. Pick the
   trip and what they show first. Use the originals (JPEG, PNG or WebP, at least 1000 pixels wide), not
   thumbnails or screenshots. Locations hidden in the photos are removed automatically.
@@ -41,7 +44,8 @@ sightings, the photos set into "The idea", the big quote, guest stories, the gro
 
 ## Clips
 
-**Clips** lists every video on the website. To add one, drag it onto the box. Use **MP4** (most phones and
+**Clips** lists every video on the website. To swap one, tap it and choose the new clip: it plays everywhere the
+old one did (**Put back** on the old one undoes it). To add one, drag it onto the box. Use **MP4** (most phones and
 editing apps export this) or WebM, up to 250 MB. Short clips, under a minute, load fastest for visitors.
 
 The portal takes the opening image from the clip itself. Once a clip is uploaded, choose where it plays in

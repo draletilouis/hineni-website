@@ -71,7 +71,9 @@ function clips() {
   const own = Object.values(manifest.videos).map((v) => ({ ...v, title: shippedClipName[v.key] || prettyKey(v.key) }));
   return [...ups, ...own];
 }
-const slotValue = (s) => (s.kind === 'video' ? site.slots[s.id]?.video : site.slots[s.id]?.photo) || s.def;
+// what a spot shows: its chosen photo or clip, or the original, and whatever has replaced that since
+const current = (key) => { for (let i = 0; i < 20 && site.replaced?.[key]; i++) key = site.replaced[key]; return key; };
+const slotValue = (s) => current((s.kind === 'video' ? site.slots[s.id]?.video : site.slots[s.id]?.photo) || s.def);
 function usage() {
   const used = {};
   for (const s of slots) (used[slotValue(s)] ||= []).push(s);
@@ -208,13 +210,13 @@ function renderAlbum(list) {
 function card(p, used = []) {
   const spots = used.map((s) => s.label).join(', ');
   return `<article class="card${p.removed ? ' is-removed' : ''}${ui.fresh.has(p.key) ? ' is-new' : ''}" data-key="${esc(p.key)}">
-    <div class="card__img card__img--${p.orient}">
+    ${p.removed ? `<div class="card__img card__img--${p.orient}">` : `<button type="button" class="card__img card__img--${p.orient}" data-replace aria-label="Replace this photo with another from your device">`}
       <img src="${photo(p.key, 900)}" alt="" loading="lazy" decoding="async" />
       <div class="card__badges">
         ${p.uploaded ? '<span class="badge">Uploaded</span>' : ''}
         ${used.length ? `<span class="badge badge--used" title="${esc(spots)}">On the page${used.length > 1 ? ` ×${used.length}` : ''}</span>` : ''}
       </div>
-    </div>
+      ${p.removed ? '</div>' : '<span class="card__replace">Replace photo</span></button>'}
     <div class="card__body">
       <label class="sr" for="alt-${esc(p.key)}">Caption</label>
       <textarea id="alt-${esc(p.key)}" class="card__alt${p.alt ? '' : ' is-empty'}" rows="2" maxlength="160" data-alt placeholder="Add a caption: what's happening, and where" ${p.removed ? 'disabled' : ''}>${esc(p.alt)}</textarea>
@@ -223,7 +225,7 @@ function card(p, used = []) {
         <select data-field="type" aria-label="What it shows">${typeOptions(p.type)}</select>
       </div>`}
       <div class="card__row card__row--foot">
-        <span class="card__date">${p.t ? dateFmt.format(p.t) : ''}</span>
+        <span class="card__date">${p.removed && site.replaced?.[p.key] ? 'Replaced by a new photo' : p.t ? dateFmt.format(p.t) : ''}</span>
         ${p.removed
           ? `<span class="card__acts"><button type="button" class="link" data-act="restore">Put back</button>${p.uploaded ? '<button type="button" class="link link--danger" data-act="delete">Delete for good</button>' : ''}</span>`
           : '<button type="button" class="link link--danger" data-act="remove">Remove from website</button>'}
@@ -274,6 +276,7 @@ grid.addEventListener('change', async (e) => {
   }, field === 'trip' ? `Moved to ${tripName(sel.value)}` : 'Saved');
 });
 grid.addEventListener('click', async (e) => {
+  if (e.target.closest('[data-replace]')) { replacePhoto(e.target.closest('[data-key]').dataset.key); return; }
   const b = e.target.closest('[data-act]');
   if (!b) return;
   const key = b.closest('[data-key]').dataset.key;
@@ -281,7 +284,7 @@ grid.addEventListener('click', async (e) => {
   if (act === 'remove') {
     const used = usage()[key];
     if (used) {
-      toast(`This photo is chosen for ${used.map((s) => `${s.group}: ${s.label}`).join(', ')}. Pick another photo there first (Spots on the page).`, 'error');
+      toast(`This photo is on the page (${used.map((s) => `${s.group}: ${s.label}`).join(', ')}). Tap it to replace it instead, or pick another photo there in Spots on the page.`, 'error');
       return;
     }
     await attempt(async () => { await api('POST', `/admin/photos/${key}/remove`); await refresh(); renderAll(); }, 'Removed. Find it under "Removed" to put it back.');
@@ -298,15 +301,15 @@ const queue = [];
 let running = 0;
 const MAX_MB = 40;
 
-function addFiles(files, { trip, type, onDone } = {}) {
+function addFiles(files, { trip, type, onDone, onError } = {}) {
   trip ||= $('#upTrip').value;
   type ||= $('#upType').value;
   for (const file of files) {
-    const item = { file, trip, type, onDone, id: Math.random().toString(36).slice(2), state: 'waiting', pct: 0, error: '' };
+    const item = { file, trip, type, onDone, onError, id: Math.random().toString(36).slice(2), state: 'waiting', pct: 0, error: '' };
     if (/\.hei[cf]$/i.test(file.name) || /hei[cf]/.test(file.type)) item.error = 'HEIC isn\'t supported: on an iPhone, upload from the browser (it converts them) or export as JPEG.';
     else if (!/^image\/(jpeg|png|webp)$/.test(file.type)) item.error = 'Not a JPEG, PNG or WebP photo.';
     else if (file.size > MAX_MB * 1024 * 1024) item.error = `Over ${MAX_MB} MB.`;
-    if (item.error) item.state = 'error';
+    if (item.error) { item.state = 'error'; onError?.(item.error); }
     item.preview = item.error ? '' : URL.createObjectURL(file);
     queue.push(item);
   }
@@ -362,8 +365,62 @@ async function send(item) {
     site.pending = true;
     ui.fresh.add(body.photo.key);
     item.onDone?.(body.photo);
-  } else { item.state = 'error'; item.error = body.error || `Upload failed (${status}).`; }
+  } else { item.state = 'error'; item.error = body.error || `Upload failed (${status}).`; item.onError?.(item.error); }
   renderQueue();
+}
+
+// ---- replace: tap a photo or clip, choose the new one, and it takes the old one's place everywhere
+const replaceInput = Object.assign(document.createElement('input'), { type: 'file', hidden: true });
+document.body.append(replaceInput);
+let onReplaceFile = null;
+replaceInput.addEventListener('change', () => {
+  const file = replaceInput.files[0];
+  const then = onReplaceFile;
+  replaceInput.value = '';
+  onReplaceFile = null;
+  if (file && then) then(file);
+});
+function chooseFile(accept, then) {
+  onReplaceFile = then;
+  replaceInput.accept = accept;
+  replaceInput.click();
+}
+const failed = (msg) => toast(`Couldn't replace it: ${msg}`, 'error');
+
+// the new photo keeps the old one's caption, trip, type and place in the album; the old one is removed
+function replacePhoto(key) {
+  const old = photos().find((p) => p.key === key);
+  if (!old) return;
+  chooseFile('image/jpeg,image/png,image/webp', (file) => {
+    toast('Uploading the new photo…');
+    addFiles([file], {
+      trip: old.trip,
+      type: old.type,
+      onError: failed,
+      onDone: (p) => attempt(async () => {
+        if (old.alt) await api('PATCH', `/admin/photos/${p.key}`, { alt: old.alt });
+        await api('POST', `/admin/photos/${key}/replace`, { with: p.key });
+        await refresh();
+        renderAll();
+      }, 'Replaced. The new photo shows everywhere the old one did (the old one is under "Removed").'),
+    });
+  });
+}
+function replaceClip(key) {
+  const old = clips().find((c) => c.key === key);
+  if (!old) return;
+  chooseFile('video/mp4,video/webm', (file) => {
+    toast('Uploading the new clip…');
+    addClips([file], {
+      onError: failed,
+      onDone: (v) => attempt(async () => {
+        await api('PATCH', `/admin/videos/${v.key}`, { title: old.title });
+        await api('POST', `/admin/videos/${key}/replace`, { with: v.key });
+        await refresh();
+        renderAll();
+      }, 'Replaced. The new clip plays everywhere the old one did.'),
+    });
+  });
 }
 
 function finishBatch() {
@@ -444,12 +501,12 @@ function readClip(file) {
   });
 }
 
-function addClips(files, { onDone } = {}) {
+function addClips(files, { onDone, onError } = {}) {
   for (const file of files) {
-    const item = { file, onDone, id: Math.random().toString(36).slice(2), state: 'waiting', pct: 0, error: '', preview: '' };
+    const item = { file, onDone, onError, id: Math.random().toString(36).slice(2), state: 'waiting', pct: 0, error: '', preview: '' };
     if (!/^video\/(mp4|webm)$/.test(file.type)) item.error = 'Use an MP4 (H.264) or WebM clip. Other formats don\'t play in every browser.';
     else if (file.size > CLIP_MB * 1024 * 1024) item.error = `Over ${CLIP_MB} MB. Export a shorter or smaller version.`;
-    if (item.error) item.state = 'error';
+    if (item.error) { item.state = 'error'; onError?.(item.error); }
     clipQueue.push(item);
   }
   renderClipQueue();
@@ -497,6 +554,7 @@ async function pumpClips() {
     item.state = 'error';
     item.error = e.message;
   }
+  if (item.state === 'error') item.onError?.(item.error);
   clipRunning = 0;
   renderClipQueue();
   pumpClips();
@@ -516,21 +574,26 @@ function renderClips() {
   const used = usage();
   $('#clips').innerHTML = clips().map((c) => {
     const where = used[c.key] || [];
-    return `<article class="card${ui.fresh.has(c.key) ? ' is-new' : ''}" data-clip="${esc(c.key)}">
-      <div class="card__img"><img src="${poster(c.key)}" alt="" loading="lazy" decoding="async" />
+    const by = site.replaced?.[c.key] && clips().find((x) => x.key === site.replaced[c.key]);
+    return `<article class="card${by ? ' is-removed' : ''}${ui.fresh.has(c.key) ? ' is-new' : ''}" data-clip="${esc(c.key)}">
+      <button type="button" class="card__img" data-clip-replace aria-label="Replace this clip with another from your device"><img src="${poster(c.key)}" alt="" loading="lazy" decoding="async" />
         <div class="card__badges">
           ${c.uploaded ? '<span class="badge">Uploaded</span>' : ''}
           ${where.length ? `<span class="badge badge--used" title="${esc(where.map((s) => s.label).join(', '))}">On the page</span>` : ''}
           ${c.dur ? `<span class="badge">${mins(c.dur)}</span>` : ''}
         </div>
-      </div>
+        <span class="card__replace">Replace clip</span>
+      </button>
       <div class="card__body">
         ${c.uploaded
           ? `<label class="field field--small">Name<input data-clip-title maxlength="80" value="${esc(c.title)}" /></label>`
           : `<p class="card__title">${esc(c.title)}</p>`}
         <div class="card__row card__row--foot">
-          <span class="card__date">${where.length ? esc(where.map((s) => s.label).join(', ')) : 'Not used on the page'}</span>
-          ${c.uploaded && !where.length ? '<button type="button" class="link link--danger" data-clip-delete>Delete</button>' : ''}
+          <span class="card__date">${by ? `Replaced by ${esc(by.title)}` : where.length ? esc(where.map((s) => s.label).join(', ')) : 'Not used on the page'}</span>
+          <span class="card__acts">
+            ${by ? '<button type="button" class="link" data-clip-restore>Put back</button>' : ''}
+            ${c.uploaded && !where.length && !Object.values(site.replaced || {}).includes(c.key) ? '<button type="button" class="link link--danger" data-clip-delete>Delete</button>' : ''}
+          </span>
         </div>
       </div>
     </article>`;
@@ -543,8 +606,15 @@ $('#clips').addEventListener('change', async (e) => {
   await attempt(async () => { await api('PATCH', `/admin/videos/${key}`, { title: input.value }); await refresh(); renderPublish(); }, 'Saved');
 });
 $('#clips').addEventListener('click', async (e) => {
+  const card = e.target.closest('[data-clip]');
+  if (!card) return;
+  const key = card.dataset.clip;
+  if (e.target.closest('[data-clip-replace]')) { replaceClip(key); return; }
+  if (e.target.closest('[data-clip-restore]')) {
+    await attempt(async () => { await api('POST', `/admin/videos/${key}/restore`); await refresh(); renderAll(); }, 'Put back. It plays in its own places again.');
+    return;
+  }
   if (!e.target.closest('[data-clip-delete]')) return;
-  const key = e.target.closest('[data-clip]').dataset.clip;
   if (!confirm('Delete this clip for good? This can\'t be undone.')) return;
   await attempt(async () => { await api('DELETE', `/admin/videos/${key}`); await refresh(); renderAll(); }, 'Clip deleted');
 });

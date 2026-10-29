@@ -38,18 +38,20 @@ export function applySite(site) {
   addVideos(site.videos);
   applyAlbum(site);
 
+  // a photo or clip replaced in the portal: the new one shows wherever the old one did
+  const swap = (key) => { for (let i = 0; i < 20 && site.replaced?.[key]; i++) key = site.replaced[key]; return key; };
+
   // removed photos leave the map too
   const hidden = new Set(site.hidden || []);
   for (const p of places) {
     if (!p.photos) continue;
-    p.photos = p.photos.filter((k) => !hidden.has(k));
+    p.photos = [...new Set(p.photos.map(swap))].filter((k) => !hidden.has(k));
     if (!p.photos.length) delete p.photos;
   }
 
   for (const s of photoSlots()) {
-    const o = site.slots?.[s.id];
-    if (!o) continue;
-    const chosen = s.kind === 'video' ? o.video : o.photo;
+    const o = site.slots?.[s.id] || {};
+    const chosen = swap((s.kind === 'video' ? o.video : o.photo) || s.get());
     const known = s.kind === 'video' ? videoMeta(chosen) : photoMeta(chosen);
     if (chosen && known && chosen !== s.get()) {
       s.set(chosen);
