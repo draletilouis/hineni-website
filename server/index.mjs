@@ -59,7 +59,7 @@ await ensureBootstrapAdmin(DATA);
 const shipped = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/data/media.json'), 'utf8'));
 const builtIn = shipped.photos;
 const builtInVideos = shipped.videos || {};
-const builtInTrips = ['moyo', 'murchison', 'fortportal'];
+const builtInTrips = ['moyo', 'murchison', 'reptiles', 'fortportal'];
 
 // ---------------------------------------------------------------- the published site and the draft
 // replaced: old photo or clip key -> the one that now shows wherever it did (src/lib/site.js applies it)

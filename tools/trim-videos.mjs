@@ -13,6 +13,9 @@ fs.mkdirSync(raw, { recursive: true });
 
 // key: [start seconds, length seconds]
 const TRIM = {
+  // Uganda Reptiles Village: the snake rearing up, hood open; the chameleon before the selfie
+  'v-r-snake': [8, 6],
+  'v-r-chameleon': [0, 3.5],
   'v-hero-water': [2, 9],
   'v-hero-elephant': [0, 9],
   'v-hero-storm': [0, 10],

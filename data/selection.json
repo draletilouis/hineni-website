@@ -603,6 +603,90 @@
       "album": "album5",
       "i": 440,
       "alt": "All smiles on the Nile shore"
+    },
+    {
+      "key": "r-gate",
+      "album": "album6",
+      "i": 0,
+      "alt": "The gate of the Uganda Reptiles Village, off the Entebbe road"
+    },
+    {
+      "key": "r-mamba",
+      "album": "album6",
+      "i": 14,
+      "alt": "By the Mamba section"
+    },
+    {
+      "key": "r-path",
+      "album": "album6",
+      "i": 16,
+      "alt": "The path between the snake houses"
+    },
+    {
+      "key": "r-chameleon",
+      "album": "album6",
+      "i": 55,
+      "alt": "A chameleon on an open hand"
+    },
+    {
+      "key": "r-chameleon-smile",
+      "album": "album6",
+      "i": 56,
+      "alt": "All smiles, chameleon in hand"
+    },
+    {
+      "key": "r-tortoise-lift",
+      "album": "album6",
+      "i": 82,
+      "alt": "Lifting a tortoise with the keepers"
+    },
+    {
+      "key": "r-tortoise",
+      "album": "album6",
+      "i": 86,
+      "alt": "A tortoise held in both hands"
+    },
+    {
+      "key": "r-snake-hands",
+      "album": "album6",
+      "i": 103,
+      "alt": "Everyone takes hold of the snake with the keeper"
+    },
+    {
+      "key": "r-snake-hooks",
+      "album": "album6",
+      "i": 108,
+      "alt": "Guiding a snake with hooks, the keepers alongside"
+    },
+    {
+      "key": "r-seedling",
+      "album": "album6",
+      "i": 32,
+      "alt": "A seedling to plant before we leave"
+    },
+    {
+      "key": "r-planting",
+      "album": "album6",
+      "i": 39,
+      "alt": "Planting trees with the village team"
+    },
+    {
+      "key": "r-kneel",
+      "album": "album6",
+      "i": 47,
+      "alt": "A newly planted tree, patted down"
+    },
+    {
+      "key": "r-group",
+      "album": "album6",
+      "i": 142,
+      "alt": "The whole group at the Reptiles Village"
+    },
+    {
+      "key": "r-sunset",
+      "album": "album6",
+      "i": 152,
+      "alt": "Sunset on the road back to Kampala"
     }
   ],
   "videos": [
@@ -738,6 +822,16 @@
       "key": "v-m-buffalo-nile",
       "album": "album3",
       "i": 503
+    },
+    {
+      "key": "v-r-snake",
+      "album": "album6",
+      "i": 136
+    },
+    {
+      "key": "v-r-chameleon",
+      "album": "album6",
+      "i": 50
     }
   ]
 }

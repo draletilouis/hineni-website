@@ -217,6 +217,7 @@ export const places = [
   { id: 'kampala', name: 'Kampala', region: 'road', lat: 0.3476, lon: 32.5825, photos: ['m-van-laugh', 'van-road'], note: 'Where every trip starts — pick-up at your door.' },
   { id: 'wamala', name: 'Lake Wamala', region: 'road', lat: 0.3287, lon: 31.8969, note: 'A wide, shallow lake in the hills south of Mityana.' },
   { id: 'nakayima', name: 'Nakayima Tree', region: 'road', lat: 0.5738, lon: 31.3775, web: ['w-nakayima', 'w-nakayima-2'], note: 'A huge sacred tree on Mubende hill, tied to the Bachwezi legends.' },
+  { id: 'reptiles', name: 'Uganda Reptiles Village', region: 'road', lat: 0.1047, lon: 32.4744, photos: ['r-chameleon-smile', 'r-tortoise', 'r-snake-hands', 'r-chameleon', 'r-gate', 'r-group'], note: 'Chameleons, tortoises and snakes up close with the keepers, off the Entebbe road. We planted trees there too.' },
   { id: 'ziwa', name: 'Ziwa Rhino Sanctuary', region: 'road', lat: 1.4483, lon: 32.0778, addon: true, web: ['w-ziwa', 'w-ziwa-2'], note: 'Uganda\'s only wild rhinos, tracked on foot with a ranger.' },
 
   // Fort Portal & the crater lakes
@@ -267,6 +268,7 @@ export const experiencePlaces = {
   'crater-hike': ['craters'], waterfalls: ['amabere'], 'nile-cruise': ['paraa'], 'top-falls': ['topfalls'],
   'buce-hike': ['buce'], laropi: ['laropi'], muchomo: ['moyo'], nights: ['fortportal'], equator: ['equator'],
   kazinga: ['kazinga'], deck: ['kyaninga'], 'game-drive': ['kasenyi'], chimps: ['kibale'], 'tea-road': ['fortportal'], salt: ['bunyampaka'],
+  reptiles: ['reptiles'],
 };
 
 // Experiences are a core offer in their own right, not just safari add-ons.
@@ -309,6 +311,8 @@ export const experiences = [
     text: 'Emerald tea estates, Tooro hill villages and the Mountains of the Moon on the horizon — the drive is half the fun.' },
   { id: 'salt', cat: 'culture', title: 'Bunyampaka salt lake', trip: 'Queen Elizabeth', photo: 'salt-lake', video: 'v-salt', feel: 'A crater turned salt pan',
     text: 'A crater lake on the Kasenyi plains where salt is still dug by hand, and only in the dry season: table salt for kitchens, and salt licks for cattle.' },
+  { id: 'reptiles', cat: 'wildlife', title: 'Uganda Reptiles Village', trip: 'Entebbe', photo: 'r-chameleon', video: 'v-r-snake', feel: 'Brave hands, big grins',
+    text: 'A chameleon on your palm, a tortoise in your arms, and the keepers\' snakes up close, Egyptian cobra and black mamba included. We planted trees before we left.' },
 ];
 
 // Pillar 2 — proof of expertise: what a guide knows that a brochure doesn't.

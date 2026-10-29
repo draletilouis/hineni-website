@@ -1,5 +1,6 @@
 // The photo catalogue: every trip photo on the site, tagged once with what it shows.
-// The trip comes from the key (m- Murchison, b-/y- Moyo & Mt. Buce, no prefix Fort Portal & Queen Elizabeth)
+// The trip comes from the key (m- Murchison, b-/y- Moyo & Mt. Buce, r- Uganda Reptiles Village, no prefix
+// Fort Portal & Queen Elizabeth)
 // and the orientation from the file, so adding a photo is one line here.
 // Order matters: the "Every photo" gallery shows them in this order, strongest first.
 // Admins add trips and photos, re-tag and remove them from the admin portal; applyAlbum() layers
@@ -8,6 +9,7 @@ import { photoMeta } from '../lib/media.js';
 
 export const photoTrips = [
   { id: 'murchison', label: 'Murchison Falls' },
+  { id: 'reptiles', label: 'Uganda Reptiles Village' },
   { id: 'fortportal', label: 'Fort Portal & Queen Elizabeth' },
   { id: 'moyo', label: 'Moyo & Mt. Buce' },
 ];
@@ -16,6 +18,7 @@ export const photoTrips = [
 export const albumChapters = [
   { trip: 'moyo', title: 'Moyo & Mt. Buce', when: 'May 2026', start: '2026-05' },
   { trip: 'murchison', title: 'Murchison Falls', when: 'July 2026', start: '2026-07' },
+  { trip: 'reptiles', title: 'Uganda Reptiles Village', when: 'July 2026', start: '2026-07' },
   { trip: 'fortportal', title: 'Fort Portal & Queen Elizabeth', when: 'September 2026', start: '2026-09' },
 ];
 export const photoTypes = [
@@ -53,9 +56,13 @@ const TAGS = `
   m-ranger people             cruise-buffalo wildlife    sunset-figure land         rainforest land
   salt-lake land              cave land                  equator land               town land
   van-road land               safari-4x4 land            falls-dark land
+  r-chameleon-smile people    r-chameleon wildlife       r-snake-hands people       r-tortoise wildlife
+  r-gate land                 r-snake-hooks people       r-tortoise-lift wildlife   r-planting people
+  r-mamba people              r-path land                r-seedling people          r-group people
+  r-kneel people              r-sunset land
 `;
 
-const tripByKey = (key) => (key.startsWith('m-') ? 'murchison' : /^[by]-/.test(key) ? 'moyo' : 'fortportal');
+const tripByKey = (key) => (key.startsWith('m-') ? 'murchison' : /^[by]-/.test(key) ? 'moyo' : key.startsWith('r-') ? 'reptiles' : 'fortportal');
 const entry = (key, type, trip) => {
   const meta = photoMeta(key) || { w: 3, h: 2 };
   return { key, type, trip, orient: meta.w > meta.h ? 'wide' : meta.w < meta.h ? 'tall' : 'square' };

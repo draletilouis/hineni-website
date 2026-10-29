@@ -936,6 +936,132 @@
    "w": 1500,
    "h": 2000,
    "t": 1778253023529
+  },
+  "r-gate": {
+   "key": "r-gate",
+   "album": "album6",
+   "i": 0,
+   "alt": "The gate of the Uganda Reptiles Village, off the Entebbe road",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784971135880
+  },
+  "r-mamba": {
+   "key": "r-mamba",
+   "album": "album6",
+   "i": 14,
+   "alt": "By the Mamba section",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784971817448
+  },
+  "r-path": {
+   "key": "r-path",
+   "album": "album6",
+   "i": 16,
+   "alt": "The path between the snake houses",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784971858523
+  },
+  "r-chameleon": {
+   "key": "r-chameleon",
+   "album": "album6",
+   "i": 55,
+   "alt": "A chameleon on an open hand",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784985231632
+  },
+  "r-chameleon-smile": {
+   "key": "r-chameleon-smile",
+   "album": "album6",
+   "i": 56,
+   "alt": "All smiles, chameleon in hand",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784985236067
+  },
+  "r-tortoise-lift": {
+   "key": "r-tortoise-lift",
+   "album": "album6",
+   "i": 82,
+   "alt": "Lifting a tortoise with the keepers",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784986167748
+  },
+  "r-tortoise": {
+   "key": "r-tortoise",
+   "album": "album6",
+   "i": 86,
+   "alt": "A tortoise held in both hands",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784986216615
+  },
+  "r-snake-hands": {
+   "key": "r-snake-hands",
+   "album": "album6",
+   "i": 103,
+   "alt": "Everyone takes hold of the snake with the keeper",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784987360505
+  },
+  "r-snake-hooks": {
+   "key": "r-snake-hooks",
+   "album": "album6",
+   "i": 108,
+   "alt": "Guiding a snake with hooks, the keepers alongside",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784987505015
+  },
+  "r-seedling": {
+   "key": "r-seedling",
+   "album": "album6",
+   "i": 32,
+   "alt": "A seedling to plant before we leave",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784982874232
+  },
+  "r-planting": {
+   "key": "r-planting",
+   "album": "album6",
+   "i": 39,
+   "alt": "Planting trees with the village team",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784983220981
+  },
+  "r-kneel": {
+   "key": "r-kneel",
+   "album": "album6",
+   "i": 47,
+   "alt": "A newly planted tree, patted down",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784983582912
+  },
+  "r-group": {
+   "key": "r-group",
+   "album": "album6",
+   "i": 142,
+   "alt": "The whole group at the Reptiles Village",
+   "w": 2000,
+   "h": 1500,
+   "t": 1784989383622
+  },
+  "r-sunset": {
+   "key": "r-sunset",
+   "album": "album6",
+   "i": 152,
+   "alt": "Sunset on the road back to Kampala",
+   "w": 1500,
+   "h": 2000,
+   "t": 1784994424372
   }
  },
  "videos": {
@@ -1191,6 +1317,24 @@
    "h": 1280,
    "dur": 18.3,
    "t": 1783167072000
+  },
+  "v-r-snake": {
+   "key": "v-r-snake",
+   "album": "album6",
+   "i": 136,
+   "w": 720,
+   "h": 1280,
+   "dur": 17.9,
+   "t": 1784988842000
+  },
+  "v-r-chameleon": {
+   "key": "v-r-chameleon",
+   "album": "album6",
+   "i": 50,
+   "w": 720,
+   "h": 1280,
+   "dur": 5.3,
+   "t": 1784985182000
   }
  }
 }
