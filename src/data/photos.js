@@ -60,6 +60,7 @@ const TAGS = `
   r-gate land                 r-snake-hooks people       r-tortoise-lift wildlife   r-planting people
   r-mamba people              r-path land                r-seedling people          r-group people
   r-kneel people              r-sunset land
+  m-hyena-close wildlife      m-vultures wildlife
 `;
 
 const tripByKey = (key) => (key.startsWith('m-') ? 'murchison' : /^[by]-/.test(key) ? 'moyo' : key.startsWith('r-') ? 'reptiles' : 'fortportal');

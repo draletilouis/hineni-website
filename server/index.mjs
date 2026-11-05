@@ -22,6 +22,7 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { loadAdmins, verifyPassword, ensureBootstrapAdmin, setAdmin, removeAdmin, validName } from './admins.mjs';
+import { canConvert, toWeb, frame, oneAtATime } from './video.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 try { process.loadEnvFile(path.join(ROOT, '.env')); } catch { /* no .env: use the real environment */ }
@@ -48,7 +49,7 @@ const CLIP_MB = 250;
 // sharp's cache keeps files open, and Windows won't delete an open file
 sharp.cache(false);
 // clean-up of upload files is best-effort: a leftover file is harmless, a crash isn't
-const filesOf = (key) => [...SIZES.map((w) => `${key}-${w}.webp`), `${key}.mp4`, `${key}.webm`, `${key}-poster.webp`];
+const filesOf = (key) => [...SIZES.map((w) => `${key}-${w}.webp`), `${key}.mp4`, `${key}-sm.mp4`, `${key}.webm`, `${key}-poster.webp`];
 const removeFiles = (key) => Promise.all(filesOf(key).map((f) => fsp.rm(path.join(UPLOADS, f), { force: true })))
   .catch((e) => console.warn(`[files] couldn't remove all of ${key}: ${e.code || e.message}`));
 
@@ -63,7 +64,9 @@ const builtInTrips = ['moyo', 'murchison', 'reptiles', 'fortportal'];
 
 // ---------------------------------------------------------------- the published site and the draft
 // replaced: old photo or clip key -> the one that now shows wherever it did (src/lib/site.js applies it)
-const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {}, videos: {}, text: {}, replaced: {} });
+// map: { places: { <place id>: { photos } }, stopovers: { <trip>~<name>: { photos, and for the portal's own:
+// custom, trip, name, lat, lon, when, note } } }, where photos lists photo and clip keys in order
+const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {}, videos: {}, text: {}, replaced: {}, map: { places: {}, stopovers: {} } });
 const readSite = (file) => (fs.existsSync(file) ? { ...emptySite(), ...JSON.parse(fs.readFileSync(file, 'utf8')) } : null);
 const copy = (o) => structuredClone(o);
 let site = readSite(SITE_FILE) || emptySite(); // what visitors see
@@ -372,26 +375,44 @@ admin.delete('/photos/:key', async (req, res) => {
   res.json({ ok: true });
 });
 
-// ---- clips: one video per request, with a poster frame the portal grabs from it in the browser
+// ---- clips: one video per request. With ffmpeg (always on Railway), any phone or camera format is
+// converted to H.264 MP4 plus a phone copy (server/video.mjs), and the poster is taken from it when the
+// portal couldn't grab one in the browser. Without ffmpeg, only MP4/WebM are accepted, kept as they are.
 const clipUpload = multer({ dest: TMP, limits: { fileSize: CLIP_MB * 1024 * 1024, files: 2, fields: 10 } });
 const CLIP_TYPES = { 'video/mp4': 'mp4', 'video/webm': 'webm' };
+const ANY_CLIP = /^video\/|\.(mp4|m4v|mov|webm|3gp|mkv|avi)$/i;
 admin.post('/videos', (req, res) => {
   clipUpload.fields([{ name: 'video', maxCount: 1 }, { name: 'poster', maxCount: 1 }])(req, res, async (err) => {
     const tmp = [...(req.files?.video || []), ...(req.files?.poster || [])].map((f) => f.path);
     const cleanup = () => Promise.all(tmp.map((p) => fsp.rm(p, { force: true })));
-    if (err) { await cleanup(); return res.status(400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? `That clip is over ${CLIP_MB} MB. Export a shorter or smaller MP4.` : 'Upload failed.' }); }
+    if (err) { await cleanup(); return res.status(400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? `That clip is over ${CLIP_MB} MB. Export a shorter or smaller version.` : 'Upload failed.' }); }
     const video = req.files?.video?.[0];
     const poster = req.files?.poster?.[0];
-    const ext = video && CLIP_TYPES[video.mimetype];
-    if (!video || !poster) { await cleanup(); return res.status(400).json({ error: 'No clip received.' }); }
-    if (!ext) { await cleanup(); return res.status(400).json({ error: 'Use an MP4 (H.264) or WebM clip: other formats don\'t play in every browser.' }); }
+    if (!video) { await cleanup(); return res.status(400).json({ error: 'No clip received.' }); }
+    const convert = await canConvert();
+    const ext = convert ? 'mp4' : CLIP_TYPES[video.mimetype];
+    if (!ext || !(ANY_CLIP.test(video.mimetype) || ANY_CLIP.test(video.originalname))) { await cleanup(); return res.status(400).json({ error: 'That doesn\'t look like a video clip.' }); }
+    if (!convert && !poster) { await cleanup(); return res.status(400).json({ error: 'No poster frame received.' }); }
     const title = clean(req.body.title || video.originalname, 80).replace(/\.[a-z0-9]+$/i, '');
     const key = `u-${slug(title || 'clip')}-${crypto.randomBytes(3).toString('hex')}`;
     try {
-      await sharp(poster.path).rotate().resize({ width: 1280, withoutEnlargement: true }).webp({ quality: 80 }).toFile(path.join(UPLOADS, `${key}-poster.webp`));
-      await fsp.rename(video.path, path.join(UPLOADS, `${key}.${ext}`));
       const num = (v, max) => { const n = Number(v); return n > 0 && n < max ? Math.round(n * 10) / 10 : 0; };
-      const clip = { key, title, ext, w: num(req.body.w, 10000), h: num(req.body.h, 10000), dur: num(req.body.dur, 36000), up: 1, added: Date.now(), by: req.admin };
+      let size = { w: num(req.body.w, 10000), h: num(req.body.h, 10000), dur: num(req.body.dur, 36000) };
+      if (convert) {
+        try {
+          size = await oneAtATime(() => toWeb(video.path, path.join(UPLOADS, key)));
+        } catch (e) {
+          console.error('[clip] conversion failed', e.log || e.message);
+          await removeFiles(key);
+          return res.status(400).json({ error: 'That clip couldn\'t be read. Try exporting it again from your phone or editing app.' });
+        }
+      } else {
+        await fsp.rename(video.path, path.join(UPLOADS, `${key}.${ext}`));
+      }
+      const posterPng = path.join(TMP, `${key}-poster.png`);
+      if (!poster) { await frame(path.join(UPLOADS, `${key}.mp4`), posterPng, size.dur); tmp.push(posterPng); }
+      await sharp(poster ? poster.path : posterPng).rotate().resize({ width: 1280, withoutEnlargement: true }).webp({ quality: 80 }).toFile(path.join(UPLOADS, `${key}-poster.webp`));
+      const clip = { key, title, ext, ...size, ...(convert && { web: 1, sm: 1 }), up: 1, added: Date.now(), by: req.admin };
       draft.videos[key] = clip;
       await saveDraft(req.admin);
       res.json({ video: clip });
@@ -433,6 +454,70 @@ admin.delete('/videos/:key', async (req, res) => {
   delete draft.videos[key];
   await saveDraft(req.admin);
   if (!site.videos[key]) await removeFiles(key);
+  res.json({ ok: true });
+});
+
+// ---- the map: photos and clips for each place and stopover, and the portal's own stopovers
+const MAP_TRIPS = ['murchison', 'fortportal', 'moyo'];
+const mapOf = () => (draft.map ||= { places: {}, stopovers: {} });
+const mediaList = (list) => {
+  if (!Array.isArray(list) || list.length > 40) return null;
+  const keys = [...new Set(list)];
+  return keys.every((k) => isPhoto(k) || isVideo(k)) ? keys : null;
+};
+const mapId = /^[a-z0-9~-]{1,80}$/;
+admin.put('/map/places/:id', async (req, res) => {
+  const photos = mediaList(req.body.photos);
+  if (!mapId.test(req.params.id) || !photos) return res.status(400).json({ error: 'Unknown photo or clip.' });
+  mapOf().places[req.params.id] = { photos };
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+admin.delete('/map/places/:id', async (req, res) => {
+  delete mapOf().places[req.params.id];
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+// a stopover's photos (any stopover); for the portal's own, its name, place on the map, time and note too
+const coord = (v, max) => { const n = Number(v); return Number.isFinite(n) && Math.abs(n) <= max ? Math.round(n * 1e5) / 1e5 : null; };
+function stopoverFrom(body, prev = {}) {
+  const next = { ...prev };
+  if ('photos' in body) { const p = mediaList(body.photos); if (!p) throw new Error('Unknown photo or clip.'); next.photos = p; }
+  if (next.custom) {
+    if ('trip' in body) { if (!MAP_TRIPS.includes(body.trip)) throw new Error('Choose a trip.'); next.trip = body.trip; }
+    for (const k of ['name', 'when', 'note']) if (k in body) next[k] = clean(body[k], k === 'note' ? 160 : 60);
+    if ('lat' in body || 'lon' in body) {
+      const lat = coord(body.lat, 90), lon = coord(body.lon, 180);
+      if (lat == null || lon == null) throw new Error('That position is not a valid latitude and longitude.');
+      // the trips are all in Uganda; a point far outside it is a typo
+      if (lat < -2 || lat > 5 || lon < 29 || lon > 36) throw new Error('That position is outside Uganda.');
+      Object.assign(next, { lat, lon });
+    }
+    if (!next.name) throw new Error('Give the stopover a name.');
+  }
+  return next;
+}
+admin.post('/map/stopovers', async (req, res) => {
+  let stop;
+  try { stop = stopoverFrom(req.body, { custom: 1, photos: [] }); } catch (e) { return res.status(400).json({ error: e.message }); }
+  if (stop.lat == null || !stop.trip) return res.status(400).json({ error: 'Give the stopover a trip and a place on the map.' });
+  const id = `${stop.trip}~c-${crypto.randomBytes(3).toString('hex')}`;
+  mapOf().stopovers[id] = stop;
+  await saveDraft(req.admin);
+  res.json({ id, stopover: stop });
+});
+admin.put('/map/stopovers/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!mapId.test(id)) return res.status(400).json({ error: 'Unknown stopover.' });
+  const prev = mapOf().stopovers[id] || {};
+  try { mapOf().stopovers[id] = stopoverFrom(req.body, prev); } catch (e) { return res.status(400).json({ error: e.message }); }
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+// the portal's own: deleted; one of the planned ones: back to the photos it ships with
+admin.delete('/map/stopovers/:id', async (req, res) => {
+  delete mapOf().stopovers[req.params.id];
+  await saveDraft(req.admin);
   res.json({ ok: true });
 });
 
@@ -640,7 +725,35 @@ if (fs.existsSync(DIST)) {
   app.get('/', (req, res) => res.type('text').send('API only: run `npm run build` to serve the site from here too.'));
 }
 
+// clips uploaded before conversion existed (or while ffmpeg was missing) are converted once, in the
+// background: the original waits in tmp/ until its conversion has worked, then goes
+async function upgradeClips() {
+  if (!(await canConvert())) return console.warn('[clips] no ffmpeg: uploaded clips are kept as they are.');
+  const keys = [...new Set([...Object.keys(site.videos), ...Object.keys(draft.videos)])].filter((k) => !(site.videos[k] || draft.videos[k]).web);
+  for (const key of keys) {
+    const ext = (site.videos[key] || draft.videos[key]).ext || 'mp4';
+    const src = path.join(UPLOADS, `${key}.${ext}`);
+    const orig = path.join(TMP, `${key}-original.${ext}`);
+    if (!fs.existsSync(src)) continue;
+    try {
+      await fsp.rename(src, orig);
+      const size = await oneAtATime(() => toWeb(orig, path.join(UPLOADS, key)));
+      for (const [s, file] of [[site, SITE_FILE], [draft, DRAFT_FILE]]) {
+        if (!s.videos[key]) continue;
+        Object.assign(s.videos[key], { ext: 'mp4', ...size, web: 1, sm: 1 });
+        await writeJSON(file, s);
+      }
+      await fsp.rm(orig, { force: true });
+      console.log(`[clips] ${key} converted for every browser`);
+    } catch (e) {
+      console.error(`[clips] couldn't convert ${key}:`, e.log || e.message);
+      if (!fs.existsSync(src)) await fsp.rename(orig, src).catch(() => {});
+    }
+  }
+}
+
 app.listen(PORT, () => {
   console.log(`Hineni server on http://localhost:${PORT}  (data: ${DATA})`);
   if (!loadAdmins(DATA).length) console.warn('No admin accounts yet: run `npm run admin -- add <name>`.');
+  upgradeClips();
 });

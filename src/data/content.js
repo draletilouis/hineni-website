@@ -90,6 +90,10 @@ export const game = [
 // Stopovers and sights are only on the Fort Portal trip for now.
 // TODO (guides): confirm every stopover is where you really stop, and add the ones you make that aren't here.
 const KAMPALA = { lat: 0.3476, lon: 32.5825 };
+// the admin portal's map changes (src/lib/site.js fills this): photos and clips for the stopovers below,
+// and stopovers added in the portal ({ custom, trip, name, lat, lon, when, note, photos }), by stopoverId
+export const mapExtras = { stopovers: {} };
+export const stopoverId = (trip, name) => `${trip}~${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 export const routeTrips = [
   {
     id: 'murchison', color: '#ffca16', label: 'Murchison Falls', anchor: 'falls',
@@ -315,6 +319,27 @@ export const experiences = [
     text: 'A chameleon on your palm, a tortoise in your arms, and the keepers\' snakes up close, Egyptian cobra and black mamba included. We planted trees before we left.' },
 ];
 
+// "Did you know?": short facts about the places on our trips. Editable in the portal (Words & details).
+export const didYouKnow = [
+  { title: 'A seven-metre gap', text: 'At Murchison Falls the whole Nile squeezes through a gorge about seven metres wide and drops some 43 metres. You hear it long before you see it.' },
+  { title: 'Ice on the Equator', text: 'The Rwenzori, the Mountains of the Moon, still carry glaciers a few kilometres from the Equator. Margherita Peak is 5,109 metres high.' },
+  { title: 'A crane on the flag', text: 'The grey crowned crane is Uganda\'s national bird, and it stands in the middle of the flag.' },
+  { title: 'More than fifty crater lakes', text: 'Old volcanoes around Fort Portal left more than fifty crater lakes. From some ridges you can see three at once.' },
+  { title: 'Hippos by the hundred', text: 'The Kazinga Channel joins Lake George to Lake Edward, and its banks hold one of the largest gatherings of hippos in Africa.' },
+  { title: 'The kob on the coat of arms', text: 'The Uganda kob, the antelope you see by the thousand on the Kasenyi plains, is on the national coat of arms.' },
+];
+
+// "Have you ever heard of the Ugly 5?": the safari answer to the Big Five, with our own photos. No warthog or
+// marabou stork in our albums yet (add one in the portal: Spots on the page); the wildebeest has no photo on
+// purpose (`absent`): Uganda's parks have none. Words editable in the portal too.
+export const uglyFive = [
+  { word: 'Warthog', photo: null, note: 'Kneels on padded knees to graze, and runs with its tail straight up like an aerial.' },
+  { word: 'Vulture', photo: 'm-vultures', note: 'Spots a carcass from high above the plains, and clears it away before it can spread disease.' },
+  { word: 'Marabou stork', photo: null, note: 'Taller than many children, with wings close to three metres across. As at home on a Kampala rooftop as by a lake.' },
+  { word: 'Hyena', photo: 'm-hyena-close', note: 'Not just a scavenger: spotted hyenas hunt most of what they eat, usually at night.' },
+  { word: 'Wildebeest', absent: true, note: 'The one you won\'t see with us: Uganda\'s parks have no wildebeest. For them, it\'s Kenya and Tanzania.' },
+];
+
 // Pillar 2 — proof of expertise: what a guide knows that a brochure doesn't.
 export const fieldNotes = [
   { photo: 'lioness-rest', title: 'Why we leave before 5', tag: 'Lion',
@@ -462,7 +487,7 @@ export const about = {
   title: 'Hineni means', em: '“here I am.”',
   text: [
     'It\'s what you say when you finally arrive somewhere you were meant to be. At the edge of Murchison Falls with spray on your face. Three metres from a tusker. On a crater rim as the storm comes in.',
-    'We\'re a small team running group trips to the places we love most. Every photo and video of our trips was shot by our own travellers in 2026 — no stock, no filters, nothing staged. The only exceptions are a few places on the map we haven\'t taken a group to yet; those photos are credited to their photographers.',
+    'We\'re a small team running group trips to the places we love most. Every photo and video of our trips was shot by our own travellers in 2026 — no stock, no filters, nothing staged.',
   ],
 };
 

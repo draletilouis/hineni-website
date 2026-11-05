@@ -30,8 +30,12 @@ Admins sign in at **/admin** and run the website themselves. The plain-language 
 - **Spots on the page**: the photo or clip for every fixed spot: hero slides and their captions, the trust card,
   trip cards and itinerary days, experiences and their clips, the wildlife sightings, the photos in "The idea",
   the big quote, guest stories, the About portrait and the film. "Back to the original" undoes a change.
-- **Clips**: upload MP4 (H.264) or WebM, up to 250 MB. The browser reads the clip and grabs the poster frame
-  (no video tools on the server), then the clip is chosen for a spot.
+- **Clips**: any phone or camera format, up to 250 MB. The server converts each one with ffmpeg (installed in the
+  Docker image; locally the copy in `tools/`) to H.264 MP4 plus a 960 px `-sm` copy for phones (`server/video.mjs`),
+  so HEVC, HDR and old MPEG-4 clips play everywhere. Clips uploaded before this are converted once at start-up.
+- **Map**: photos and clips for every map place and trip stopover (`site.map`), and stopovers of the portal's own
+  (name, time, note, a point from a Google Maps link) that `src/modules/terrain.js` puts on the trip's road.
+- **Put on the page**: from any photo or clip, send it to a spot or add it to a map place or stopover.
 - **Words & details**: contacts, the line under the hero, each trip's name, dates, price, route and blurb, guest
   stories (with a show switch), the questions (each with a show switch), experiences, wildlife notes and About.
   The fields are declared in `src/data/fields.js`; spots in `src/data/slots.js`.

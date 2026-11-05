@@ -51,9 +51,13 @@ export const slowNet = () => {
   return !!c && (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || ''));
 };
 
-// clips uploaded in the admin portal (keys start "u-") come as one file, MP4 or WebM, with a poster
+// clips uploaded in the admin portal (keys start "u-"): converted on the server to MP4 with a lighter
+// "-sm" copy for phones (`sm`); older ones are a single MP4 or WebM file
 export function videoSrc(key, small = isMobile() || slowNet()) {
-  if (key.startsWith('u-')) return `${UPLOADS}${key}.${manifest.videos[key]?.ext || 'mp4'}`;
+  if (key.startsWith('u-')) {
+    const m = manifest.videos[key];
+    return `${UPLOADS}${key}${small && m?.sm ? '-sm' : ''}.${m?.ext || 'mp4'}`;
+  }
   return `${BASE}${key}${small ? '-sm' : ''}.mp4`;
 }
 export function poster(key) {
@@ -62,6 +66,9 @@ export function poster(key) {
 export function videoMeta(key) {
   return manifest.videos[key];
 }
+// lists that mix photos and clips (a map place's media): which is which, and the still to show for either
+export const isClip = (key) => !!manifest.videos[key];
+export const still = (key, size = 900) => (isClip(key) ? poster(key) : photo(key, size));
 export function addVideos(videos = {}) {
   Object.assign(manifest.videos, videos);
 }

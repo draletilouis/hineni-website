@@ -32,11 +32,13 @@ Changed your mind? **Discard changes** throws the draft away and puts everything
 - **Captions:** click under a photo and type what's happening and where. A gold box means it has no caption
   yet. Captions help visitors using screen readers, and Google.
 - **Move or sort:** change the trip or "what it shows" under each photo.
+- **Put on the page:** under any photo, choose where it should show: a spot on the page (it takes that
+  spot's place) or a place or stopover on the map (it's added to its photos).
 - **Remove from website:** hides a photo. Find it under **Removed** to put it back, or delete it for good.
 
 **Spots on the page** shows every place on the website with one chosen photo or clip: the big slideshow at the
 top (on computers and on phones), trip cards and each day of the itineraries, experiences, the wildlife
-sightings, the photos set into "The idea", the big quote, guest stories, the group portrait and the film.
+sightings, the Ugly 5, the photos set into "The idea", the big quote, guest stories, the group portrait and the film.
 
 - Click a photo to **choose another one** from the album, or upload a new one there and then.
 - Spots marked for landscape or portrait photos show those first; others will be cropped.
@@ -45,14 +47,25 @@ sightings, the photos set into "The idea", the big quote, guest stories, the gro
 ## Clips
 
 **Clips** lists every video on the website. To swap one, tap it and choose the new clip: it plays everywhere the
-old one did (**Put back** on the old one undoes it). To add one, drag it onto the box. Use **MP4** (most phones and
-editing apps export this) or WebM, up to 250 MB. Short clips, under a minute, load fastest for visitors.
+old one did (**Put back** on the old one undoes it). To add one, drag it onto the box: any clip from a phone or camera (MP4, MOV and the rest), up to 250 MB.
 
-The portal takes the opening image from the clip itself. Once a clip is uploaded, choose where it plays in
-**Spots on the page** (experience clips, wildlife sightings or the film). A clip can only be deleted when no
-spot is using it.
+The website converts every clip so it plays on every phone and browser, with a lighter copy for phones. Give it
+a minute or two after the upload finishes; a long clip takes longer. The opening image is taken from the clip.
+Then choose where it plays: **Put on the page** under the clip, or **Spots on the page** (experience clips,
+wildlife sightings, the film) or the **Map**. A clip can only be deleted when nothing is using it.
 
-If a clip is refused with "won't play in a browser", export it again as MP4 (H.264).
+If a clip is refused with "couldn't be read", export it again from your phone or editing app.
+
+## Map
+
+The **Map** tab lists every stop and place on the route map, and the stopovers on each trip's drive.
+
+- **Photos and clips:** each one has a row of its photos and clips. **+ Add photos or clips** opens the
+  album: tap to add, tap again to take it off; you can upload new ones there too. The first is the cover;
+  **←** moves one earlier and **✕** takes it off. Clips play when a visitor taps them.
+- **Add a stopover:** under each trip, give it a name, a time, a note, and where it is: in Google Maps, press
+  and hold on the spot and copy the coordinates (or share the place and paste its link). It pops up, with its
+  photos, as that trip's drive passes it on the map. Change or delete it any time.
 
 ## Words & details
 
@@ -67,6 +80,8 @@ All the wording on the website, in sections you open one at a time:
   there now are samples: replace their words with real guests', then turn on **show on the website**.
 - **Questions:** each question and answer, with a switch to hide one.
 - **Experiences, Wildlife and Who we are:** titles and descriptions.
+- **The Ugly 5 and Did you know?:** each animal's name and note, and each fact. The Ugly 5 photos are in
+  **Spots on the page**: the warthog and the marabou stork have none yet, so add one when you have it.
 
 A gold **Changed** label shows what you've edited; **Back to the original** undoes it.
 

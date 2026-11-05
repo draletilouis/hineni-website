@@ -11,8 +11,8 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { gsap } from 'gsap';
-import { routeTrips, itineraries, places as PLACES, regions as REGIONS, experiencePlaces } from '../data/content.js';
-import { photo, webCredit, isMobile, reducedMotion } from '../lib/media.js';
+import { routeTrips, itineraries, places as PLACES, regions as REGIONS, experiencePlaces, mapExtras, stopoverId } from '../data/content.js';
+import { photo, poster, still, isClip, webCredit, isMobile, reducedMotion } from '../lib/media.js';
 import { icon } from '../lib/icons.js';
 
 const BASE = import.meta.env.BASE_URL + 'terrain/';
@@ -144,7 +144,19 @@ function prepare(t, j) {
   const K = j.pts.reduce((a, p, i) => (a.push(i ? a[i - 1] + hav(j.pts[i - 1], p) : 0), a), []);
   const stopKm = j.stops.map((i) => K[i]);
   const extraKm = j.segs.filter((s) => s[2].startsWith('extra')).reduce((a, s) => a + K[s[1]] - K[s[0]], 0);
-  const events = j.events || [];
+  const events = [...(j.events || [])];
+  // the portal's changes for this trip: photos and clips for its stopovers, and the stopovers it added,
+  // each put at the nearest point of the road
+  if (routeTrips.includes(t)) {
+    for (const e of events) if (e.type === 'stopover') { const o = mapExtras.stopovers[stopoverId(t.id, e.name)]; if (o?.photos?.length) e.photos = o.photos; }
+    for (const x of Object.values(mapExtras.stopovers)) {
+      if (!x.custom || x.trip !== t.id || !Number.isFinite(x.lat) || !Number.isFinite(x.lon)) continue;
+      let bi = 0, bd = Infinity;
+      j.pts.forEach((p, i) => { const d = hav(p, [x.lat, x.lon]); if (d < bd) { bd = d; bi = i; } });
+      events.push({ km: +K[bi].toFixed(1), type: 'stopover', name: x.name, when: x.when, note: x.note, lat: x.lat, lon: x.lon, photos: x.photos?.length ? x.photos : undefined });
+    }
+    events.sort((a, b) => a.km - b.km);
+  }
   for (const e of events) if (!e.photos && e.lat != null && (e.type === 'sight' || e.type === 'stopover')) Object.assign(e, picsNear(e.lat, e.lon));
   const districtAt = (k) => { let d = null; for (const e of events) { if (e.km > k + 0.05) break; if (e.type === 'district') d = e.name; } return d; };
   // the districts each leg passes through, in order
@@ -514,7 +526,8 @@ export function initTerrain() {
     const leg = s.leg ? `<div class="journey__leg${s.leg.extra ? ' is-extra' : ''}">
         <span class="eyebrow">${s.leg.extra ? 'Getting there' : 'Getting here'}${r ? `: ${fmtKm(r.stopKm[pos])} km from Kampala` : ''}</span>
         <b>${s.leg.time}, ${fmtKm(k)} km</b><small>${s.leg.how}</small></div>` : '';
-    return `<div class="journey__card-media"><img src="${photo(s.photo, 900)}" alt="${s.name}" /></div>
+    const pics = [s.photo, ...(placeById[s.id]?.photos || [])].filter((k, i, a) => k && a.indexOf(k) === i);
+    return `${placeMedia({ name: s.name, photos: pics })}
       <div class="journey__card-body" style="--c:${t.color}">
         <div class="eyebrow">${t.label}, ${s.when}</div>
         <h3>${s.name}</h3>
@@ -528,14 +541,24 @@ export function initTerrain() {
   // ---- cards for Explore and Build your own
   const photoCount = (ids) => ids.reduce((a, id) => a + (placeById[id]?.photos?.length || 0), 0);
   function placeMedia(st) {
-    // ours if we have any; otherwise credited web photos
-    const own = !!st.photos?.length, pics = own ? st.photos : st.web || [];
+    // ours if we have any (photos first, then clips); otherwise credited web photos
+    const own = !!st.photos?.length;
+    const pics = own ? [...st.photos.filter((k) => !isClip(k)), ...st.photos.filter(isClip)] : st.web || [];
     if (!pics.length) {
       return `<div class="journey__card-media journey__nophoto"><span class="eyebrow">No photos of our own here yet</span><small>We haven't taken a group here — ask us and we'll fit it in.</small></div>`;
     }
-    return `<div class="journey__card-media${own ? '' : ' is-web'}"><img src="${photo(pics[0], 900)}" alt="${st.name}" data-main${own ? ` data-album-key="${pics[0]}" data-cursor="hover"` : ''} />
+    // a clip plays in the film viewer (any [data-clip] opens it); a photo opens the album
+    const main = isClip(pics[0])
+      ? `<button type="button" class="journey__clip" data-clip="${pics[0]}" data-clip-cap="${st.name}" aria-label="Play the clip: ${st.name}"><img src="${poster(pics[0])}" alt="${st.name}" />${icon('play')}</button>`
+      : `<img src="${photo(pics[0], 900)}" alt="${st.name}" data-main${own ? ` data-album-key="${pics[0]}" data-cursor="hover"` : ''} />`;
+    // room for 8 in the strip: up to 3 of them kept for clips, which come after the photos
+    const strip = (list) => { const cl = list.filter(isClip).slice(0, 3); return [...list.filter((k) => !isClip(k)).slice(0, 8 - cl.length), ...cl]; };
+    const thumb = (k, i) => (isClip(k)
+      ? `<button type="button" data-clip="${k}" data-clip-cap="${st.name}" class="is-clip" aria-label="Clip ${i + 1} of ${st.name}"><img src="${poster(k)}" alt="" loading="lazy" />${icon('play')}</button>`
+      : `<button type="button" data-photo="${k}" class="${i ? '' : 'is-on'}" aria-label="Photo ${i + 1} of ${st.name}"><img src="${photo(k, 900)}" alt="" loading="lazy" /></button>`);
+    return `<div class="journey__card-media${own ? '' : ' is-web'}">${main}
       ${own ? '' : `<small class="journey__credit" data-credit>${webCredit(pics[0])}</small>`}
-      ${pics.length > 1 ? `<div class="journey__thumbs">${pics.slice(0, 6).map((k, i) => `<button type="button" data-photo="${k}" class="${i ? '' : 'is-on'}" aria-label="Photo ${i + 1} of ${st.name}"><img src="${photo(k, 900)}" alt="" loading="lazy" /></button>`).join('')}</div>` : ''}</div>`;
+      ${pics.length > 1 ? `<div class="journey__thumbs">${strip(pics).map(thumb).join('')}</div>` : ''}</div>`;
   }
   function dynCardHTML() {
     const t = DYN, r = R(), n = t.stops.length, color = t.color;
@@ -578,7 +601,7 @@ export function initTerrain() {
       const reg = regionById[t.region];
       const withPhotos = t.stops.filter((st) => st.photos).length;
       const cover = t.stops.find((st) => st.photos)?.photos[0];
-      return `${cover ? `<div class="journey__card-media"><img src="${photo(cover, 900)}" alt="" /></div>` : ''}
+      return `${cover ? `<div class="journey__card-media"><img src="${still(cover)}" alt="" /></div>` : ''}
         <div class="journey__card-body" style="--c:${color}">
           <div class="eyebrow">${t.kind === 'explore' ? 'Explore a region' : 'Built by you'}${pos >= n ? ': the whole route' : ''}</div>
           <h3>${t.kind === 'explore' ? reg.name : 'Your route'}</h3>
@@ -676,7 +699,7 @@ export function initTerrain() {
         void live.stopover.offsetWidth; // restart the entrance animation
         live.stopover.className = `journey__stopover ${near.type === 'sight' ? 'is-sight' : 'is-stamp'}`;
         const fp = firstPic(near);
-        const pic = fp ? `<img class="journey__stopover-img" src="${photo(fp.key, 900)}" alt="" />` : '';
+        const pic = fp ? `<img class="journey__stopover-img" src="${still(fp.key)}" alt="" />` : '';
         live.stopover.innerHTML = pic + (near.type === 'stopover'
           ? `<span class="eyebrow">Stopover${near.when ? `, ${near.when}` : ''}</span><b>${near.name}</b><small>${near.note || ''}</small>`
           : `<span class="eyebrow">${near.addon ? 'Nearby (add-on)' : 'Nearby'}${near.off >= 1 ? `, ${Math.round(near.off)} km off the road` : ''}</span><b>${icon('sight')} ${near.name}</b><small>${near.note || ''}</small>`

@@ -1,6 +1,6 @@
 // The wildlife: one card per sighting. Clips show their poster and play only when the visitor presses
 // play, with the browser's own controls (sound included); photos are shown as they are.
-import { game } from '../data/content.js';
+import { game, uglyFive } from '../data/content.js';
 import { photo, poster, videoSrc, photoMeta, videoMeta } from '../lib/media.js';
 
 export function initGame() {
@@ -22,4 +22,20 @@ export function initGame() {
   grid.addEventListener('play', (e) => {
     grid.querySelectorAll('video').forEach((v) => { if (v !== e.target) v.pause(); });
   }, true);
+
+  // the Ugly 5, on the same cards; one without a photo says why
+  const ugly = document.getElementById('uglyGrid');
+  if (ugly) {
+    ugly.innerHTML = uglyFive.map((u, i) => `
+    <article class="wild" data-reveal>
+      <div class="wild__media${u.photo ? '' : ' wild__media--none'}">${u.photo
+        ? `<img src="${photo(u.photo, 900)}" alt="${esc(photoMeta(u.photo)?.alt || u.word)}" loading="lazy" decoding="async" />`
+        : `<span class="eyebrow">${u.absent ? 'Not found in Uganda' : "We haven't photographed one yet"}</span>`}</div>
+      <div class="wild__body">
+        <div class="eyebrow">${String(i + 1).padStart(2, '0')}</div>
+        <h3>${u.word}</h3>
+        <p>${u.note}</p>
+      </div>
+    </article>`).join('');
+  }
 }

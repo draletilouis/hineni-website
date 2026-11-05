@@ -9,6 +9,7 @@ import { catalogue, albumChapters, photoTypes } from '../data/photos.js';
 import { photoSlots } from '../data/slots.js';
 import { textFields } from '../data/fields.js';
 import { photo, poster } from '../lib/media.js';
+import { places as mapPlaces, regions as mapRegions, routeTrips, stopoverId } from '../data/content.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -170,6 +171,7 @@ function renderAll() {
   renderPublish();
   if (ui.tab === 'album') renderAlbum(list);
   if (ui.tab === 'spots') renderSpots(list);
+  if (ui.tab === 'map') renderMap();
   if (ui.tab === 'clips') renderClips();
   if (ui.tab === 'words') renderWords();
   if (ui.tab === 'trips') renderTrips(list);
@@ -228,7 +230,7 @@ function card(p, used = []) {
         <span class="card__date">${p.removed && site.replaced?.[p.key] ? 'Replaced by a new photo' : p.t ? dateFmt.format(p.t) : ''}</span>
         ${p.removed
           ? `<span class="card__acts"><button type="button" class="link" data-act="restore">Put back</button>${p.uploaded ? '<button type="button" class="link link--danger" data-act="delete">Delete for good</button>' : ''}</span>`
-          : '<button type="button" class="link link--danger" data-act="remove">Remove from website</button>'}
+          : '<span class="card__acts"><button type="button" class="link" data-act="where">Put on the page</button><button type="button" class="link link--danger" data-act="remove">Remove from website</button></span>'}
       </div>
     </div>
   </article>`;
@@ -281,6 +283,7 @@ grid.addEventListener('click', async (e) => {
   if (!b) return;
   const key = b.closest('[data-key]').dataset.key;
   const act = b.dataset.act;
+  if (act === 'where') { openWhere(key); return; }
   if (act === 'remove') {
     const used = usage()[key];
     if (used) {
@@ -409,7 +412,7 @@ function replacePhoto(key) {
 function replaceClip(key) {
   const old = clips().find((c) => c.key === key);
   if (!old) return;
-  chooseFile('video/mp4,video/webm', (file) => {
+  chooseFile('video/*', (file) => {
     toast('Uploading the new clip…');
     addClips([file], {
       onError: failed,
@@ -473,15 +476,16 @@ window.addEventListener('beforeunload', (e) => { if (running || clipRunning) { e
 const clipQueue = [];
 let clipRunning = 0;
 
-// the poster frame, size and length, read from the clip in this browser (no server-side video tools)
+// the poster frame, size and length, read from the clip in this browser when it can play it. It often can't
+// (an iPhone HEVC clip in Chrome): then null, and the server takes all three from the clip as it converts it
 function readClip(file) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const url = URL.createObjectURL(file);
     const v = document.createElement('video');
     let settled = false;
     const done = (fn, arg) => { if (settled) return; settled = true; clearTimeout(timer); URL.revokeObjectURL(url); fn(arg); };
-    const fail = () => done(reject, new Error('This clip won\'t play in a browser. Export it as MP4 (H.264) and try again.'));
-    const timer = setTimeout(fail, 30000);
+    const fail = () => done(resolve, null);
+    const timer = setTimeout(fail, 15000);
     v.muted = true;
     v.playsInline = true;
     v.preload = 'auto';
@@ -501,10 +505,11 @@ function readClip(file) {
   });
 }
 
+const CLIP_FILE = /\.(mp4|m4v|mov|webm|3gp|mkv|avi)$/i;
 function addClips(files, { onDone, onError } = {}) {
   for (const file of files) {
     const item = { file, onDone, onError, id: Math.random().toString(36).slice(2), state: 'waiting', pct: 0, error: '', preview: '' };
-    if (!/^video\/(mp4|webm)$/.test(file.type)) item.error = 'Use an MP4 (H.264) or WebM clip. Other formats don\'t play in every browser.';
+    if (!/^video\//.test(file.type) && !CLIP_FILE.test(file.name)) item.error = 'That doesn\'t look like a video clip.';
     else if (file.size > CLIP_MB * 1024 * 1024) item.error = `Over ${CLIP_MB} MB. Export a shorter or smaller version.`;
     if (item.error) { item.state = 'error'; onError?.(item.error); }
     clipQueue.push(item);
@@ -521,14 +526,16 @@ async function pumpClips() {
     item.state = 'reading';
     renderClipQueue();
     const info = await readClip(item.file);
-    item.preview = info.preview;
     const fd = new FormData();
     fd.append('title', item.file.name);
-    fd.append('w', String(info.w));
-    fd.append('h', String(info.h));
-    fd.append('dur', String(info.dur));
+    if (info) {
+      item.preview = info.preview;
+      fd.append('w', String(info.w));
+      fd.append('h', String(info.h));
+      fd.append('dur', String(info.dur));
+    }
     fd.append('video', item.file);
-    fd.append('poster', info.poster, 'poster.jpg');
+    if (info) fd.append('poster', info.poster, 'poster.jpg');
     item.state = 'uploading';
     renderClipQueue();
     const { status, body } = await post('/api/admin/videos', fd, (pct) => {
@@ -591,6 +598,7 @@ function renderClips() {
         <div class="card__row card__row--foot">
           <span class="card__date">${by ? `Replaced by ${esc(by.title)}` : where.length ? esc(where.map((s) => s.label).join(', ')) : 'Not used on the page'}</span>
           <span class="card__acts">
+            ${by ? '' : '<button type="button" class="link" data-clip-where>Put on the page</button>'}
             ${by ? '<button type="button" class="link" data-clip-restore>Put back</button>' : ''}
             ${c.uploaded && !where.length && !Object.values(site.replaced || {}).includes(c.key) ? '<button type="button" class="link link--danger" data-clip-delete>Delete</button>' : ''}
           </span>
@@ -610,6 +618,7 @@ $('#clips').addEventListener('click', async (e) => {
   if (!card) return;
   const key = card.dataset.clip;
   if (e.target.closest('[data-clip-replace]')) { replaceClip(key); return; }
+  if (e.target.closest('[data-clip-where]')) { openWhere(key); return; }
   if (e.target.closest('[data-clip-restore]')) {
     await attempt(async () => { await api('POST', `/admin/videos/${key}/restore`); await refresh(); renderAll(); }, 'Put back. It plays in its own places again.');
     return;
@@ -628,6 +637,7 @@ const groupHints = {
   Experiences: 'One photo per experience card.',
   'Experience clips': 'The clip that plays from the ▶ button on these experience cards.',
   Wildlife: 'One photo or clip per sighting. Change the animal names and notes in Words & details.',
+  'The Ugly 5': 'One photo for each of the Ugly 5 under the wildlife. Their names and notes are in Words & details.',
   'The idea': 'The two small photos set into the paragraph under the album.',
   'Big quote': 'The full-width photo behind the quote near the end of the page.',
   'Guest stories': 'The photo on each guest story card. Their words are in Words & details.',
@@ -654,7 +664,7 @@ function spot(s, byKey) {
   const what = s.kind === 'video' ? 'clip' : 'photo';
   return `<article class="slot slot--${s.shape || 'any'}" data-slot="${esc(s.id)}">
     <button type="button" class="slot__img" data-pick aria-label="Change the ${what} for ${esc(s.label)}">
-      <img src="${thumb(s, key)}" alt="" loading="lazy" decoding="async" /><span>Change ${what}</span>
+      ${key ? `<img src="${thumb(s, key)}" alt="" loading="lazy" decoding="async" />` : `<em class="slot__empty">No ${what} yet</em>`}<span>${key ? `Change ${what}` : `Add a ${what}`}</span>
     </button>
     <div class="slot__body">
       <div class="slot__label">${esc(s.label)}${changed ? ' <span class="pill">Changed</span>' : ''}</div>
@@ -683,8 +693,46 @@ $('#spots').addEventListener('change', async (e) => {
 
 // ---- picker: a photo or a clip for one spot
 const picker = $('#picker');
-const pick = { slot: null, trip: 'all', q: '' };
+const pick = { slot: null, map: null, media: 'photos', trip: 'all', q: '' };
+// for a map place or stopover: tap photos and clips to add them, tap again to take them out
+function openMapPicker(it) {
+  pick.map = it;
+  pick.slot = null;
+  pick.q = '';
+  $('#pickerSearch').value = '';
+  $('#pickerTitle').textContent = `Photos and clips for ${it.name}`;
+  $('#pickerHint').textContent = 'Tap to add, tap again to take it off. They show in the order you add them; the first is the cover.';
+  $('#pickerChips').hidden = false;
+  $('#pickerFile').accept = 'image/jpeg,image/png,image/webp,video/*';
+  renderPicker();
+  picker.showModal();
+  $('#pickerSearch').focus();
+}
+function renderMapPicker() {
+  const it = mapItem(pick.map.kind, pick.map.id);
+  const has = new Set(it?.list || []);
+  const q = pick.q.toLowerCase();
+  const chip = (attr, id, label, on) => `<button type="button" class="chip${on ? ' is-on' : ''}" ${attr}="${esc(id)}">${esc(label)}</button>`;
+  $('#pickerChips').innerHTML = chip('data-media', 'photos', 'Photos', pick.media === 'photos') + chip('data-media', 'clips', 'Clips', pick.media === 'clips')
+    + (pick.media === 'photos' ? chip('data-trip', 'all', 'All trips', pick.trip === 'all') + trips().map((t) => chip('data-trip', t.id, t.title, pick.trip === t.id)).join('') : '');
+  $('#pickerUploadLabel').textContent = 'Upload a new photo or clip';
+  const added = (k) => (has.has(k) ? '<span class="pick__tag">Added</span>' : '');
+  $('#pickerGrid').innerHTML = (pick.media === 'clips'
+    ? clips().filter((c) => !q || c.title.toLowerCase().includes(q)).map((c) => `<button type="button" class="pick pick--clip${has.has(c.key) ? ' is-current' : ''}" data-key="${esc(c.key)}" title="${esc(c.title)}">
+        <img src="${poster(c.key)}" alt="${esc(c.title)}" loading="lazy" decoding="async" />${added(c.key)}<span class="pick__name">${esc(c.title)}</span></button>`)
+    : photos().filter((p) => !p.removed && (pick.trip === 'all' || p.trip === pick.trip) && (!q || p.alt.toLowerCase().includes(q))).map((p) => `<button type="button" class="pick${has.has(p.key) ? ' is-current' : ''}" data-key="${esc(p.key)}" title="${esc(p.alt)}">
+        <img src="${photo(p.key, 900)}" alt="${esc(p.alt)}" loading="lazy" decoding="async" />${added(p.key)}</button>`)
+  ).join('') || '<p class="empty">Nothing matches.</p>';
+}
+async function toggleMap(key, add) {
+  const it = mapItem(pick.map.kind, pick.map.id);
+  const list = it.list.includes(key) && !add ? it.list.filter((k) => k !== key) : [...new Set([...it.list, key])];
+  const ok = await attempt(async () => { await saveMapList(it, list); await refresh(); }, list.includes(key) ? `Added to ${it.name}` : `Taken off ${it.name}`);
+  if (ok) { if (picker.open) renderPicker(); renderAll(); }
+}
+picker.addEventListener('close', () => { pick.map = null; });
 function openPicker(s) {
+  pick.map = null;
   pick.slot = s;
   pick.q = '';
   $('#pickerSearch').value = '';
@@ -693,12 +741,13 @@ function openPicker(s) {
   $('#pickerHint').textContent = video ? 'Any clip in Clips. Upload a new one here, or in the Clips tab.'
     : s.shape === 'wide' ? 'Landscape photos fit this spot best.' : s.shape === 'tall' ? 'Portrait photos fit this spot best.' : 'Any photo works here.';
   $('#pickerChips').hidden = video;
-  $('#pickerFile').accept = video ? 'video/mp4,video/webm' : 'image/jpeg,image/png,image/webp';
+  $('#pickerFile').accept = video ? 'video/*' : 'image/jpeg,image/png,image/webp';
   renderPicker();
   picker.showModal();
   $('#pickerSearch').focus();
 }
 function renderPicker() {
+  if (pick.map) return renderMapPicker();
   const s = pick.slot;
   const current = slotValue(s);
   const used = usage();
@@ -728,6 +777,8 @@ function renderPicker() {
     </button>`).join('') || '<p class="empty">No photos match.</p>';
 }
 $('#pickerChips').addEventListener('click', (e) => {
+  const m = e.target.closest('[data-media]');
+  if (m) { pick.media = m.dataset.media; renderPicker(); return; }
   const b = e.target.closest('[data-trip]');
   if (b) { pick.trip = b.dataset.trip; renderPicker(); }
 });
@@ -739,6 +790,7 @@ async function choose(key) {
 }
 $('#pickerGrid').addEventListener('click', (e) => {
   const b = e.target.closest('[data-key]');
+  if (pick.map) { if (b) toggleMap(b.dataset.key); return; }
   if (b && b.dataset.key !== slotValue(pick.slot)) choose(b.dataset.key);
   else if (b) picker.close();
 });
@@ -746,6 +798,14 @@ $('#pickerFile').addEventListener('change', (e) => {
   const file = e.target.files[0];
   e.target.value = '';
   if (!file) return;
+  if (pick.map) {
+    const target = pick.map; // the picker may close before the upload finishes
+    const add = (key) => { pick.map ||= target; toggleMap(key, true); };
+    toast('Uploading…');
+    if (/^video\//.test(file.type) || CLIP_FILE.test(file.name)) addClips([file], { onDone: (v) => add(v.key) });
+    else addFiles([file], { trip: pick.trip === 'all' ? trips().at(-1)?.id : pick.trip, type: 'land', onDone: (p) => add(p.key) });
+    return;
+  }
   if (pick.slot.kind === 'video') {
     toast('Uploading the clip…');
     addClips([file], { onDone: (v) => choose(v.key) });
@@ -756,6 +816,191 @@ $('#pickerFile').addEventListener('change', (e) => {
   addFiles([file], { trip, type: pick.slot.group.startsWith('Experiences') ? 'people' : 'land', onDone: (p) => choose(p.key) });
 });
 picker.addEventListener('click', (e) => { if (e.target === picker || e.target.closest('[data-close]')) picker.close(); });
+
+// ---------------------------------------------------------------- map
+// Every place on the route map, and every stopover on the trips' drives, shows a list of photos and clips
+// (in order: the first is the cover). The portal can add stopovers of its own: a name, a time, a note and a
+// point on the road, from a Google Maps link or coordinates. Saved in the draft as site.map.
+const clipKey = (k) => !!(manifest.videos[k] || site.videos?.[k]);
+const stillOf = (k) => (clipKey(k) ? poster(k) : photo(k, 900));
+const km = ([a, b], [c, d]) => { const r = Math.PI / 180; const x = Math.sin(((c - a) * r) / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(((d - b) * r) / 2) ** 2; return 12742 * Math.asin(Math.sqrt(x)); };
+// a planned stopover with no photos of its own borrows the nearest place's, as the map does (within 1.5 km)
+const borrows = (o) => mapPlaces.filter((p) => p.photos).map((p) => [p, km([o.lat, o.lon], [p.lat, p.lon])]).filter(([, d]) => d < 1.5).sort((a, b) => a[1] - b[1])[0]?.[0];
+const tripLabel = (id) => routeTrips.find((t) => t.id === id)?.label || id;
+
+function mapItems() {
+  const m = site.map || { places: {}, stopovers: {} };
+  const stops = routeTrips.map((t) => ({
+    t,
+    list: [
+      ...t.stops.flatMap((s) => (s.leg?.stopovers || []).map((o) => {
+        const id = stopoverId(t.id, o.name);
+        const own = m.stopovers?.[id]?.photos;
+        return { kind: 'stop', id, name: o.name, sub: [o.when, o.note].filter(Boolean).join('. '), list: own || [], changed: !!own, from: !own && borrows(o) };
+      })),
+      ...Object.entries(m.stopovers || {}).filter(([, s]) => s.custom && s.trip === t.id)
+        .map(([id, s]) => ({ kind: 'stop', id, custom: true, name: s.name, s, list: s.photos || [] })),
+    ],
+  }));
+  const regions = mapRegions.map((r) => ({
+    r,
+    list: mapPlaces.filter((p) => p.region === r.id).map((p) => {
+      const own = m.places?.[p.id]?.photos;
+      return { kind: 'place', id: p.id, name: p.name, sub: p.note, list: own || p.photos || [], changed: !!own, web: !own && !p.photos && !!p.web };
+    }),
+  }));
+  return { stops, regions, all: [...stops.flatMap((g) => g.list), ...regions.flatMap((g) => g.list)] };
+}
+const mapItem = (kind, id) => mapItems().all.find((it) => it.kind === kind && it.id === id);
+
+function mapMedia(it) {
+  const media = it.list.map((k, i) => `<figure class="mapmedia" data-k="${esc(k)}">
+      <img src="${stillOf(k)}" alt="" loading="lazy" decoding="async" />${clipKey(k) ? '<span class="mapmedia__tag">Clip</span>' : i ? '' : '<span class="mapmedia__tag">Cover</span>'}
+      <span class="mapmedia__acts">${i ? '<button type="button" data-mm="left" aria-label="Move earlier">←</button>' : ''}<button type="button" data-mm="remove" aria-label="Take it off">✕</button></span>
+    </figure>`).join('');
+  const empty = !it.list.length
+    ? `<p class="maprow__empty">${it.from ? `Shows the photos of ${esc(it.from.name)}, nearby, until you add some.` : it.web ? 'Shows credited web photos until you add your own.' : 'No photos or clips yet.'}</p>` : '';
+  return `<div class="maprow__media">${media}${empty}<button type="button" class="mapmedia mapmedia--add" data-map-add>+ Add photos or clips</button></div>`;
+}
+const posText = (s) => (s && Number.isFinite(s.lat) ? `${s.lat}, ${s.lon}` : '');
+function mapRow(it) {
+  const head = it.custom
+    ? `<div class="maprow__fields">
+        <label class="field field--small">Name<input data-sf="name" maxlength="60" value="${esc(it.s.name)}" /></label>
+        <label class="field field--small">Time<input data-sf="when" maxlength="60" value="${esc(it.s.when || '')}" placeholder="e.g. 10:30" /></label>
+        <label class="field field--small">Where (Google Maps link or coordinates)<input data-sf="pos" value="${esc(posText(it.s))}" /></label>
+        <label class="field field--small">Note<input data-sf="note" maxlength="160" value="${esc(it.s.note || '')}" /></label>
+        <button type="button" class="link link--danger" data-stop-delete>Delete this stopover</button>
+      </div>`
+    : `<div class="maprow__head"><b>${esc(it.name)}</b>${it.changed ? ' <span class="pill">Changed</span>' : ''}${it.sub ? `<small>${esc(it.sub)}</small>` : ''}
+        ${it.changed ? '<button type="button" class="link" data-map-reset>Back to the original</button>' : ''}</div>`;
+  return `<article class="maprow${it.custom ? ' maprow--custom' : ''}" data-map="${it.kind}" data-id="${esc(it.id)}">${head}${mapMedia(it)}</article>`;
+}
+function renderMap() {
+  const { stops, regions } = mapItems();
+  $('#mapList').innerHTML = stops.map(({ t, list }) => `<section class="group">
+      <h3>${esc(t.label)}: stopovers on the drive</h3>
+      <p class="group__hint">They pop up, with their photos, as the trip's drive passes them on the map.</p>
+      <div class="maprows">${list.map(mapRow).join('') || '<p class="empty">No stopovers on this trip yet.</p>'}</div>
+      <form class="panel stop-add" data-trip="${esc(t.id)}">
+        <h3>Add a stopover to ${esc(t.label)}</h3>
+        <div class="stop-add__fields">
+          <label class="field">Name<input name="name" maxlength="60" required placeholder="e.g. HornBill Bush Lodge" /></label>
+          <label class="field">Time<input name="when" maxlength="60" placeholder="e.g. Day 01, 12:30" /></label>
+          <label class="field">Where<input name="pos" required placeholder="Paste a Google Maps link, or 0.1047, 32.4744" /></label>
+          <label class="field">Note<input name="note" maxlength="160" placeholder="What happens here" /></label>
+        </div>
+        <p class="panel__hint">In Google Maps, press and hold on the spot: the coordinates appear at the top. Copy them, or share the place and paste its link.</p>
+        <button class="btn btn--primary" type="submit">Add stopover</button>
+      </form>
+    </section>`).join('')
+    + regions.filter((g) => g.list.length).map(({ r, list }) => `<section class="group">
+      <h3>${esc(r.name)}</h3>
+      <p class="group__hint">Places on the map. Their photos and clips show on the map's cards and when you explore the region.</p>
+      <div class="maprows">${list.map(mapRow).join('')}</div>
+    </section>`).join('');
+}
+// a point from a Google Maps link (…/@lat,lon,… or …!3dlat!4dlon…) or typed coordinates ("0.1047, 32.4744")
+function parsePos(text) {
+  const t = String(text).trim();
+  const m = t.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/) || t.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/)
+    || t.match(/q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) || t.match(/^(-?\d+(?:\.\d+)?)\s*[,\s]\s*(-?\d+(?:\.\d+)?)$/);
+  return m ? { lat: +m[1], lon: +m[2] } : null;
+}
+const saveMapList = (it, list) => api('PUT', `/admin/map/${it.kind === 'place' ? 'places' : 'stopovers'}/${encodeURIComponent(it.id)}`, { photos: list });
+
+$('#mapList').addEventListener('click', async (e) => {
+  const row = e.target.closest('[data-map]');
+  if (!row) return;
+  const it = mapItem(row.dataset.map, row.dataset.id);
+  if (!it) return;
+  const mm = e.target.closest('[data-mm]');
+  if (mm) {
+    const k = mm.closest('[data-k]').dataset.k, list = [...it.list], i = list.indexOf(k);
+    if (mm.dataset.mm === 'remove') list.splice(i, 1); else if (i > 0) [list[i - 1], list[i]] = [list[i], list[i - 1]];
+    await attempt(async () => { await saveMapList(it, list); await refresh(); renderAll(); }, mm.dataset.mm === 'remove' ? 'Taken off' : 'Moved');
+  } else if (e.target.closest('[data-map-add]')) {
+    openMapPicker(it);
+  } else if (e.target.closest('[data-map-reset]')) {
+    await attempt(async () => { await api('DELETE', `/admin/map/${it.kind === 'place' ? 'places' : 'stopovers'}/${encodeURIComponent(it.id)}`); await refresh(); renderAll(); }, 'Back to the original');
+  } else if (e.target.closest('[data-stop-delete]')) {
+    if (!confirm(`Delete the stopover "${it.name}"?`)) return;
+    await attempt(async () => { await api('DELETE', `/admin/map/stopovers/${encodeURIComponent(it.id)}`); await refresh(); renderAll(); }, 'Stopover deleted');
+  }
+});
+$('#mapList').addEventListener('change', async (e) => {
+  const input = e.target.closest('[data-sf]');
+  if (!input) return;
+  const row = input.closest('[data-map]');
+  let body = { [input.dataset.sf]: input.value };
+  if (input.dataset.sf === 'pos') {
+    const p = parsePos(input.value);
+    if (!p) { toast('That isn\'t a Google Maps link or coordinates. Try "0.1047, 32.4744".', 'error'); return; }
+    body = p;
+  }
+  await attempt(async () => { await api('PUT', `/admin/map/stopovers/${encodeURIComponent(row.dataset.id)}`, body); await refresh(); renderAll(); }, 'Saved');
+});
+$('#mapList').addEventListener('submit', async (e) => {
+  const f = e.target.closest('.stop-add');
+  if (!f) return;
+  e.preventDefault();
+  const p = parsePos(f.pos.value);
+  if (!p) { toast('That isn\'t a Google Maps link or coordinates. Try "0.1047, 32.4744".', 'error'); return; }
+  await attempt(async () => {
+    await api('POST', '/admin/map/stopovers', { trip: f.dataset.trip, name: f.name.value, when: f.when.value, note: f.note.value, ...p });
+    await refresh();
+    renderAll();
+  }, `Stopover added to ${tripLabel(f.dataset.trip)}. Add its photos below it.`);
+});
+
+// ---------------------------------------------------------------- put on the page
+// From any photo or clip: choose a spot (it replaces what's there) or a map place / stopover (added to it)
+const where = $('#where');
+let whereKey = null;
+function openWhere(key) {
+  whereKey = key;
+  $('#whereSearch').value = '';
+  renderWhere();
+  where.showModal();
+  $('#whereSearch').focus();
+}
+function renderWhere() {
+  const clip = clipKey(whereKey);
+  const q = $('#whereSearch').value.trim().toLowerCase();
+  const match = (label) => !q || label.toLowerCase().includes(q);
+  const spotRows = slots.filter((s) => (s.kind === 'video') === clip && match(`${s.group} ${s.label}`)).map((s) => {
+    const now = slotValue(s), here = now === whereKey;
+    return `<button type="button" class="where__row${here ? ' is-here' : ''}" data-where="spot" data-id="${esc(s.id)}"${here ? ' disabled' : ''}>
+      <img src="${thumb(s, now)}" alt="" loading="lazy" /><span><b>${esc(s.label)}</b><small>${esc(s.group)}</small></span><em>${here ? 'There now' : 'Put here'}</em></button>`;
+  });
+  const { all } = mapItems();
+  const mapRows = all.filter((it) => match(`${it.name} map`)).map((it) => {
+    const has = it.list.includes(whereKey);
+    return `<button type="button" class="where__row${has ? ' is-here' : ''}" data-where="${it.kind}" data-id="${esc(it.id)}"${has ? ' disabled' : ''}>
+      ${it.list[0] ? `<img src="${stillOf(it.list[0])}" alt="" loading="lazy" />` : '<span class="where__none"></span>'}<span><b>${esc(it.name)}</b><small>Map${it.kind === 'stop' ? ': stopover' : ''}</small></span><em>${has ? 'Added' : 'Add'}</em></button>`;
+  });
+  $('#whereList').innerHTML = (spotRows.length ? `<h4>Spots on the page</h4>${spotRows.join('')}` : '')
+    + (mapRows.length ? `<h4>On the map</h4>${mapRows.join('')}` : '') || '<p class="empty">Nothing matches.</p>';
+}
+$('#whereSearch').addEventListener('input', renderWhere);
+$('#whereList').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-where]');
+  if (!b) return;
+  const { where: kind, id } = b.dataset;
+  await attempt(async () => {
+    if (kind === 'spot') {
+      const s = slots.find((x) => x.id === id);
+      await api('PUT', `/admin/slots/${s.id}`, { [s.kind === 'video' ? 'video' : 'photo']: whereKey });
+    } else {
+      const it = mapItem(kind, id);
+      await saveMapList(it, [...it.list, whereKey]);
+    }
+    await refresh();
+    renderWhere();
+    renderAll();
+  }, 'Done. Preview the website to see it there.');
+});
+where.addEventListener('click', (e) => { if (e.target === where || e.target.closest('[data-close]')) where.close(); });
 
 // ---------------------------------------------------------------- words & details
 const openGroups = new Set(['Contact details']);

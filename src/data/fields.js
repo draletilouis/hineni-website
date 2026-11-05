@@ -2,7 +2,7 @@
 // The ids are stored in the live site file (site.json → text): keep them stable.
 //   kind   text | long (a paragraph) | email | phone | switch ("1" on, "0" off)
 //   get()  the wording as the site ships;  set(v)  applies the portal's version
-import { brand, itineraries, experiences, stories, faqs, about, game } from './content.js';
+import { brand, itineraries, experiences, stories, faqs, about, game, uglyFive, didYouKnow } from './content.js';
 
 export function textFields() {
   const out = [];
@@ -71,6 +71,18 @@ export function textFields() {
     add(g, `wild.${i}.word`, `Sighting ${i + 1}: animal`, w, 'word', { max: 40 });
     add(g, `wild.${i}.note`, `Sighting ${i + 1}: what happened`, w, 'note', { max: 160 });
     add(g, `wild.${i}.place`, `Sighting ${i + 1}: where`, w, 'place', { max: 80 });
+  });
+
+  uglyFive.forEach((u, i) => {
+    const g = 'The Ugly 5';
+    add(g, `ugly.${i}.word`, `Animal ${i + 1}: name`, u, 'word', { max: 40 });
+    add(g, `ugly.${i}.note`, `Animal ${i + 1}: about it`, u, 'note', { kind: 'long', max: 200 });
+  });
+
+  didYouKnow.forEach((n, i) => {
+    const g = 'Did you know?';
+    add(g, `know.${i}.title`, `Fact ${i + 1}: heading`, n, 'title', { max: 60 });
+    add(g, `know.${i}.text`, `Fact ${i + 1}: the fact`, n, 'text', { kind: 'long', max: 240 });
   });
 
   add('Who we are', 'about.title', 'Heading (first part)', about, 'title', { max: 60 });

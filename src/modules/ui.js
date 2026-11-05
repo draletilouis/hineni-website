@@ -2,7 +2,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   brand, heroReel, experiences, experienceCats, fieldNotes, itineraries, stories, faqs, ledger, about, places, regions, customTrip, navMenus,
-  manifestoPhotos, quote, film,
+  manifestoPhotos, quote, film, didYouKnow,
 } from '../data/content.js';
 import { catalogue, photoTrips, photoTypes, albumChapters, checkRepeats } from '../data/photos.js';
 import { photo, photoMeta, imgTag, srcset, makeVideo, poster, videoSrc, safePlay, reducedMotion } from '../lib/media.js';
@@ -137,6 +137,14 @@ export function renderSections() {
     <article class="note note--text" data-reveal>
       <span class="tag">${n.tag}</span>
       <div class="note__num eyebrow">Field note ${String(i + 1).padStart(2, '0')}</div>
+      <h3>${n.title}</h3>
+      <p>${n.text}</p>
+    </article>`).join('');
+
+  // did you know?
+  $('#knowGrid').innerHTML = didYouKnow.map((n, i) => `
+    <article class="note note--text" data-reveal>
+      <div class="note__num eyebrow">${String(i + 1).padStart(2, '0')}</div>
       <h3>${n.title}</h3>
       <p>${n.text}</p>
     </article>`).join('');

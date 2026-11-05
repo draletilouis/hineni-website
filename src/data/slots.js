@@ -2,7 +2,7 @@
 // The ids are stored in the live site file (site.json → slots): keep them stable.
 // `kind` is 'photo' (the default) or 'video'; `shape` is the photo that suits the spot (wide / tall);
 // `fields` are captions that belong to the photo.
-import { heroReel, itineraries, experiences, about, customTrip, stories, game, manifestoPhotos, quote, film } from './content.js';
+import { heroReel, itineraries, experiences, about, customTrip, stories, game, manifestoPhotos, quote, film, uglyFive } from './content.js';
 
 export function photoSlots() {
   const out = [];
@@ -26,6 +26,7 @@ export function photoSlots() {
     if (w.key) clip('Wildlife', `wild.${i}.clip`, `${w.word}: clip`, w, 'key');
     else add('Wildlife', `wild.${i}.photo`, `${w.word}: photo`, w, 'photo');
   });
+  uglyFive.forEach((u, i) => { if (!u.absent) add('The Ugly 5', `ugly.${i}.photo`, u.word, u, 'photo'); });
   manifestoPhotos.forEach((_, i) => add('The idea', `idea.${i}`, `Photo in the words ${i + 1}`, manifestoPhotos, i, { shape: 'wide' }));
   add('Big quote', 'quote.photo', 'Background photo', quote, 'photo', { shape: 'wide' });
   stories.forEach((s, i) => add('Guest stories', `story.${i}.photo`, `Story ${i + 1}`, s, 'photo'));

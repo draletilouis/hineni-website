@@ -9,7 +9,7 @@ import { addPhotos, addVideos, photoMeta, videoMeta } from './media.js';
 import { applyAlbum } from '../data/photos.js';
 import { photoSlots } from '../data/slots.js';
 import { textFields } from '../data/fields.js';
-import { places } from '../data/content.js';
+import { places, mapExtras } from '../data/content.js';
 
 const wantsPreview = () => new URLSearchParams(location.search).has('preview');
 
@@ -41,6 +41,19 @@ export function applySite(site) {
   // a photo or clip replaced in the portal: the new one shows wherever the old one did
   const swap = (key) => { for (let i = 0; i < 20 && site.replaced?.[key]; i++) key = site.replaced[key]; return key; };
 
+  // the map: the photos and clips the portal chose for each place, and for each stopover (stopovers it
+  // added come with their name and position too; src/modules/terrain.js puts them on the road)
+  const known = (k) => typeof k === 'string' && (photoMeta(k) || videoMeta(k));
+  for (const [id, m] of Object.entries(site.map?.places || {})) {
+    const p = places.find((x) => x.id === id);
+    if (!p || !Array.isArray(m.photos)) continue;
+    p.photos = m.photos.filter(known);
+    if (!p.photos.length) delete p.photos;
+  }
+  for (const [id, s] of Object.entries(site.map?.stopovers || {})) {
+    mapExtras.stopovers[id] = { ...s, photos: (s.photos || []).filter(known) };
+  }
+
   // removed photos leave the map too
   const hidden = new Set(site.hidden || []);
   for (const p of places) {
@@ -48,6 +61,7 @@ export function applySite(site) {
     p.photos = [...new Set(p.photos.map(swap))].filter((k) => !hidden.has(k));
     if (!p.photos.length) delete p.photos;
   }
+  for (const s of Object.values(mapExtras.stopovers)) s.photos = [...new Set(s.photos.map(swap))].filter((k) => !hidden.has(k));
 
   for (const s of photoSlots()) {
     const o = site.slots?.[s.id] || {};

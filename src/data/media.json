@@ -1062,6 +1062,24 @@
    "w": 1500,
    "h": 2000,
    "t": 1784994424372
+  },
+  "m-hyena-close": {
+   "key": "m-hyena-close",
+   "album": "album3",
+   "i": 874,
+   "alt": "Spotted hyena on the Buligi plains, looking back at us",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783227455000
+  },
+  "m-vultures": {
+   "key": "m-vultures",
+   "album": "album3",
+   "i": 906,
+   "alt": "Vultures on a dead tree above the Buligi plains",
+   "w": 1500,
+   "h": 2000,
+   "t": 1783228290000
   }
  },
  "videos": {

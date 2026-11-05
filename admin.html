@@ -31,6 +31,7 @@
       <nav class="tabs" role="tablist" aria-label="Sections">
         <button role="tab" data-tab="album" aria-selected="true">Album photos <span id="countAlbum"></span></button>
         <button role="tab" data-tab="spots" aria-selected="false">Spots on the page</button>
+        <button role="tab" data-tab="map" aria-selected="false">Map</button>
         <button role="tab" data-tab="clips" aria-selected="false">Clips</button>
         <button role="tab" data-tab="words" aria-selected="false">Words &amp; details</button>
         <button role="tab" data-tab="trips" aria-selected="false">Trips</button>
@@ -102,6 +103,17 @@
       <div id="spots"></div>
     </section>
 
+    <!-- MAP -->
+    <section class="view" id="view-map" role="tabpanel" hidden>
+      <div class="view__head">
+        <div>
+          <h2>Map</h2>
+          <p>The photos and clips each stop and place shows on the route map, and the stopovers on each trip's drive. Add a stopover anywhere on a trip's road: it pops up as the drive passes it.</p>
+        </div>
+      </div>
+      <div id="mapList"></div>
+    </section>
+
     <!-- CLIPS -->
     <section class="view" id="view-clips" role="tabpanel" hidden>
       <div class="view__head">
@@ -111,12 +123,12 @@
         </div>
       </div>
       <div class="drop" id="clipDrop">
-        <input type="file" id="clipInput" accept="video/mp4,video/webm" multiple hidden />
+        <input type="file" id="clipInput" accept="video/*" multiple hidden />
         <div class="drop__main">
           <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 10l5-3v10l-5-3M4 6h11v12H4z"/></svg>
           <div>
             <strong>Drop clips here</strong> or <button type="button" class="link" id="chooseClips">choose from this device</button>
-            <small>MP4 (H.264) or WebM, up to 250 MB each. Short clips (under a minute) load fastest.</small>
+            <small>Any clip from a phone or camera, up to 250 MB each. It is converted so it plays everywhere; short clips (under a minute) load fastest.</small>
           </div>
         </div>
       </div>
@@ -208,6 +220,19 @@
       </div>
     </div>
     <div class="picker__grid" id="pickerGrid"></div>
+  </dialog>
+
+  <!-- "Put on the page": where an album photo or clip should show -->
+  <dialog class="picker where" id="where" aria-labelledby="whereTitle">
+    <div class="picker__head">
+      <div>
+        <h3 id="whereTitle">Put on the page</h3>
+        <p id="whereHint">Choose where it shows. A spot shows one photo, so it replaces what is there; a map place or stopover adds it to its photos.</p>
+      </div>
+      <button class="btn btn--quiet" type="button" data-close aria-label="Close"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="toolbar"><input type="search" id="whereSearch" placeholder="Search spots and places" aria-label="Search spots and places" /></div>
+    <div class="where__list" id="whereList"></div>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
