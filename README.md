@@ -64,6 +64,16 @@ from them if none exist (then remove them). For local development, `.env` holds 
 `history/` (the last 100 published versions). The repository's own photos and `src/data/*.js` are never
 modified.
 
+## Search engines
+
+The server (`server/seo.mjs`) adds what search engines and link previews read, built from the published
+wording so portal edits flow through: a canonical URL (`SITE_URL`, default https://hinenisafaris.com),
+Open Graph and X card tags with `public/og.jpg`, JSON-LD (a TravelAgency, its trips with prices when a price
+is set, the visible questions), and the trips and questions as plain HTML for crawlers that don't run
+JavaScript. It also serves `/robots.txt` (no `/admin`, no `/api/`) and `/sitemap.xml` (the page and its
+photos), redirects `www.` to the bare domain, and marks the API noindex. To verify the site with Google or
+Bing by meta tag, set `GOOGLE_SITE_VERIFICATION` or `BING_SITE_VERIFICATION` on Railway to the code they give.
+
 ## Deploying on Railway
 
 Everything runs inside one Railway service: the site, `/admin`, the API, and a **volume** that holds the

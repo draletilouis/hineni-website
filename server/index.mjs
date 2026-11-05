@@ -23,6 +23,7 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { loadAdmins, verifyPassword, ensureBootstrapAdmin, setAdmin, removeAdmin, validName } from './admins.mjs';
 import { canConvert, toWeb, frame, oneAtATime } from './video.mjs';
+import { SITE_URL, seoHead, seoBody, robots, sitemap } from './seo.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 try { process.loadEnvFile(path.join(ROOT, '.env')); } catch { /* no .env: use the real environment */ }
@@ -166,6 +167,12 @@ app.disable('x-powered-by');
 const proxy = process.env.TRUST_PROXY || (ON_RAILWAY ? '1' : '');
 if (proxy) app.set('trust proxy', Number(proxy) || proxy);
 
+// one address for search engines: www. goes to the bare domain (once its DNS points here)
+app.use((req, res, next) => (req.hostname?.startsWith('www.') ? res.redirect(301, SITE_URL + req.originalUrl) : next()));
+// the API's JSON is for the page and the portal, not for search results
+app.use('/api', (req, res, next) => { res.set('X-Robots-Tag', 'noindex'); next(); });
+app.get('/robots.txt', (req, res) => res.type('text/plain').set('Cache-Control', 'public, max-age=3600').send(robots()));
+app.get('/sitemap.xml', (req, res) => res.type('application/xml').set('Cache-Control', 'public, max-age=3600').send(sitemap(site, builtIn)));
 app.get('/api/health', (req, res) => res.json({ ok: true, persistent: !EPHEMERAL }));
 app.use(express.json({ limit: '64kb' }));
 app.use((req, res, next) => { req.body ??= {}; next(); });
@@ -715,7 +722,9 @@ if (fs.existsSync(DIST)) {
     if ('preview' in req.query) return next();
     const { by, ...pub } = site;
     const data = JSON.stringify(pub).replace(/</g, '\\u003c'); // can't close the <script> early
-    res.set('Cache-Control', 'no-cache').type('html').send(page.replace('</head>', `<script>window.__HINENI_SITE__=${data}</script></head>`));
+    // what search engines and link previews read (server/seo.mjs), built from the published wording
+    const html = seoBody(page, site).replace('</head>', `${seoHead(site)}<script>window.__HINENI_SITE__=${data}</script></head>`);
+    res.set('Cache-Control', 'no-cache').type('html').send(html);
   });
   app.use(express.static(DIST, {
     maxAge: '7d',

@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -r
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
 COPY server ./server
-COPY src/data/media.json ./src/data/media.json
+COPY src/data ./src/data
 COPY --from=build /app/dist ./dist
 # Railway sets PORT; the volume (RAILWAY_VOLUME_MOUNT_PATH) holds everything that changes
 CMD ["node", "server/index.mjs"]
