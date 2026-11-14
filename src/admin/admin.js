@@ -9,7 +9,7 @@ import { catalogue, albumChapters, photoTypes } from '../data/photos.js';
 import { photoSlots } from '../data/slots.js';
 import { textFields } from '../data/fields.js';
 import { photo, poster } from '../lib/media.js';
-import { places as mapPlaces, regions as mapRegions, routeTrips, stopoverId } from '../data/content.js';
+import { places as mapPlaces, regions as mapRegions, routeTrips, stopoverId, parseRates, ratesText } from '../data/content.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -635,7 +635,7 @@ const groupHints = {
   'Hero trust card': 'The small card with real faces at the bottom of the hero.',
   Trips: 'The trip cards and the photo for each day of the itineraries.',
   Experiences: 'One photo per experience card.',
-  'Experience clips': 'The clip that plays from the ▶ button on these experience cards.',
+  'Experience clips': 'The clip that plays over each experience card while the pointer is on it (on phones, while the card is on screen), and from its ▶ button. A card without a clip shows its photo.',
   Wildlife: 'One photo or clip per sighting. Change the animal names and notes in Words & details.',
   'The Ugly 5': 'One photo for each of the Ugly 5 under the wildlife. Their names and notes are in Words & details.',
   'The idea': 'The two small photos set into the paragraph under the album.',
@@ -828,6 +828,15 @@ const km = ([a, b], [c, d]) => { const r = Math.PI / 180; const x = Math.sin(((c
 const borrows = (o) => mapPlaces.filter((p) => p.photos).map((p) => [p, km([o.lat, o.lon], [p.lat, p.lon])]).filter(([, d]) => d < 1.5).sort((a, b) => a[1] - b[1])[0]?.[0];
 const tripLabel = (id) => routeTrips.find((t) => t.id === id)?.label || id;
 
+// the map's regions (destinations): the code's, with the draft's changes, then the portal's own
+function allRegions() {
+  const own = site.map?.regions || {};
+  const pick = (o) => Object.fromEntries(['name', 'blurb', 'color', 'hub', 'hidden'].filter((k) => k in o).map((k) => [k, o[k]]));
+  return [
+    ...mapRegions.map((r) => ({ ...r, ...pick(own[r.id] || {}), hidden: own[r.id] && 'hidden' in own[r.id] ? !!own[r.id].hidden : !!r.hidden, changed: !!own[r.id] })),
+    ...Object.entries(own).filter(([, r]) => r.custom).map(([id, r]) => ({ id, ...r, hidden: !!r.hidden, custom: true })),
+  ];
+}
 function mapItems() {
   const m = site.map || { places: {}, stopovers: {} };
   const stops = routeTrips.map((t) => ({
@@ -842,12 +851,13 @@ function mapItems() {
         .map(([id, s]) => ({ kind: 'stop', id, custom: true, name: s.name, s, list: s.photos || [] })),
     ],
   }));
-  const regions = mapRegions.map((r) => ({
+  const regions = allRegions().map((r) => ({
     r,
     list: mapPlaces.filter((p) => p.region === r.id).map((p) => {
       const own = m.places?.[p.id]?.photos;
       return { kind: 'place', id: p.id, name: p.name, sub: p.note, list: own || p.photos || [], changed: !!own, web: !own && !p.photos && !!p.web };
-    }),
+    }).concat(Object.entries(m.places || {}).filter(([, p]) => p.custom && p.region === r.id)
+      .map(([id, p]) => ({ kind: 'place', id, custom: true, name: p.name, s: p, list: p.photos || [] }))),
   }));
   return { stops, regions, all: [...stops.flatMap((g) => g.list), ...regions.flatMap((g) => g.list)] };
 }
@@ -863,7 +873,40 @@ function mapMedia(it) {
   return `<div class="maprow__media">${media}${empty}<button type="button" class="mapmedia mapmedia--add" data-map-add>+ Add photos or clips</button></div>`;
 }
 const posText = (s) => (s && Number.isFinite(s.lat) ? `${s.lat}, ${s.lon}` : '');
+const regionOptions = (sel) => allRegions().map((r) => `<option value="${esc(r.id)}"${r.id === sel ? ' selected' : ''}>${esc(r.name)}</option>`).join('');
+// a region's own details: what Explore shows for it, its colour on the map, and the place its tour starts from
+function regionPanel(r, list) {
+  const starts = list.some((it) => it.id === r.hub) ? r.hub : list[0]?.id;
+  return `<div class="region${r.custom ? ' region--custom' : ''}" data-region-id="${esc(r.id)}">
+    <div class="region__fields">
+      <label class="field field--small">Region name<input data-rf="name" maxlength="60" value="${esc(r.name)}" /></label>
+      <label class="field field--small region__color">Colour on the map<input data-rf="color" type="color" value="${esc(r.color || '#a9c47f')}" /></label>
+      <label class="field field--small">Its tour starts at<select data-rf="hub"${list.length ? '' : ' disabled'}>${list.map((it) => `<option value="${esc(it.id)}"${it.id === starts ? ' selected' : ''}>${esc(it.name)}</option>`).join('')}</select></label>
+      <label class="field field--small region__about">About the region (shown in Explore)<input data-rf="blurb" maxlength="240" value="${esc(r.blurb || '')}" /></label>
+      <label class="switch"><input type="checkbox" data-rf="show"${r.hidden ? '' : ' checked'} /><span>Show in Explore</span></label>
+    </div>
+    <div class="region__acts">
+      ${r.changed ? '<button type="button" class="link" data-region-reset>Back to the original</button>' : ''}
+      ${r.custom ? '<button type="button" class="link link--danger" data-region-delete>Delete this region</button>' : ''}
+    </div>
+  </div>`;
+}
 function mapRow(it) {
+  // a place the portal added to a region: all of it can change
+  if (it.custom && it.kind === 'place') {
+    const straight = it.s.roads?.some((r) => r.straight);
+    return `<article class="maprow maprow--custom" data-map="place" data-id="${esc(it.id)}">
+      <div class="maprow__fields">
+        <label class="field field--small">Name<input data-sf="name" maxlength="60" value="${esc(it.s.name)}" /></label>
+        <label class="field field--small">Where (Google Maps link or coordinates)<input data-sf="pos" value="${esc(posText(it.s))}" /></label>
+        <label class="field field--small">Region<select data-sf="region">${regionOptions(it.s.region)}</select></label>
+        <label class="field field--small">About it<input data-sf="note" maxlength="200" value="${esc(it.s.note || '')}" /></label>
+        <label class="switch"><input type="checkbox" data-sf="addon"${it.s.addon ? ' checked' : ''} /><span>A paid extra, not in a trip price</span></label>
+        <button type="button" class="link link--danger" data-place-delete>Delete this place</button>
+      </div>
+      ${straight ? '<p class="maprow__warn">The road to it couldn\'t be looked up, so the map draws a straight line there for now. Change its position (or paste it again) to try again.</p>' : ''}
+      ${mapMedia(it)}</article>`;
+  }
   const head = it.custom
     ? `<div class="maprow__fields">
         <label class="field field--small">Name<input data-sf="name" maxlength="60" value="${esc(it.s.name)}" /></label>
@@ -894,11 +937,43 @@ function renderMap() {
         <button class="btn btn--primary" type="submit">Add stopover</button>
       </form>
     </section>`).join('')
-    + regions.filter((g) => g.list.length).map(({ r, list }) => `<section class="group">
-      <h3>${esc(r.name)}</h3>
-      <p class="group__hint">Places on the map. Their photos and clips show on the map's cards and when you explore the region.</p>
-      <div class="maprows">${list.map(mapRow).join('')}</div>
-    </section>`).join('');
+    + regions.map(({ r, list }) => `<section class="group">
+      <h3><i class="region__dot" style="background:${esc(r.color || '#a9c47f')}"></i>${esc(r.name)}${r.custom ? ' <span class="pill">Added here</span>' : r.changed ? ' <span class="pill">Changed</span>' : ''}</h3>
+      <p class="group__hint">A region on the map. "Explore" tours all its places; each place's photos and clips show on the map's cards, and "Build your own" drives to them on the roads.</p>
+      ${regionPanel(r, list)}
+      <div class="maprows">${list.map(mapRow).join('') || '<p class="empty">No places in this region yet.</p>'}</div>
+      <form class="panel place-add" data-region="${esc(r.id)}">
+        <h3>Add a place to ${esc(r.name)}</h3>
+        <div class="stop-add__fields">
+          <label class="field">Name<input name="name" maxlength="60" required placeholder="e.g. Sipi Falls" /></label>
+          <label class="field">Where<input name="pos" required placeholder="Paste a Google Maps link, or 0.6468, 30.2685" /></label>
+          <label class="field">About it<input name="note" maxlength="200" placeholder="One line: what you see or do there" /></label>
+        </div>
+        <label class="switch"><input type="checkbox" name="addon" /><span>A paid extra, not in a trip price</span></label>
+        <p class="panel__hint">The map finds the roads to it from the places around it. Next you can add its photos and clips.</p>
+        <button class="btn btn--primary" type="submit">Add place</button>
+      </form>
+    </section>`).join('')
+    + `<section class="group">
+      <h3>Add a region</h3>
+      <p class="group__hint">A new destination on the map, such as Bwindi or Mount Elgon. It's made with its first place; add more places to it afterwards.</p>
+      <form class="panel region-add">
+        <div class="stop-add__fields">
+          <label class="field">Region name<input name="rname" maxlength="60" required placeholder="e.g. Bwindi & Lake Bunyonyi" /></label>
+          <label class="field">About the region<input name="blurb" maxlength="240" placeholder="One or two lines for Explore" /></label>
+          <label class="field region__color">Colour on the map<input name="color" type="color" value="#7fb8c4" /></label>
+        </div>
+        <h3>Its first place</h3>
+        <div class="stop-add__fields">
+          <label class="field">Name<input name="name" maxlength="60" required placeholder="e.g. Buhoma gate" /></label>
+          <label class="field">Where<input name="pos" required placeholder="Paste a Google Maps link, or -0.9939, 29.6158" /></label>
+          <label class="field">About it<input name="note" maxlength="200" placeholder="One line: what you see or do there" /></label>
+        </div>
+        <label class="switch"><input type="checkbox" name="addon" /><span>A paid extra, not in a trip price</span></label>
+        <p class="panel__hint">In Google Maps, press and hold on the spot: the coordinates appear at the top. Copy them, or share the place and paste its link. The region's tour starts from this place.</p>
+        <button class="btn btn--primary" type="submit">Add region</button>
+      </form>
+    </section>`;
 }
 // a point from a Google Maps link (…/@lat,lon,… or …!3dlat!4dlon…) or typed coordinates ("0.1047, 32.4744")
 function parsePos(text) {
@@ -910,6 +985,18 @@ function parsePos(text) {
 const saveMapList = (it, list) => api('PUT', `/admin/map/${it.kind === 'place' ? 'places' : 'stopovers'}/${encodeURIComponent(it.id)}`, { photos: list });
 
 $('#mapList').addEventListener('click', async (e) => {
+  const reg = e.target.closest('[data-region-id]');
+  if (reg && e.target.closest('[data-region-reset]')) {
+    await attempt(async () => { await api('DELETE', `/admin/map/regions/${encodeURIComponent(reg.dataset.regionId)}`); await refresh(); renderAll(); }, 'Back to the original');
+    return;
+  }
+  if (reg && e.target.closest('[data-region-delete]')) {
+    const r = allRegions().find((x) => x.id === reg.dataset.regionId);
+    const n = Object.values(site.map?.places || {}).filter((p) => p.custom && p.region === r.id).length;
+    if (!confirm(`Delete the region "${r.name}"${n ? ` and its ${n} place${n === 1 ? '' : 's'}` : ''} from the map? Their photos stay in the album.`)) return;
+    await attempt(async () => { await api('DELETE', `/admin/map/regions/${encodeURIComponent(r.id)}`); await refresh(); renderAll(); }, 'Region deleted');
+    return;
+  }
   const row = e.target.closest('[data-map]');
   if (!row) return;
   const it = mapItem(row.dataset.map, row.dataset.id);
@@ -926,31 +1013,85 @@ $('#mapList').addEventListener('click', async (e) => {
   } else if (e.target.closest('[data-stop-delete]')) {
     if (!confirm(`Delete the stopover "${it.name}"?`)) return;
     await attempt(async () => { await api('DELETE', `/admin/map/stopovers/${encodeURIComponent(it.id)}`); await refresh(); renderAll(); }, 'Stopover deleted');
+  } else if (e.target.closest('[data-place-delete]')) {
+    if (!confirm(`Delete the place "${it.name}" from the map? Its photos stay in the album.`)) return;
+    await attempt(async () => { await api('DELETE', `/admin/map/places/${encodeURIComponent(it.id)}`); await refresh(); renderAll(); }, 'Place deleted');
   }
 });
+const BAD_POS = 'That isn\'t a Google Maps link or coordinates. Try "0.1047, 32.4744".';
+const ROAD_NOTE = ' The road to it couldn\'t be looked up just now, so the map draws a straight line there; change its position later to try again.';
 $('#mapList').addEventListener('change', async (e) => {
+  const rf = e.target.closest('[data-rf]');
+  if (rf) {
+    const id = rf.closest('[data-region-id]').dataset.regionId;
+    const body = rf.dataset.rf === 'show' ? { hidden: !rf.checked } : { [rf.dataset.rf]: rf.value };
+    await attempt(async () => { await api('PUT', `/admin/map/regions/${encodeURIComponent(id)}`, body); await refresh(); renderAll(); }, 'Saved');
+    return;
+  }
   const input = e.target.closest('[data-sf]');
   if (!input) return;
   const row = input.closest('[data-map]');
-  let body = { [input.dataset.sf]: input.value };
+  const kind = row.dataset.map === 'place' ? 'places' : 'stopovers';
+  let body = { [input.dataset.sf]: input.type === 'checkbox' ? input.checked : input.value };
   if (input.dataset.sf === 'pos') {
     const p = parsePos(input.value);
-    if (!p) { toast('That isn\'t a Google Maps link or coordinates. Try "0.1047, 32.4744".', 'error'); return; }
+    if (!p) { toast(BAD_POS, 'error'); return; }
     body = p;
   }
-  await attempt(async () => { await api('PUT', `/admin/map/stopovers/${encodeURIComponent(row.dataset.id)}`, body); await refresh(); renderAll(); }, 'Saved');
+  let res;
+  const moved = kind === 'places' && (input.dataset.sf === 'pos' || input.dataset.sf === 'region');
+  if (moved) toast('Finding the roads to it…');
+  const ok = await attempt(async () => { res = await api('PUT', `/admin/map/${kind}/${encodeURIComponent(row.dataset.id)}`, body); await refresh(); renderAll(); }, 'Saved');
+  if (ok && res?.straight && moved) toast(`Saved.${ROAD_NOTE}`, 'error');
 });
 $('#mapList').addEventListener('submit', async (e) => {
-  const f = e.target.closest('.stop-add');
+  const rf = e.target.closest('.region-add');
+  if (rf) {
+    e.preventDefault();
+    const p = parsePos(rf.pos.value);
+    if (!p) { toast(BAD_POS, 'error'); return; }
+    const btn = rf.querySelector('[type="submit"]');
+    btn.disabled = true;
+    toast('Finding the roads to it…');
+    let res;
+    const ok = await attempt(async () => {
+      res = await api('POST', '/admin/map/regions', {
+        name: rf.rname.value, blurb: rf.blurb.value, color: rf.color.value,
+        place: { name: rf.name.value, note: rf.note.value, addon: rf.addon.checked, ...p },
+      });
+      await refresh();
+      renderAll();
+    }, `${rf.rname.value} is on the map. Now add photos of ${rf.name.value}, then more places to the region.`);
+    btn.disabled = false;
+    if (!ok || !res?.place) return;
+    if (res.straight) toast(`${rf.rname.value} is on the map.${ROAD_NOTE}`, 'error');
+    const it = mapItem('place', res.place);
+    if (it) openMapPicker(it);
+    return;
+  }
+  const f = e.target.closest('.stop-add, .place-add');
   if (!f) return;
   e.preventDefault();
   const p = parsePos(f.pos.value);
-  if (!p) { toast('That isn\'t a Google Maps link or coordinates. Try "0.1047, 32.4744".', 'error'); return; }
-  await attempt(async () => {
-    await api('POST', '/admin/map/stopovers', { trip: f.dataset.trip, name: f.name.value, when: f.when.value, note: f.note.value, ...p });
+  if (!p) { toast(BAD_POS, 'error'); return; }
+  const btn = f.querySelector('[type="submit"]');
+  btn.disabled = true;
+  let res;
+  const isPlace = f.classList.contains('place-add');
+  if (isPlace) toast('Finding the roads to it…');
+  const ok = await attempt(async () => {
+    res = isPlace
+      ? await api('POST', '/admin/map/places', { region: f.dataset.region, name: f.name.value, note: f.note.value, addon: f.addon.checked, ...p })
+      : await api('POST', '/admin/map/stopovers', { trip: f.dataset.trip, name: f.name.value, when: f.when.value, note: f.note.value, ...p });
     await refresh();
     renderAll();
-  }, `Stopover added to ${tripLabel(f.dataset.trip)}. Add its photos below it.`);
+  }, isPlace ? `${f.name.value} is on the map. Now add its photos and clips.` : `Stopover added to ${tripLabel(f.dataset.trip)}. Now add its photos and clips.`);
+  btn.disabled = false;
+  if (!ok || !res?.id) return;
+  if (res.straight) toast(`${f.name.value} is on the map.${ROAD_NOTE}`, 'error');
+  // straight on to its photos: pick from the album, or upload new ones from the picker
+  const it = mapItem(isPlace ? 'place' : 'stop', res.id);
+  if (it) openMapPicker(it);
 });
 
 // ---------------------------------------------------------------- put on the page
@@ -1026,6 +1167,19 @@ function field(f) {
       <label class="switch"><input type="checkbox" data-word-input${value === '1' ? ' checked' : ''} /><span>${label}</span></label>${hint}${reset}
     </div>`;
   }
+  if (f.kind === 'rates') {
+    const rows = parseRates(value);
+    const row = (r = { people: '', price: '' }) => `<div class="rate" data-rate-row>
+        <label class="field field--small">Travellers<input data-rate="people" maxlength="20" value="${esc(r.people)}" placeholder="e.g. 2, 3–4 or 5+" /></label>
+        <label class="field field--small">Price per person<input data-rate="price" maxlength="40" value="${esc(r.price)}" placeholder="e.g. USD 650" /></label>
+        <button type="button" class="link link--danger" data-rate-remove aria-label="Remove this price">Remove</button>
+      </div>`;
+    return `<div class="word word--rates" data-word="${esc(f.id)}" data-rates>
+      <span class="field">${label}</span>
+      <div class="rates">${rows.map(row).join('')}${rows.length ? '' : row()}</div>
+      <button type="button" class="btn" data-rate-add>+ Add a price</button>${hint}${reset}
+    </div>`;
+  }
   const input = f.kind === 'long'
     ? `<textarea data-word-input rows="3" maxlength="${f.max}">${esc(value)}</textarea>`
     : `<input data-word-input type="${f.kind === 'email' ? 'email' : f.kind === 'phone' ? 'tel' : 'text'}" maxlength="${f.max}" value="${esc(value)}" />`;
@@ -1035,7 +1189,28 @@ $('#words').addEventListener('toggle', (e) => {
   const d = e.target.closest('[data-group]');
   if (d) d.open ? openGroups.add(d.dataset.group) : openGroups.delete(d.dataset.group);
 }, true);
+// a price list: its rows as one line ("2|USD 650;3–4|USD 520"); the separators can't be typed into a row
+const ratesOf = (box) => ratesText([...box.querySelectorAll('[data-rate-row]')].map((r) => {
+  const v = (k) => r.querySelector(`[data-rate="${k}"]`).value.replace(/[|;]/g, ' ').replace(/\s+/g, ' ').trim();
+  return { people: v('people'), price: v('price') };
+}).filter((r) => r.people && r.price));
+async function saveWord(f, value) {
+  await attempt(async () => {
+    if (value === f.def) await api('DELETE', `/admin/text/${f.id}`);
+    else await api('PUT', `/admin/text/${f.id}`, { value });
+    await refresh();
+    renderAll();
+  }, 'Saved');
+}
 $('#words').addEventListener('change', async (e) => {
+  const box = e.target.closest('[data-rates]');
+  if (box && e.target.closest('[data-rate]')) {
+    const row = e.target.closest('[data-rate-row]');
+    const filled = [...row.querySelectorAll('[data-rate]')].every((i) => i.value.trim());
+    // a half-filled row waits for its other half; an emptied one is taken off
+    if (!filled && [...row.querySelectorAll('[data-rate]')].some((i) => i.value.trim())) return;
+    return saveWord(fields.find((x) => x.id === box.dataset.word), ratesOf(box));
+  }
   const input = e.target.closest('[data-word-input]');
   if (!input) return;
   const f = fields.find((x) => x.id === input.closest('[data-word]').dataset.word);
@@ -1048,6 +1223,23 @@ $('#words').addEventListener('change', async (e) => {
   }, 'Saved');
 });
 $('#words').addEventListener('click', async (e) => {
+  const box = e.target.closest('[data-rates]');
+  if (box && e.target.closest('[data-rate-add]')) {
+    const rows = box.querySelector('.rates');
+    const blank = rows.querySelector('[data-rate-row]:last-child');
+    const row = blank.cloneNode(true);
+    row.querySelectorAll('input').forEach((i) => { i.value = ''; });
+    rows.appendChild(row);
+    row.querySelector('input').focus();
+    return;
+  }
+  if (box && e.target.closest('[data-rate-remove]')) {
+    const row = e.target.closest('[data-rate-row]');
+    const had = [...row.querySelectorAll('[data-rate]')].every((i) => i.value.trim());
+    if (box.querySelectorAll('[data-rate-row]').length > 1) row.remove(); else row.querySelectorAll('input').forEach((i) => { i.value = ''; });
+    if (had) saveWord(fields.find((x) => x.id === box.dataset.word), ratesOf(box));
+    return;
+  }
   if (!e.target.closest('[data-word-reset]')) return;
   const id = e.target.closest('[data-word]').dataset.word;
   await attempt(async () => { await api('DELETE', `/admin/text/${id}`); await refresh(); renderAll(); }, 'Back to the original');

@@ -21,7 +21,7 @@ export function photoSlots() {
   });
   add('Trips', 'trip.custom.cover', 'Make it yours: card', customTrip, 'photo');
   experiences.forEach((e) => add('Experiences', `exp.${e.id}`, e.title, e, 'photo'));
-  experiences.forEach((e) => { if (e.video) clip('Experience clips', `exp.${e.id}.clip`, e.title, e, 'video'); });
+  experiences.forEach((e) => clip('Experience clips', `exp.${e.id}.clip`, e.title, e, 'video'));
   game.forEach((w, i) => {
     if (w.key) clip('Wildlife', `wild.${i}.clip`, `${w.word}: clip`, w, 'key');
     else add('Wildlife', `wild.${i}.photo`, `${w.word}: photo`, w, 'photo');

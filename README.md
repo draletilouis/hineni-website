@@ -35,8 +35,13 @@ Admins sign in at **/admin** and run the website themselves. The plain-language 
   so HEVC, HDR and old MPEG-4 clips play everywhere. Clips uploaded before this are converted once at start-up.
 - **Map**: photos and clips for every map place and trip stopover (`site.map`), and stopovers of the portal's own
   (name, time, note, a point from a Google Maps link) that `src/modules/terrain.js` puts on the trip's road.
+  Places of its own in each region too (name, note, paid extra, a point): `server/roads.mjs` asks OSRM once for
+  real road links to their nearest neighbours, stored with the place, so Explore and Build your own drive there.
+  Regions too (`site.map.regions`): rename, recolour, describe, choose the place the tour starts from, hide from
+  Explore; and new regions of the portal's own, each made with its first place (name and coordinates).
 - **Put on the page**: from any photo or clip, send it to a spot or add it to a map place or stopover.
-- **Words & details**: contacts, the line under the hero, each trip's name, dates, price, route and blurb, guest
+- **Words & details**: contacts, the line under the hero, each trip's name, dates, group size, prices by group
+  size (price per person for each number of travellers), headline price, route and blurb, guest
   stories (with a show switch), the questions (each with a show switch), experiences, wildlife notes and About.
   The fields are declared in `src/data/fields.js`; spots in `src/data/slots.js`.
 - **Trips**: rename, change the month, add new trips (each one a chapter of the album).
@@ -120,7 +125,7 @@ lasting 12 hours; every change also needs a header other sites can't send; capti
 uploads must decode as JPEG / PNG / WebP of at least 1000 px (40 MB max). HEIC from desktops isn't supported
 (iPhones convert to JPEG when uploading from the browser).
 
-Not editable from the portal (still in code): the map and its web photos, the field notes, the park-fee
+Not editable from the portal (still in code): the trips' routes on the map, the map's web photos, the field notes, the park-fee
 ledger, the menus' structure and the page layout itself.
 
 ## What's on the page

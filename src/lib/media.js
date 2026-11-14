@@ -96,6 +96,43 @@ export const sound = {
   },
 };
 
+// A clip that previews itself, silently: it plays while a mouse is over `area` and pauses when it leaves;
+// on a touch screen (no hover) it plays while most of it is on screen. `get(make)` returns the <video>,
+// making it on first need when `make` is true. The file starts loading as the area comes near the screen,
+// so the preview starts the moment the pointer arrives. A clip the visitor started (or unmuted) themselves
+// is theirs: the preview never pauses it.
+const hoverPointer = (e) => e.pointerType === 'mouse' || e.pointerType === 'pen';
+export function autoPreview(area, get) {
+  let mine = false;
+  const start = () => {
+    const v = get(true);
+    if (!v || !v.paused) return;
+    mine = true;
+    v.muted = true;
+    v.play().catch(() => { mine = false; });
+  };
+  const end = () => { const v = get(false); if (v && mine) v.pause(); mine = false; };
+  const claim = () => { const v = get(false); if (v && !v.muted) mine = false; };
+  area.addEventListener('pointerenter', (e) => { if (hoverPointer(e)) start(); });
+  area.addEventListener('pointerleave', (e) => { if (hoverPointer(e)) end(); });
+  area.addEventListener('volumechange', claim, true);
+  if (!('IntersectionObserver' in window)) return;
+  // fetch it ahead, unless the connection is slow (then it loads on the first hover)
+  if (!slowNet()) {
+    const near = new IntersectionObserver((es) => {
+      if (!es.some((x) => x.isIntersecting)) return;
+      near.disconnect();
+      const v = get(true);
+      if (v && v.preload !== 'auto') v.preload = 'auto';
+    }, { rootMargin: '400px 0px' });
+    near.observe(area);
+  }
+  if (window.matchMedia('(hover: hover)').matches || reducedMotion()) return;
+  new IntersectionObserver((es) => {
+    for (const x of es) x.intersectionRatio >= 0.6 ? start() : end();
+  }, { threshold: [0, 0.6] }).observe(area);
+}
+
 export function safePlay(v) {
   if (!v) return;
   v.muted = !sound.on;

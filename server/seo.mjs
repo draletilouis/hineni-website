@@ -5,7 +5,7 @@
 //   - the trips and questions as plain HTML inside their containers, for crawlers and previews that don't
 //     run JavaScript; the page's script replaces them with the designed versions
 //   - robots.txt and sitemap.xml (the page, and its photos for image search)
-import { brand, itineraries, faqs } from '../src/data/content.js';
+import { brand, itineraries, faqs, priceHeadline, parseRates } from '../src/data/content.js';
 import { textFields } from '../src/data/fields.js';
 
 export const SITE_URL = (process.env.SITE_URL || 'https://hinenisafaris.com').replace(/\/+$/, '');
@@ -33,7 +33,8 @@ function content(site) {
     days: t(`trip.${it.id}.days`),
     season: t(`trip.${it.id}.season`),
     route: t(`trip.${it.id}.route`),
-    price: t(`trip.${it.id}.price`),
+    price: priceHeadline({ price: t(`trip.${it.id}.price`), rates: parseRates(t(`trip.${it.id}.rates`)) }) || '',
+    group: t(`trip.${it.id}.group`),
   }));
   const questions = faqs.map((f, i) => ({ q: t(`faq.${i}.q`), a: t(`faq.${i}.a`), show: t(`faq.${i}.show`) !== '0' })).filter((f) => f.show && f.q);
   return {
@@ -94,7 +95,7 @@ export function seoHead(site) {
 // the trips and questions as plain HTML, in the containers the page's script fills
 export function seoBody(page, site) {
   const c = content(site);
-  const trips = c.trips.map((tr) => `<article class="trip-card"><h3>${esc(tr.name)}</h3><p>${esc(tr.blurb)}</p><p>${esc([tr.days, tr.route, tr.season, tr.price].filter(Boolean).join('. '))}</p></article>`).join('');
+  const trips = c.trips.map((tr) => `<article class="trip-card"><h3>${esc(tr.name)}</h3><p>${esc(tr.blurb)}</p><p>${esc([tr.days, tr.route, tr.season, tr.group, tr.price].filter(Boolean).join('. '))}</p></article>`).join('');
   const questions = c.questions.map((f) => `<details class="faq"><summary><span>${esc(f.q)}</span></summary><p>${esc(f.a)}</p></details>`).join('');
   return page
     .replace('<div class="trips__grid" id="tripsGrid"></div>', `<div class="trips__grid" id="tripsGrid">${trips}</div>`)

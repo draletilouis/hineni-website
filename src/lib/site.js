@@ -9,7 +9,7 @@ import { addPhotos, addVideos, photoMeta, videoMeta } from './media.js';
 import { applyAlbum } from '../data/photos.js';
 import { photoSlots } from '../data/slots.js';
 import { textFields } from '../data/fields.js';
-import { places, mapExtras } from '../data/content.js';
+import { places, regions, mapExtras } from '../data/content.js';
 
 const wantsPreview = () => new URLSearchParams(location.search).has('preview');
 
@@ -44,6 +44,25 @@ export function applySite(site) {
   // the map: the photos and clips the portal chose for each place, and for each stopover (stopovers it
   // added come with their name and position too; src/modules/terrain.js puts them on the road)
   const known = (k) => typeof k === 'string' && (photoMeta(k) || videoMeta(k));
+  // regions: the code's, as the portal renamed, described or recoloured them; and the portal's own
+  const regionKeys = ['name', 'blurb', 'color', 'hub'];
+  for (const [id, m] of Object.entries(site.map?.regions || {})) {
+    let r = regions.find((x) => x.id === id);
+    if (!r) {
+      if (!m.custom || !m.name) continue;
+      r = { id, custom: true, name: m.name, blurb: '', color: '#a9c47f' };
+      regions.push(r);
+    }
+    for (const k of regionKeys) if (typeof m[k] === 'string' && m[k]) r[k] = m[k];
+    if ('hidden' in m) r.hidden = !!m.hidden;
+  }
+  // places the portal added to a region: on the map with the rest, with road links to their neighbours
+  for (const [id, m] of Object.entries(site.map?.places || {})) {
+    if (m.custom && !regions.some((r) => r.id === m.region)) continue;
+    if (!m.custom || places.some((x) => x.id === id) || !Number.isFinite(m.lat) || !Number.isFinite(m.lon) || !m.name) continue;
+    places.push({ id, custom: true, name: m.name, region: m.region, lat: m.lat, lon: m.lon, note: m.note || '', addon: !!m.addon, photos: [] });
+    if (Array.isArray(m.roads)) mapExtras.roads.push(...m.roads);
+  }
   for (const [id, m] of Object.entries(site.map?.places || {})) {
     const p = places.find((x) => x.id === id);
     if (!p || !Array.isArray(m.photos)) continue;

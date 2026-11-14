@@ -574,7 +574,7 @@ body.menu-open .mobile-menu { clip-path: inset(0 0 0 0); }
 .exp-card__media { position: relative; aspect-ratio: 4 / 3; border-radius: var(--r-lg); overflow: hidden; background: var(--ink-3); }
 .exp-card__media img, .exp-card__media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 250ms ease-out; }
 .exp-card__media video { opacity: 0; }
-.exp-card:hover .exp-card__media video.is-ready { opacity: 1; }
+.exp-card.is-playing .exp-card__media video { opacity: 1; }
 /* 14px in from the photo's 22px corners, so the label and play button take 22 − 14 */
 .exp-card__top { position: absolute; z-index: 2; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: center; }
 .exp-card__trip {
@@ -916,6 +916,15 @@ fieldset.field legend { padding: 0; margin-bottom: 8px; }
 .trip-card__price { margin-top: auto; padding-top: 16px; border-top: 0.5px solid var(--line); display: grid; gap: 2px; }
 .trip-card__price strong { font-family: var(--f-display); font-weight: 500; font-size: var(--t-lg); color: var(--accent); }
 .trip-card__price span, .trip-card__price small { font-size: var(--t-sm); color: var(--bone-dim); }
+/* group size and the price per person by group size (set in the portal) */
+.trip-group, .journey__group { display: inline-flex; align-items: center; gap: 6px; font-size: var(--t-sm); color: var(--bone); }
+.trip-group .i, .journey__group .i { width: 16px; height: 16px; color: var(--accent); flex: none; }
+.journey__group { display: flex; margin-top: 4px; }
+.trip-rates { display: grid; gap: 2px; margin: 6px 0 4px; font-size: var(--t-sm); }
+.trip-rates div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 0.5px dashed var(--line); }
+.trip-rates div:last-child { border-bottom: 0; }
+.trip-rates dt { color: var(--bone-dim); }
+.trip-rates dd { margin: 0; color: var(--bone); font-variant-numeric: tabular-nums; }
 .trip-card__actions { display: flex; gap: 10px; flex-wrap: wrap; }
 /* labels stay on one line; a button that doesn't fit moves to its own row */
 .trip-card__actions .btn { flex: 1 1 auto; justify-content: center; padding: 14px 18px; white-space: nowrap; }

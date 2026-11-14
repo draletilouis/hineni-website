@@ -91,8 +91,9 @@ export const game = [
 // TODO (guides): confirm every stopover is where you really stop, and add the ones you make that aren't here.
 const KAMPALA = { lat: 0.3476, lon: 32.5825 };
 // the admin portal's map changes (src/lib/site.js fills this): photos and clips for the stopovers below,
-// and stopovers added in the portal ({ custom, trip, name, lat, lon, when, note, photos }), by stopoverId
-export const mapExtras = { stopovers: {} };
+// and stopovers added in the portal ({ custom, trip, name, lat, lon, when, note, photos }), by stopoverId;
+// and the road links of the places the portal added (they join `places` below; edges as in network.json)
+export const mapExtras = { stopovers: {}, roads: [] };
 export const stopoverId = (trip, name) => `${trip}~${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 export const routeTrips = [
   {
@@ -363,12 +364,32 @@ export const fieldNotes = [
     text: 'Rothschild\'s giraffe wear "white stockings" — no patches below the knee. Murchison holds one of the largest populations left anywhere. Don\'t look for them in Queen Elizabeth: there are none.' },
 ];
 
+// Each trip's group size and its price list: the price per person for each number of travellers.
+// The portal stores a price list as one line, "2|USD 650;3–4|USD 520;5+|USD 450" (src/data/fields.js).
+//   group  — "2 to 12 people"; null hides it
+//   rates  — [{ people: '2', price: 'USD 650' }, …]: the price per person when that many travel
+export const parseRates = (text) => String(text || '').split(';').map((row) => row.split('|').map((x) => x.trim()))
+  .filter(([people, price]) => people && price).map(([people, price]) => ({ people, price })).slice(0, 12);
+export const ratesText = (rates) => (rates || []).map((r) => `${r.people}|${r.price}`).join(';');
+// "2" → "2 people", "1" → "1 person", "5+" → "5+ people"; anything with words ("Solo traveller") as typed
+export const peopleLabel = (p) => (/^[\d\s+–-]+$/.test(p) ? `${p} ${p.trim() === '1' ? 'person' : 'people'}` : p);
+// the price to lead with: the one typed in, else the lowest on the price list ("From USD 450")
+export function priceHeadline(it) {
+  if (it.price) return it.price;
+  if (!it.rates?.length) return null;
+  const num = (r) => Number((r.price.match(/\d[\d,.]*/) || [''])[0].replace(/,/g, '')) || Infinity;
+  const low = [...it.rates].sort((a, b) => num(a) - num(b))[0];
+  return it.rates.length > 1 ? `From ${low.price}` : low.price;
+}
+
 export const itineraries = [
   {
     id: 'murchison', name: 'Murchison Falls', em: 'Explorer', days: '3 days, 2 nights', when: 'Ran July 2026',
     blurb: 'Kampala to the most powerful waterfall on the Nile, a river cruise among tuskers and crocodiles, and a dawn drive on the Buligi plains.',
     // TODO: set a real price, e.g. 'From USD 480 pp' — until then the site shows "Quote within 24 h"
     price: null,
+    group: null, // TODO: how many travel, e.g. "2 to 12 people"
+    rates: [], // TODO: the price per person for each group size (the portal: Words & details)
     cover: 'm-falls-head', route: 'Kampala → Murchison Falls NP → Kampala',
     highlights: ['Murchison Falls', 'Nile boat cruise', 'Giraffe & elephant', 'Hyena & buffalo'],
     season: 'Best Dec–Feb & Jun–Sep',
@@ -391,6 +412,8 @@ export const itineraries = [
     blurb: 'From Kampala to the caves, waterfalls and crater-lake hills of Fort Portal, then a 4:50 am run across the Equator for the game drive and the Kazinga Channel.',
     // TODO: set a real price, e.g. 'From USD 520 pp' — until then the site shows "Quote within 24 h"
     price: null,
+    group: null, // TODO: how many travel, e.g. "2 to 12 people"
+    rates: [], // TODO: the price per person for each group size (the portal: Words & details)
     cover: 'crater-crew', route: 'Kampala → Fort Portal → Queen Elizabeth NP → Kampala',
     highlights: ['Game drive & Kazinga cruise', 'Crater lake hikes', 'Caves & waterfalls', 'Bunyampaka salt lake'],
     season: 'Best Dec–Feb & Jun–Sep',
@@ -414,6 +437,8 @@ export const itineraries = [
     blurb: 'The far north-west: up the Nile road, across the Albert Nile on the Laropi ferry at sunset, and a summit hike on the South Sudan border with the river winding far below.',
     // TODO: set a real price — until then the site shows "Quote within 24 h". Check the day plan and inclusions too.
     price: null,
+    group: null, // TODO: how many travel, e.g. "2 to 12 people"
+    rates: [], // TODO: the price per person for each group size (the portal: Words & details)
     cover: 'b-summit-crew', route: 'Kampala → Laropi ferry → Moyo → Mt. Buce',
     highlights: ['Mt. Buce summit hike', 'Albert Nile ferry', 'West Nile hills', 'Grilled goat & bonfires'],
     season: 'Dry Dec–Mar, greenest May–Jun',

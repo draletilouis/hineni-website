@@ -2,10 +2,10 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   brand, heroReel, experiences, experienceCats, fieldNotes, itineraries, stories, faqs, ledger, about, places, regions, customTrip, navMenus,
-  manifestoPhotos, quote, film, didYouKnow,
+  manifestoPhotos, quote, film, didYouKnow, priceHeadline, peopleLabel,
 } from '../data/content.js';
 import { catalogue, photoTrips, photoTypes, albumChapters, checkRepeats } from '../data/photos.js';
-import { photo, photoMeta, imgTag, srcset, makeVideo, poster, videoSrc, safePlay, reducedMotion } from '../lib/media.js';
+import { photo, photoMeta, imgTag, srcset, makeVideo, poster, videoSrc, autoPreview, reducedMotion } from '../lib/media.js';
 import { icon } from '../lib/icons.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -18,7 +18,14 @@ const EXP_SHOWN = 8;
 const GAL_SHOWN = 32;
 
 // ---------------------------------------------------------------- render
+// a trip's group size, and its prices per person by the number travelling (both set in the portal)
+const groupLine = (it) => (it.group ? `<span class="trip-group">${icon('people')}${it.group}</span>` : '');
+const ratesTable = (it) => (it.rates?.length > 1
+  ? `<dl class="trip-rates" aria-label="Price per person by group size">${it.rates.map((r) => `<div><dt>${peopleLabel(r.people)}</dt><dd>${r.price}</dd></div>`).join('')}</dl>`
+  : it.rates?.length === 1 ? `<span class="trip-rates__one">For ${peopleLabel(it.rates[0].people)}</span>` : '');
+
 export function renderSections() {
+  indexPlacePhotos();
   // hero trust card: real faces above the fold
   $('#heroFaces').innerHTML = heroReel.faces.map((k) => `<img src="${photo(k, 900)}" alt="" />`).join('');
   $('#heroTrustImg').src = photo(heroReel.trustPhoto, 900);
@@ -46,9 +53,9 @@ export function renderSections() {
     + '<option value="both">Two trips as one week</option><option value="custom">Something custom</option>';
 
   // trips at a glance
-  const priceLine = (it) => it.price
-    ? `<strong>${it.price}</strong><span>per person, all-in</span>`
-    : '<strong>Quote within 24 hours</strong><span>One price for the whole trip, no obligation</span>';
+  const priceLine = (it) => (priceHeadline(it)
+    ? `<strong>${priceHeadline(it)}</strong><span>per person, all-in</span>`
+    : '<strong>Quote within 24 hours</strong><span>One price for the whole trip, no obligation</span>');
   $('#tripsGrid').innerHTML = itineraries.map((it, i) => `
     <article class="trip-card" data-reveal>
       <div class="trip-card__media">
@@ -60,7 +67,7 @@ export function renderSections() {
         <h3>${it.name} <em>${it.em}</em></h3>
         <p>${it.blurb}</p>
         <ul class="trip-card__hl">${it.highlights.map((h) => `<li>${h}</li>`).join('')}</ul>
-        <div class="trip-card__price">${priceLine(it)}<small>${it.season}</small></div>
+        <div class="trip-card__price">${priceLine(it)}${ratesTable(it)}${groupLine(it)}<small>${it.season}</small></div>
         <div class="trip-card__actions">
           <a href="#enquire" class="btn btn--solid" data-book="${it.id}" data-cursor="hover">Book this trip</a>
           <a href="#itinerary" class="btn" data-days="${i}" data-cursor="hover">Day by day</a>
@@ -230,7 +237,7 @@ function renderItinerary(idx) {
   const it = itineraries[idx];
   $('#itinBlurb').textContent = it.blurb;
   $('#itinFacts').innerHTML = `
-    <div class="itin-facts__price">${it.price ? `<strong>${it.price}</strong> per person` : '<strong>Quote within 24 hours</strong> One price for the whole trip'}<span class="eyebrow">${it.days}. ${it.season}</span></div>
+    <div class="itin-facts__price">${priceHeadline(it) ? `<strong>${priceHeadline(it)}</strong> per person` : '<strong>Quote within 24 hours</strong> One price for the whole trip'}${ratesTable(it)}${groupLine(it)}<span class="eyebrow">${it.days}. ${it.season}</span></div>
     <div><h4 class="eyebrow">Included</h4><ul>${it.includes.map((x) => `<li>${x}</li>`).join('')}</ul></div>
     <div><h4 class="eyebrow">Not included</h4><ul class="is-muted">${it.excludes.map((x) => `<li>${x}</li>`).join('')}</ul></div>
     <a href="#enquire" class="btn btn--solid" data-book="${it.id}" data-cursor="hover">Book this trip</a>`;
@@ -279,8 +286,12 @@ function bindItinerary() {
 
 // photos of a place on the route map (from `places`), so the gallery can open the map there.
 // Places in a region the map doesn't tour on its own (the road from Kampala) are left out.
+// Built when the page renders, after the portal's places, photos and regions are in.
 const placeOfPhoto = new Map();
-places.forEach((p) => { if (!regions.find((r) => r.id === p.region)?.hidden) p.photos?.forEach((k) => placeOfPhoto.set(k, p)); });
+function indexPlacePhotos() {
+  placeOfPhoto.clear();
+  places.forEach((p) => { if (!regions.find((r) => r.id === p.region)?.hidden) p.photos?.forEach((k) => placeOfPhoto.set(k, p)); });
+}
 
 // ---------------------------------------------------------------- lightbox
 let lbKeys = [], lbIdx = 0;
@@ -435,19 +446,20 @@ function initExperiences() {
     syncMyTrip();
   });
 
+  // each card's clip plays over its photo on hover (or, on a phone, while the card is on screen)
   grid.querySelectorAll('.exp-card').forEach((card) => {
+    if (!card.dataset.video) return;
     let video;
     const media = $('.exp-card__media', card);
-    card.addEventListener('pointerenter', () => {
-      if (card.dataset.video && !video) {
-        video = makeVideo(card.dataset.video, { preload: 'auto' });
-        video.addEventListener('playing', () => video.classList.add('is-ready'));
+    autoPreview(card, (make) => {
+      if (!video && make) {
+        video = makeVideo(card.dataset.video, { preload: 'metadata' });
+        video.setAttribute('aria-hidden', 'true');
+        video.addEventListener('playing', () => card.classList.add('is-playing'));
+        video.addEventListener('pause', () => card.classList.remove('is-playing'));
         media.appendChild(video);
       }
-      video && safePlay(video);
-    });
-    card.addEventListener('pointerleave', () => {
-      video && video.pause();
+      return video;
     });
   });
 }

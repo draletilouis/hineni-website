@@ -263,6 +263,13 @@ button.card__img:hover .card__replace, button.card__img:focus-visible .card__rep
 .field textarea { min-height: 84px; padding: 8px 12px; border: 0.5px solid var(--line-2); border-radius: var(--r-sm); background: var(--card); font-weight: 400; font-size: var(--t-md); line-height: 1.45; resize: vertical; }
 .field__hint { color: var(--ink-2); font-size: var(--t-sm); }
 .word .link { justify-self: start; font-size: var(--t-sm); }
+/* a price list: travellers → price per person, one row each */
+.word--rates { grid-column: 1 / -1; }
+.word--rates > .btn { justify-self: start; }
+.rates { display: grid; gap: 8px; }
+.rate { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(160px, 1.4fr) auto; gap: 10px; align-items: end; }
+.rate .link { padding-bottom: 10px; }
+@media (max-width: 560px) { .rate { grid-template-columns: 1fr 1fr; } .rate .link { grid-column: 1 / -1; padding: 0; } }
 .switch { display: flex; align-items: center; gap: 10px; min-height: 42px; font-size: var(--t-sm); font-weight: 550; cursor: pointer; }
 .switch input { appearance: none; flex: none; position: relative; width: 38px; height: 22px; margin: 0; border-radius: 999px; background: var(--gray-7); cursor: pointer; transition: background 250ms ease-out; }
 .switch input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--gray-1); transition: transform 250ms ease-out; }
@@ -307,7 +314,20 @@ button.card__img:hover .card__replace, button.card__img:focus-visible .card__rep
 .mapmedia__acts button { width: 28px; height: 28px; border: 0; border-radius: var(--r-xs); background: rgb(15 26 20 / 0.78); color: var(--dark-12); cursor: pointer; }
 .mapmedia--add { display: grid; place-items: center; padding: 6px; border: 0.5px dashed var(--gray-8); background: none; color: var(--green-text); font-size: var(--t-sm); font-weight: 550; cursor: pointer; text-align: center; }
 .mapmedia--add:hover { border-color: var(--green-text); background: var(--green-tint); }
-.stop-add { margin-top: 12px; }
+.stop-add, .place-add { margin-top: 12px; }
+/* a region's own details, above its places */
+.region { display: grid; gap: 10px; margin-bottom: 12px; padding: 14px 16px; border-radius: var(--r-md); background: var(--card); border: 0.5px solid var(--line); }
+.region--custom { border-color: var(--gold-7); background: var(--gold-2); }
+.region__fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: end; }
+.region__about { grid-column: 1 / -1; }
+.region__color input[type='color'] { width: 100%; min-height: 42px; padding: 3px; border: 0.5px solid var(--line-2); border-radius: var(--r-sm); background: var(--card); cursor: pointer; }
+.region__acts { display: flex; gap: 16px; }
+.region__acts:empty { display: none; }
+.region__acts .link { font-size: var(--t-sm); }
+.region__dot { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 50%; vertical-align: 0.1em; }
+.region-add h3 { margin-top: 4px; }
+.maprow__fields .switch { padding-bottom: 0; }
+.maprow__warn { margin: 0; padding: 6px 9px; border-radius: var(--r-xs); background: var(--gold-3); color: var(--gold-11); font-size: var(--t-sm); }
 .stop-add__fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
 
 /* ---- put on the page: where a photo or clip should show */

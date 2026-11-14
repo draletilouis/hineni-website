@@ -11,7 +11,7 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { gsap } from 'gsap';
-import { routeTrips, itineraries, places as PLACES, regions as REGIONS, experiencePlaces, mapExtras, stopoverId } from '../data/content.js';
+import { routeTrips, itineraries, places as PLACES, regions as REGIONS, experiencePlaces, mapExtras, stopoverId, priceHeadline } from '../data/content.js';
 import { photo, poster, still, isClip, webCredit, isMobile, reducedMotion } from '../lib/media.js';
 import { icon } from '../lib/icons.js';
 
@@ -181,8 +181,9 @@ function prepare(t, j) {
     legStopovers: onLeg('stopover'), legSights: onLeg('sight'), latLonAt };
 }
 // ---------------------------------------------------------------- places and the road network
-const placeById = Object.fromEntries(PLACES.map((p) => [p.id, p]));
-const regionById = Object.fromEntries(REGIONS.map((r) => [r.id, r]));
+// filled by initTerrain, once the portal's places have joined PLACES (src/lib/site.js)
+const placeById = {};
+const regionById = {}; // likewise, with the portal's regions
 // the photos of the place nearest a point (a stopover or sight on a trip), if it's within reach:
 // our own, or for a place we haven't been to, the credited web ones
 function picsNear(lat, lon, km = 1.5) {
@@ -345,6 +346,8 @@ function eventText(e) {
 
 // ---------------------------------------------------------------- module
 export function initTerrain() {
+  for (const p of PLACES) placeById[p.id] = p;
+  for (const r of REGIONS) regionById[r.id] = r;
   const host = document.getElementById('journeyGL');
   const stage = document.getElementById('journeyStage');
   const labelsEl = document.getElementById('journeyLabels');
@@ -413,7 +416,13 @@ export function initTerrain() {
 
   // ---- Explore / Build your own: load the road network once, then turn a list of places into a drive
   async function network() {
-    if (!NET) { NET = await fetch(`${BASE}network.json`).then((r) => r.json()); G = makeGraph(NET); }
+    if (!NET) {
+      NET = await fetch(`${BASE}network.json`).then((r) => r.json());
+      // the road links of places added in the portal (each to its neighbours), if both ends are on the map
+      const ok = (e) => placeById[e.a] && placeById[e.b] && Array.isArray(e.pts) && e.pts.length > 1 && Number.isFinite(e.km);
+      NET.edges.push(...mapExtras.roads.filter(ok).map((e) => ({ ...e, walk: e.walk || [0, 0] })));
+      G = makeGraph(NET);
+    }
     return NET;
   }
   async function setRoute(seq, label, color) {
@@ -433,7 +442,8 @@ export function initTerrain() {
     DYN.kind = 'explore'; DYN.region = regionId;
     const ids = PLACES.filter((p) => p.region === regionId).map((p) => p.id);
     await network();
-    const seq = order(G, reg.hub, ids);
+    // it starts from its hub, or its first place if the hub isn't one of them any more
+    const seq = order(G, ids.includes(reg.hub) ? reg.hub : ids[0], ids);
     await setRoute(seq, reg.name, reg.color);
     // from the gallery: straight to that place, its region's tour around it
     show(DT, focus ? seq.indexOf(focus) : -1);
@@ -504,7 +514,8 @@ export function initTerrain() {
       <button type="button" data-go="-1" aria-label="Previous stop"${pos < 0 ? ' disabled' : ''}>${icon('arrowLeft')}</button>
       <span class="eyebrow">${where}</span>
       <button type="button" data-go="1" aria-label="${pos < 0 ? 'Start the drive' : 'Drive to the next stop'}"${pos >= n ? ' disabled' : ''}>${icon('arrowRight')}</button></div>`;
-    const price = `<div class="journey__price">${it.price ? `<b>${it.price}</b> per person` : '<b>Quote within 24 hours</b><span class="journey__more">, one price for the whole trip</span>'}</div>`;
+    const lead = priceHeadline(it);
+    const price = `<div class="journey__price">${lead ? `<b>${lead}</b> per person` : '<b>Quote within 24 hours</b><span class="journey__more">, one price for the whole trip</span>'}${it.group ? `<span class="journey__group">${icon('people')}${it.group}</span>` : ''}</div>`;
     if (pos < 0 || pos >= n) {
       const L = longest(trip);
       const km = r ? r.total - r.extraKm : null;
@@ -568,7 +579,7 @@ export function initTerrain() {
         <div class="eyebrow">Explore a region</div>
         <h3>See every place <em>in one area</em></h3>
         <p>Pick a region and drive around all of it — the places we've been, with our photos, and the ones we haven't yet.</p>
-        <div class="journey__pick">${REGIONS.filter((g) => !g.hidden).map((g) => {
+        <div class="journey__pick">${REGIONS.filter((g) => !g.hidden && PLACES.some((p) => p.region === g.id)).map((g) => {
           const ids = PLACES.filter((p) => p.region === g.id).map((p) => p.id);
           return `<button type="button" data-region="${g.id}" style="--c:${g.color}" data-cursor="hover"><i></i>
             <span><b>${g.name}</b><small>${ids.length} places, ${photoCount(ids)} photos</small></span><em aria-hidden="true">${icon('arrowRight')}</em></button>`;

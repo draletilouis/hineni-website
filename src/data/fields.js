@@ -1,8 +1,9 @@
 // Every piece of wording the admin portal can change ("Words & details"), and where it lands on the page.
 // The ids are stored in the live site file (site.json → text): keep them stable.
 //   kind   text | long (a paragraph) | email | phone | switch ("1" on, "0" off)
+//          | rates (a price list: "travellers|price" rows joined by ";", see parseRates in content.js)
 //   get()  the wording as the site ships;  set(v)  applies the portal's version
-import { brand, itineraries, experiences, stories, faqs, about, game, uglyFive, didYouKnow } from './content.js';
+import { brand, itineraries, experiences, stories, faqs, about, game, uglyFive, didYouKnow, parseRates, ratesText } from './content.js';
 
 export function textFields() {
   const out = [];
@@ -28,8 +29,17 @@ export function textFields() {
     const g = `Trip: ${it.name} ${it.em}`;
     add(g, `trip.${it.id}.name`, 'Name (first part)', it, 'name', { max: 60 });
     add(g, `trip.${it.id}.em`, 'Name (in italics)', it, 'em', { max: 60 });
-    add(g, `trip.${it.id}.price`, 'Price', it, 'price', {
-      max: 60, hint: 'For example "From USD 480 per person". Leave empty to show "Quote within 24 hours".',
+    add(g, `trip.${it.id}.group`, 'Group size', it, 'group', {
+      max: 60, hint: 'How many people a trip takes, for example "2 to 12 people". Leave empty to hide it.',
+      get: () => it.group || '', set: (v) => { it.group = v || null; },
+    });
+    add(g, `trip.${it.id}.rates`, 'Prices by group size', it, 'rates', {
+      kind: 'rates', max: 600,
+      hint: 'The price per person for each number of travellers, for example 2 → USD 650, 3–4 → USD 520, 5+ → USD 450.',
+      get: () => ratesText(it.rates), set: (v) => { it.rates = parseRates(v); },
+    });
+    add(g, `trip.${it.id}.price`, 'Headline price', it, 'price', {
+      max: 60, hint: 'For example "From USD 480 per person". Leave empty to lead with the lowest price above, or, with no prices, "Quote within 24 hours".',
       get: () => it.price || '', set: (v) => { it.price = v || null; },
     });
     add(g, `trip.${it.id}.days`, 'Length', it, 'days', { max: 40 });

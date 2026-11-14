@@ -24,6 +24,8 @@ import path from 'node:path';
 import { loadAdmins, verifyPassword, ensureBootstrapAdmin, setAdmin, removeAdmin, validName } from './admins.mjs';
 import { canConvert, toWeb, frame, oneAtATime } from './video.mjs';
 import { SITE_URL, seoHead, seoBody, robots, sitemap } from './seo.mjs';
+import { roadsFor } from './roads.mjs';
+import { places as mapPlaces, regions as mapRegions } from '../src/data/content.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 try { process.loadEnvFile(path.join(ROOT, '.env')); } catch { /* no .env: use the real environment */ }
@@ -65,7 +67,9 @@ const builtInTrips = ['moyo', 'murchison', 'reptiles', 'fortportal'];
 
 // ---------------------------------------------------------------- the published site and the draft
 // replaced: old photo or clip key -> the one that now shows wherever it did (src/lib/site.js applies it)
-// map: { places: { <place id>: { photos } }, stopovers: { <trip>~<name>: { photos, and for the portal's own:
+// map: { regions: { <region id>: { name, blurb, color, hub, hidden, and custom for the portal's own } },
+//        places: { <place id>: { photos, and for the portal's own: custom, region, name, note, lat, lon, addon, roads } },
+//        stopovers: { <trip>~<name>: { photos, and for the portal's own:
 // custom, trip, name, lat, lon, when, note } } }, where photos lists photo and clip keys in order
 const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {}, videos: {}, text: {}, replaced: {}, map: { places: {}, stopovers: {} } });
 const readSite = (file) => (fs.existsSync(file) ? { ...emptySite(), ...JSON.parse(fs.readFileSync(file, 'utf8')) } : null);
@@ -473,33 +477,132 @@ const mediaList = (list) => {
   return keys.every((k) => isPhoto(k) || isVideo(k)) ? keys : null;
 };
 const mapId = /^[a-z0-9~-]{1,80}$/;
-admin.put('/map/places/:id', async (req, res) => {
-  const photos = mediaList(req.body.photos);
-  if (!mapId.test(req.params.id) || !photos) return res.status(400).json({ error: 'Unknown photo or clip.' });
-  mapOf().places[req.params.id] = { photos };
+// places: the ones in the code (src/data/content.js) take a list of photos and clips; the portal can also add
+// places of its own to a region (custom: name, note, region, position, paid extra), each with its road links
+// to the places around it (server/roads.mjs), so the map can drive there
+const regionsOf = () => (mapOf().regions ||= {});
+const REGION_IDS = () => [...mapRegions.map((r) => r.id), ...Object.keys(regionsOf()).filter((id) => regionsOf()[id].custom)];
+const allPlaces = (except) => [
+  ...mapPlaces,
+  ...Object.entries(mapOf().places).filter(([id, p]) => p.custom && id !== except).map(([id, p]) => ({ id, ...p })),
+];
+function placeFrom(body, prev) {
+  const next = { ...prev };
+  if ('photos' in body) { const p = mediaList(body.photos); if (!p) throw new Error('Unknown photo or clip.'); next.photos = p; }
+  if (!next.custom) return next;
+  if ('region' in body) { if (!REGION_IDS().includes(body.region)) throw new Error('Choose a region.'); next.region = body.region; }
+  if ('name' in body) next.name = clean(body.name, 60);
+  if ('note' in body) next.note = clean(body.note, 200);
+  if ('addon' in body) next.addon = body.addon === true || body.addon === '1' ? 1 : 0;
+  if ('lat' in body || 'lon' in body) Object.assign(next, pointFrom(body));
+  if (!next.name) throw new Error('Give the place a name.');
+  return next;
+}
+admin.post('/map/places', async (req, res) => {
+  let place;
+  try { place = placeFrom(req.body, { custom: 1, photos: [] }); } catch (e) { return res.status(400).json({ error: e.message }); }
+  if (place.lat == null || !place.region) return res.status(400).json({ error: 'Give the place a region and a position on the map.' });
+  const id = `c-${crypto.randomBytes(3).toString('hex')}`;
+  place.roads = await roadsFor({ id, ...place }, allPlaces(id));
+  mapOf().places[id] = place;
   await saveDraft(req.admin);
-  res.json({ ok: true });
+  res.json({ id, place, straight: place.roads.some((r) => r.straight) });
 });
+admin.put('/map/places/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!mapId.test(id)) return res.status(400).json({ error: 'Unknown place.' });
+  const prev = mapOf().places[id] || {};
+  if (!prev.custom && !mapPlaces.some((p) => p.id === id)) return res.status(404).json({ error: 'Unknown place.' });
+  let next;
+  try { next = placeFrom(req.body, prev); } catch (e) { return res.status(400).json({ error: e.message }); }
+  // moved, or into another region: new road links (and a retry if the last ones were straight stand-ins)
+  if (next.custom && (next.lat !== prev.lat || next.lon !== prev.lon || next.region !== prev.region || next.roads?.some((r) => r.straight))) {
+    next.roads = await roadsFor({ id, ...next }, allPlaces(id));
+  }
+  mapOf().places[id] = next;
+  await saveDraft(req.admin);
+  res.json({ ok: true, straight: !!next.roads?.some((r) => r.straight) });
+});
+// one of the portal's own: deleted; one in the code: back to the photos it ships with
 admin.delete('/map/places/:id', async (req, res) => {
   delete mapOf().places[req.params.id];
   await saveDraft(req.admin);
   res.json({ ok: true });
 });
+
+// regions (the map's destinations, toured by "Explore"): the ones in the code can be renamed, described,
+// recoloured, started from another of their places, or left out of Explore; the portal can add regions of its
+// own, each made with its first place (a name and a point, like any place). Saved as map.regions:
+// { <id>: { name, blurb, color, hub, hidden, and custom: 1 for the portal's own } }
+function regionFrom(body, prev, id) {
+  const next = { ...prev };
+  if ('name' in body) next.name = clean(body.name, 60);
+  if ('blurb' in body) next.blurb = clean(body.blurb, 240);
+  if ('color' in body) {
+    if (!/^#[0-9a-f]{6}$/i.test(String(body.color))) throw new Error('Choose a colour.');
+    next.color = String(body.color).toLowerCase();
+  }
+  if ('hidden' in body) next.hidden = body.hidden === true || body.hidden === '1' ? 1 : 0;
+  if ('hub' in body) {
+    if (!allPlaces().some((p) => p.id === body.hub && p.region === id)) throw new Error('Choose one of the region\'s own places to start from.');
+    next.hub = body.hub;
+  }
+  if ('name' in next && !next.name) throw new Error('Give the region a name.');
+  return next;
+}
+admin.post('/map/regions', async (req, res) => {
+  const id = `r-${crypto.randomBytes(3).toString('hex')}`;
+  const pid = `c-${crypto.randomBytes(3).toString('hex')}`;
+  let region, place;
+  try {
+    region = regionFrom(req.body, { custom: 1, color: '#a9c47f', blurb: '', hidden: 0 }, id);
+    if (!region.name) throw new Error('Give the region a name.');
+    const { region: _, photos: __, ...given } = req.body.place || {};
+    place = placeFrom(given, { custom: 1, photos: [] });
+    if (place.lat == null) throw new Error('Give its first place a position on the map.');
+  } catch (e) { return res.status(400).json({ error: e.message }); }
+  place.region = id;
+  region.hub = pid;
+  place.roads = await roadsFor({ id: pid, ...place }, allPlaces(pid));
+  regionsOf()[id] = region;
+  mapOf().places[pid] = place;
+  await saveDraft(req.admin);
+  res.json({ id, place: pid, straight: place.roads.some((r) => r.straight) });
+});
+admin.put('/map/regions/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!mapId.test(id) || !REGION_IDS().includes(id)) return res.status(404).json({ error: 'Unknown region.' });
+  try { regionsOf()[id] = regionFrom(req.body, regionsOf()[id] || {}, id); } catch (e) { return res.status(400).json({ error: e.message }); }
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
+// one of the portal's own: deleted with the places added to it (their photos stay in the album);
+// one in the code: back to how it ships
+admin.delete('/map/regions/:id', async (req, res) => {
+  const { id } = req.params;
+  if (regionsOf()[id]?.custom) {
+    for (const [pid, p] of Object.entries(mapOf().places)) if (p.custom && p.region === id) delete mapOf().places[pid];
+  }
+  delete regionsOf()[id];
+  await saveDraft(req.admin);
+  res.json({ ok: true });
+});
 // a stopover's photos (any stopover); for the portal's own, its name, place on the map, time and note too
 const coord = (v, max) => { const n = Number(v); return Number.isFinite(n) && Math.abs(n) <= max ? Math.round(n * 1e5) / 1e5 : null; };
+function pointFrom(body) {
+  const lat = coord(body.lat, 90), lon = coord(body.lon, 180);
+  if (lat == null || lon == null) throw new Error('That position is not a valid latitude and longitude.');
+  // the trips are all in Uganda; a point far outside it is a typo
+  if (lat < -2 || lat > 5 || lon < 29 || lon > 36) throw new Error('That position is outside Uganda.');
+  return { lat, lon };
+}
 function stopoverFrom(body, prev = {}) {
   const next = { ...prev };
   if ('photos' in body) { const p = mediaList(body.photos); if (!p) throw new Error('Unknown photo or clip.'); next.photos = p; }
   if (next.custom) {
     if ('trip' in body) { if (!MAP_TRIPS.includes(body.trip)) throw new Error('Choose a trip.'); next.trip = body.trip; }
     for (const k of ['name', 'when', 'note']) if (k in body) next[k] = clean(body[k], k === 'note' ? 160 : 60);
-    if ('lat' in body || 'lon' in body) {
-      const lat = coord(body.lat, 90), lon = coord(body.lon, 180);
-      if (lat == null || lon == null) throw new Error('That position is not a valid latitude and longitude.');
-      // the trips are all in Uganda; a point far outside it is a typo
-      if (lat < -2 || lat > 5 || lon < 29 || lon > 36) throw new Error('That position is outside Uganda.');
-      Object.assign(next, { lat, lon });
-    }
+    if ('lat' in body || 'lon' in body) Object.assign(next, pointFrom(body));
     if (!next.name) throw new Error('Give the stopover a name.');
   }
   return next;

@@ -65,7 +65,21 @@ The **Map** tab lists every stop and place on the route map, and the stopovers o
   **←** moves one earlier and **✕** takes it off. Clips play when a visitor taps them.
 - **Add a stopover:** under each trip, give it a name, a time, a note, and where it is: in Google Maps, press
   and hold on the spot and copy the coordinates (or share the place and paste its link). It pops up, with its
-  photos, as that trip's drive passes it on the map. Change or delete it any time.
+  photos, as that trip's drive passes it on the map. Change or delete it any time. Once it's added, the album
+  opens so you can give it its photos and clips straight away.
+- **Add a place:** under each region (Fort Portal, Queen Elizabeth, Murchison, Moyo, and "On the road from
+  Kampala"), give the new place a name, where it is (as for a stopover), one line about it, and whether it's a
+  paid extra. The map looks up the roads to it from the places around it, so visitors can tour it with the
+  region in **Explore** and pick it in **Build your own**, and the drive goes there on the real roads. Then add
+  its photos and clips. If the road lookup fails (no internet at that moment) the map draws a straight line and
+  says so in the portal: change its position, or paste it again, to try again.
+- **Regions:** each region (destination) has its own box at the top of its section: its name, a colour for its
+  roads on the map, the place its tour starts from, a line about it for **Explore**, and **Show in Explore**.
+  Changes to the regions the site came with can be undone with **Back to the original**.
+- **Add a region:** at the bottom of the Map tab. Give the region a name, a line about it and a colour, and its
+  first place: a name and where it is (a Google Maps link or coordinates, as above). The map finds the roads to
+  it, and the region appears in **Explore** and **Build your own**. Then add its photos and more places to it.
+  **Delete this region** removes it and the places added to it (their photos stay in the album).
 
 ## Words & details
 
@@ -74,8 +88,11 @@ All the wording on the website, in sections you open one at a time:
 - **Contact details:** email, WhatsApp number (country code and number, digits only), phone, and where you are.
   They're set to info@hinenisafaris.com and +256 702 116926.
 - **Front page:** the line under the photos at the top.
-- **Each trip:** name, length, best season, route, description and **price** (leave the price empty to show "Quote
-  within 24 hours").
+- **Each trip:** name, **group size** (for example "2 to 12 people"; empty hides it), **prices by group size**
+  (one row per group size: how many travel, and the price per person, for example 2 → USD 650, 3–4 → USD 520,
+  5+ → USD 450; **+ Add a price** adds a row, **Remove** takes one off), a **headline price** (leave it empty to
+  lead with the lowest price on the list, or with no prices at all, "Quote within 24 hours"), length, best season,
+  route and description. The trip cards, the day-by-day plan and the map show them.
 - **Guest stories:** each guest's name, trip, the worry they had and the moment it went away. The three stories
   there now are samples: replace their words with real guests', then turn on **show on the website**.
 - **Questions:** each question and answer, with a switch to hide one.
