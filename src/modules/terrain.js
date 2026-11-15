@@ -313,6 +313,7 @@ const placeStop = (p, i, regionName) => ({
   shot: p.id === 'kampala' ? [16, 10, 0] : [2.4, 1.3, 0.6], heading: p.id === 'kampala' ? 330 : undefined,
 });
 
+const plural = (k, word) => `${k} ${word}${k === 1 ? '' : 's'}`;
 const ODO_UNITS = [1000, 100, 10, 1, 0.1];
 const odoHTML = () => `<div class="odo" data-odo role="img" aria-label="0 km">${ODO_UNITS.map((u) => `<span class="odo__d${u < 1 ? ' is-tenth' : ''}"><span class="odo__strip">${'01234567890'.split('').map((n) => `<i>${n}</i>`).join('')}</span></span>`).join('')}</div>`;
 function setOdo(el, v) {
@@ -582,7 +583,7 @@ export function initTerrain() {
         <div class="journey__pick">${REGIONS.filter((g) => !g.hidden && PLACES.some((p) => p.region === g.id)).map((g) => {
           const ids = PLACES.filter((p) => p.region === g.id).map((p) => p.id);
           return `<button type="button" data-region="${g.id}" style="--c:${g.color}" data-cursor="hover"><i></i>
-            <span><b>${g.name}</b><small>${ids.length} places, ${photoCount(ids)} photos</small></span><em aria-hidden="true">${icon('arrowRight')}</em></button>`;
+            <span><b>${g.name}</b><small>${plural(ids.length, 'place')}, ${plural(photoCount(ids), 'photo')}</small></span><em aria-hidden="true">${icon('arrowRight')}</em></button>`;
         }).join('')}</div>
       </div>`;
     }
@@ -617,7 +618,7 @@ export function initTerrain() {
           <div class="eyebrow">${t.kind === 'explore' ? 'Explore a region' : 'Built by you'}${pos >= n ? ': the whole route' : ''}</div>
           <h3>${t.kind === 'explore' ? reg.name : 'Your route'}</h3>
           <p>${t.kind === 'explore' ? reg.blurb : 'Every place you picked, in the order that drives best. We can turn it into a trip.'}</p>
-          <p class="journey__facts">${n} places${r ? `, ${fmtKm(r.total)} km` : ''}. Our photos from ${withPhotos} of them.</p>
+          <p class="journey__facts">${plural(n, 'place')}${r && r.total >= 0.1 ? `, ${fmtKm(r.total)} km` : ''}. ${n === 1 ? (withPhotos ? 'With our photos.' : 'No photos of ours yet.') : `Our photos from ${withPhotos} of them.`}</p>
           <div class="journey__through journey__plan"><span class="eyebrow">In order</span>${t.stops.map((st) => `${st.photos ? '' : `${icon('noPhoto')} `}${st.name}`).join(', ')}</div>
           <div class="journey__actions">${pos < 0
             ? `<button type="button" class="btn btn--small btn--solid" data-play data-cursor="hover">Drive it ${icon('play')}</button><button type="button" class="btn btn--small" data-mode="${t.kind}" data-cursor="hover">${t.kind === 'explore' ? 'Another region' : 'Change places'}</button>`
