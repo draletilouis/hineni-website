@@ -79,6 +79,8 @@ The **Map** tab lists every stop and place on the route map, and the stopovers o
   says so in the portal: change its position, or paste it again, to try again.
 - **Regions:** each region (destination) has its own box at the top of its section: its name, a colour for its
   roads on the map, the place its tour starts from, a line about it for **Explore**, and **Show in Explore**.
+  The box also has **Best time to go**, **What you'll see** and **Good to know** (age limits, start times, what
+  to bring): they show on the region's Explore card under **Before you go**. Empty one to leave it out.
   On the website, every region's card in **Explore** also has **Drive from Kampala**: the whole drive there on
   the real roads, with the kilometres and the towns on the way, then around the region.
 - **Stopovers on the drive from Kampala:** under each region, below its places. Add one the same way as a trip's

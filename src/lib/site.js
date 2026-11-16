@@ -54,6 +54,8 @@ export function applySite(site) {
       regions.push(r);
     }
     for (const k of regionKeys) if (typeof m[k] === 'string' && m[k]) r[k] = m[k];
+    // best time, what you'll see, good to know: emptied in the portal means not shown
+    for (const k of ['when', 'see', 'know']) if (typeof m[k] === 'string') r[k] = m[k];
     if ('hidden' in m) r.hidden = !!m.hidden;
   }
   // places the portal added to a region: on the map with the rest, with road links to their neighbours

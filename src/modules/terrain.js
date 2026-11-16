@@ -328,6 +328,15 @@ const placeStop = (p, i, regionName) => ({
   shot: p.id === 'kampala' ? [16, 10, 0] : [2.4, 1.3, 0.6], heading: p.id === 'kampala' ? 330 : undefined,
 });
 
+// a region's "before you go": best time, what you'll see, good to know (each only if it has words).
+// Open on a tall screen; folded to one line on a laptop or phone, so the card's buttons stay in view.
+const regionKnow = (reg) => {
+  const rows = [['Best time', reg.when], ['You\'ll see', reg.see], ['Good to know', reg.know]].filter(([, v]) => v);
+  if (!rows.length) return '';
+  const open = window.innerHeight >= 800 && window.innerWidth > 820;
+  return `<details class="journey__know"${open ? ' open' : ''}><summary class="eyebrow">Before you go</summary>
+    <dl>${rows.map(([k, v]) => `<div><dt class="eyebrow">${k}</dt><dd>${v}</dd></div>`).join('')}</dl></details>`;
+};
 const plural = (k, word) => `${k} ${word}${k === 1 ? '' : 's'}`;
 const ODO_UNITS = [1000, 100, 10, 1, 0.1];
 const odoHTML = () => `<div class="odo" data-odo role="img" aria-label="0 km">${ODO_UNITS.map((u) => `<span class="odo__d${u < 1 ? ' is-tenth' : ''}"><span class="odo__strip">${'01234567890'.split('').map((n) => `<i>${n}</i>`).join('')}</span></span>`).join('')}</div>`;
@@ -643,6 +652,7 @@ export function initTerrain() {
           <div class="eyebrow">${t.kind === 'explore' ? (t.fromKampala ? 'From Kampala' : 'Explore a region') : 'Built by you'}${pos >= n ? ': the whole route' : ''}</div>
           <h3>${t.kind === 'explore' ? reg.name : 'Your route'}</h3>
           <p>${t.kind === 'explore' ? reg.blurb : 'Every place you picked, in the order that drives best. We can turn it into a trip.'}</p>
+          ${t.kind === 'explore' && pos < 0 ? regionKnow(reg) : ''}
           <p class="journey__facts">${plural(n, 'place')}${r && r.total >= 0.1 ? `, ${fmtKm(r.total)} km` : ''}. ${!withPhotos ? 'No photos of ours yet.' : n === 1 ? 'With our photos.' : `Our photos from ${withPhotos} of them.`}</p>
           <div class="journey__through journey__plan"><span class="eyebrow">In order</span>${t.stops.map((st) => `${st.photos ? '' : `${icon('noPhoto')} `}${st.name}`).join(', ')}</div>
           <div class="journey__actions">${pos < 0

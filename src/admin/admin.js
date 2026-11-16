@@ -831,7 +831,7 @@ const tripLabel = (id) => routeTrips.find((t) => t.id === id)?.label || id;
 // the map's regions (destinations): the code's, with the draft's changes, then the portal's own
 function allRegions() {
   const own = site.map?.regions || {};
-  const pick = (o) => Object.fromEntries(['name', 'blurb', 'color', 'hub', 'hidden'].filter((k) => k in o).map((k) => [k, o[k]]));
+  const pick = (o) => Object.fromEntries(['name', 'blurb', 'color', 'hub', 'hidden', 'when', 'see', 'know'].filter((k) => k in o).map((k) => [k, o[k]]));
   return [
     ...mapRegions.map((r) => ({ ...r, ...pick(own[r.id] || {}), hidden: own[r.id] && 'hidden' in own[r.id] ? !!own[r.id].hidden : !!r.hidden, changed: !!own[r.id] })),
     ...Object.entries(own).filter(([, r]) => r.custom).map(([id, r]) => ({ id, ...r, hidden: !!r.hidden, custom: true })),
@@ -889,6 +889,9 @@ function regionPanel(r, list) {
       <label class="field field--small region__color">Colour on the map<input data-rf="color" type="color" value="${esc(r.color || '#a9c47f')}" /></label>
       <label class="field field--small">Its tour starts at<select data-rf="hub"${list.length ? '' : ' disabled'}>${list.map((it) => `<option value="${esc(it.id)}"${it.id === starts ? ' selected' : ''}>${esc(it.name)}</option>`).join('')}</select></label>
       <label class="field field--small region__about">About the region (shown in Explore)<input data-rf="blurb" maxlength="240" value="${esc(r.blurb || '')}" /></label>
+      <label class="field field--small region__about">Best time to go<input data-rf="when" maxlength="240" value="${esc(r.when || '')}" placeholder="e.g. All year; driest in June and July" /></label>
+      <label class="field field--small region__about">What you'll see<input data-rf="see" maxlength="240" value="${esc(r.see || '')}" placeholder="The animals, birds and sights it's known for" /></label>
+      <label class="field field--small region__about">Good to know<input data-rf="know" maxlength="240" value="${esc(r.know || '')}" placeholder="Age limits, start times, what to bring" /></label>
       <label class="switch"><input type="checkbox" data-rf="show"${r.hidden ? '' : ' checked'} /><span>Show in Explore</span></label>
     </div>
     <div class="region__acts">

@@ -546,6 +546,8 @@ function regionFrom(body, prev, id) {
   const next = { ...prev };
   if ('name' in body) next.name = clean(body.name, 60);
   if ('blurb' in body) next.blurb = clean(body.blurb, 240);
+  // best time to go, what you'll see, good to know (the Explore card); empty hides the line
+  for (const k of ['when', 'see', 'know']) if (k in body) next[k] = clean(body[k], 240);
   if ('color' in body) {
     if (!/^#[0-9a-f]{6}$/i.test(String(body.color))) throw new Error('Choose a colour.');
     next.color = String(body.color).toLowerCase();

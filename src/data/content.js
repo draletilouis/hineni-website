@@ -231,6 +231,49 @@ export const regions = [
     blurb: 'One of East Africa\'s last great wildernesses, in the far north-east: buffalo herds, lion and cheetah, ringed by mountains.' },
   { id: 'road', name: 'On the road from Kampala', color: '#adb5b2', hub: 'kampala', hidden: true },
 ];
+// What a visitor wants to know before they ask: shown on each region's Explore card, editable in the portal
+// (Map: the region's box). From the Uganda Wildlife Authority brochures (2018), leaving out what dates:
+// fees, permit numbers, lodges.  when — best time to go;  see — what you'll see;  know — good to know
+const regionInfo = {
+  fortportal: {
+    when: 'All year. Expect afternoon rain in March–May and September–November.',
+    see: 'Chimpanzees and twelve more primates in Kibale, red colobus and L\'Hoest\'s monkey among them; over 370 birds; crater lakes and tea country.',
+    know: 'Chimp tracking is from age 16, in groups of six, with walks at 8:00, 11:00 and 14:00. Book well ahead.' },
+  qenp: {
+    when: 'All year. Flamingos visit the salt lakes from about August to November.',
+    see: 'Lion, elephant, buffalo and hippo; kob by the thousand; chimps in Kyambura Gorge; tree-climbing lions in Ishasha; more than 600 birds.',
+    know: 'Days are 18–28°C and nights can be cool. The Rwenzori is another matter: cold, wet and steep, a week for the summit, gumboots for the bogs.' },
+  murchison: {
+    when: 'Best in the dry seasons, December to February and June to September. Birding peaks from January to March.',
+    see: 'Elephant, Rothschild\'s giraffe, buffalo and lion; hippos and Nile crocodiles on the river; shoebill in the delta; chimps at Kaniyo Pabidi.',
+    know: 'One of the hottest parts of Uganda, 25–32°C by day: bring a hat, sunscreen and water.' },
+  bwindi: {
+    when: 'All year. Coldest in June and July.',
+    see: 'Mountain gorillas; chimpanzees, L\'Hoest\'s and blue monkeys; about 350 birds, 23 of them found only in the Albertine Rift.',
+    know: 'Gorilla tracking is from age 15: register at 7:30, set off at 8:30, a few hours to a full day on steep trails. Permits are booked ahead. Bring warm and waterproof clothes.' },
+  mgahinga: {
+    when: 'All year. Driest in June and July; wettest in March–April and September–November.',
+    see: 'Mountain gorillas, and golden monkeys in the bamboo; the Rwenzori turaco; three volcanoes, each climbed in a day.',
+    know: 'Gorilla tracking is from age 15, from Ntebeko at 8:00, usually 3–5 hours. Days average 15°C and nights 10°C, often misty: bring layers and rain gear.' },
+  mburo: {
+    when: 'All year. The rains are heaviest in April and November; July and August are the hottest months.',
+    see: 'Impala (nowhere else in Uganda), zebra, eland, topi and giraffe; hippos and crocodiles in the lake; papyrus birds and, with luck, a shoebill.',
+    know: 'About 3.5 hours from Kampala (228 km): a good first or last night of a trip west. Night drives go out with a ranger.' },
+  semuliki: {
+    when: 'All year. Expect afternoon rain in March–May and September–December.',
+    see: 'Eleven primates around Sempaya; forest elephant and buffalo; over 400 birds, 35 of them found nowhere else in East Africa; shoebill on Lake Albert.',
+    know: 'Low and warm, 18–30°C. The female spring is a 15-minute walk from the park office, the male one about an hour. Bring eggs to boil.' },
+  elgon: {
+    when: 'Best from June to August and December to March, though it can be climbed all year.',
+    see: 'Over 300 birds, the rare lammergeyer among them; giant lobelias and groundsels on the moorland; elephant and buffalo, seldom seen.',
+    know: 'The summit takes at least three days, and four is kinder. The forest walks and Sipi need no climbing. It\'s cool on the slopes: bring warm layers.' },
+  kidepo: {
+    when: 'Dry for most of the year. One light rainy season, April to September, when the tracks can be hard going.',
+    see: 'Buffalo herds, elephant, giraffe, lion and leopard; cheetah, bat-eared fox and caracal, found nowhere else in Uganda; ostrich and 56 birds of prey.',
+    know: 'A long day\'s drive from Kampala (about 570 km), or a flight. There is no fuel in the park. Walks and the Kidepo Valley drive go with a ranger.' },
+};
+for (const r of regions) Object.assign(r, regionInfo[r.id]);
+
 export const places = [
   { id: 'kampala', name: 'Kampala', region: 'road', lat: 0.3476, lon: 32.5825, photos: ['m-van-laugh', 'van-road'], note: 'Where every trip starts — pick-up at your door.' },
   { id: 'wamala', name: 'Lake Wamala', region: 'road', lat: 0.3287, lon: 31.8969, note: 'A wide, shallow lake in the hills south of Mityana.' },
