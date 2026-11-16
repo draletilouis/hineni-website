@@ -533,7 +533,8 @@ body.menu-open .mobile-menu { clip-path: inset(0 0 0 0); }
 .journey__thumbs { position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; gap: 6px; z-index: 2; }
 .journey__thumbs button { width: 42px; height: 32px; border-radius: var(--r-xs); overflow: hidden; border: 0.5px solid rgb(242 238 230 / 0.4); opacity: 0.75; transition: opacity 250ms ease-out, border-color 250ms ease-out; }
 .journey__thumbs button.is-on, .journey__thumbs button:hover { opacity: 1; border-color: var(--bone); }
-.journey__thumbs img { width: 100%; height: 100%; object-fit: cover; }
+/* (static: the card photo's own rule would otherwise stretch every thumbnail across the whole strip) */
+.journey__thumbs img { position: static; width: 100%; height: 100%; object-fit: cover; display: block; }
 /* a place's clips: the poster with a play mark; they open in the film viewer */
 .journey__thumbs button.is-clip { position: relative; }
 .journey__thumbs .is-clip .i, .journey__clip .i { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #fff; filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.6)); }
@@ -1185,7 +1186,12 @@ fieldset.field legend { padding: 0; margin-bottom: 8px; }
   .journey__more { display: none !important; }
   .journey__pick button { padding: 9px 12px; }
   .journey__pick small { display: none; }
-  .journey__card-media { flex-basis: 120px; max-height: 120px; min-height: 64px; }
+  /* the photo keeps a real height (it used to be squeezed to a 64 px strip under its own thumbnails when the
+     words were long); the card scrolls instead, and its buttons stay pinned */
+  .journey__card-media { flex: 0 0 auto; height: clamp(130px, 21svh, 190px); min-height: 0; max-height: none; }
+  .journey__thumbs { left: 8px; right: 8px; bottom: 8px; gap: 5px; overflow-x: auto; scrollbar-width: none; }
+  .journey__thumbs::-webkit-scrollbar { display: none; }
+  .journey__thumbs button { flex: 0 0 36px; width: 36px; height: 27px; }
   .journey__card-body { padding: 14px 16px; }
   .journey__card h3 { margin: 6px 0; }
   .journey__card p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

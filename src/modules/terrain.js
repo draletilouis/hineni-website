@@ -1613,7 +1613,9 @@ export function initTerrain() {
         proj.project(camera);
         let x = (proj.x * 0.5 + 0.5) * w;
         const y = (-proj.y * 0.5 + 0.5) * h + dy;
-        if (nudge) x = Math.max(4 + el._w / 2, Math.min(w - 4 - el._w / 2, x));
+        // (only a label whose point is on screen: one slid in from far outside would name the wrong spot)
+        const x0 = x;
+        if (nudge && x0 > 0 && x0 < w) x = Math.max(4 + el._w / 2, Math.min(w - 4 - el._w / 2, x));
         const r = { x: x - el._w / 2, y: y - el._h, w: el._w, h: el._h };
         const hidden = proj.z > 1 || r.x < 4 || r.y < 4 || r.x + r.w > w - 4 || r.y + r.h > h - 4
           || taken.some((q) => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
@@ -1638,7 +1640,8 @@ export function initTerrain() {
       const win = chase.on ? Math.max(15, chase.ahead * 6) : 12;
       townLabels.forEach((L) => place(L.el, L.v, 0, L.ti === trip && settled && L.km > sim.odo - win * 0.3 && L.km < sim.odo + win));
       // regions: on the overview and while choosing one in Explore (the trips' own names win a clash)
-      const pickRegion = trip < 0 || (trip === DT && DYN.kind === 'explore' && !DYN.built);
+      // (a phone's overview has no room for them beside the trips' names: there they wait for Explore)
+      const pickRegion = (trip < 0 && w >= 820) || (trip === DT && DYN.kind === 'explore' && !DYN.built);
       regionLabels.forEach((L) => {
         const ok = pickRegion && settled && !chase.on && dCam > 5 && (trip === DT || reveal > 0.95);
         place(L.el, L.v, 0, ok, true);
