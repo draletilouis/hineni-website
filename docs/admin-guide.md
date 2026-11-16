@@ -67,14 +67,20 @@ The **Map** tab lists every stop and place on the route map, and the stopovers o
   and hold on the spot and copy the coordinates (or share the place and paste its link). It pops up, with its
   photos, as that trip's drive passes it on the map. Change or delete it any time. Once it's added, the album
   opens so you can give it its photos and clips straight away.
-- **Add a place:** under each region (Fort Portal, Queen Elizabeth, Murchison, Moyo, and "On the road from
-  Kampala"), give the new place a name, where it is (as for a stopover), one line about it, and whether it's a
+- **The places the website came with** (including the national parks: Bwindi, Mgahinga, Lake Mburo, Semuliki,
+  Mount Elgon and Kidepo): change a place's **name**, the line **about it**, whether it's **a paid extra**, and
+  **Show on the map** (turned off, Explore, Build your own and the drives leave it out). Its position stays as
+  built. **Back to the original** undoes all of it, photos included.
+- **Add a place:** under each region (Fort Portal, Queen Elizabeth, Murchison, Moyo, the national parks, and
+  "On the road from Kampala"), give the new place a name, where it is (as for a stopover), one line about it, and whether it's a
   paid extra. The map looks up the roads to it from the places around it, so visitors can tour it with the
   region in **Explore** and pick it in **Build your own**, and the drive goes there on the real roads. Then add
   its photos and clips. If the road lookup fails (no internet at that moment) the map draws a straight line and
   says so in the portal: change its position, or paste it again, to try again.
 - **Regions:** each region (destination) has its own box at the top of its section: its name, a colour for its
   roads on the map, the place its tour starts from, a line about it for **Explore**, and **Show in Explore**.
+  On the website, every region's card in **Explore** also has **Drive from Kampala**: the whole drive there on
+  the real roads, with the kilometres and the towns on the way, then around the region.
   Changes to the regions the site came with can be undone with **Back to the original**.
 - **Add a region:** at the bottom of the Map tab. Give the region a name, a line about it and a colour, and its
   first place: a name and where it is (a Google Maps link or coordinates, as above). The map finds the roads to

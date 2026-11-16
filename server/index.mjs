@@ -486,14 +486,21 @@ const allPlaces = (except) => [
   ...mapPlaces,
   ...Object.entries(mapOf().places).filter(([id, p]) => p.custom && id !== except).map(([id, p]) => ({ id, ...p })),
 ];
+// The code's places can also be renamed, re-described, marked as a paid extra or not, and left off the map
+// (their position stays: their road links are built with the site, tools/fetch-network.mjs).
+const flag = (v) => (v === true || v === '1' || v === 1 ? 1 : 0);
 function placeFrom(body, prev) {
   const next = { ...prev };
   if ('photos' in body) { const p = mediaList(body.photos); if (!p) throw new Error('Unknown photo or clip.'); next.photos = p; }
-  if (!next.custom) return next;
-  if ('region' in body) { if (!REGION_IDS().includes(body.region)) throw new Error('Choose a region.'); next.region = body.region; }
   if ('name' in body) next.name = clean(body.name, 60);
   if ('note' in body) next.note = clean(body.note, 200);
-  if ('addon' in body) next.addon = body.addon === true || body.addon === '1' ? 1 : 0;
+  if ('addon' in body) next.addon = flag(body.addon);
+  if ('hidden' in body) next.hidden = flag(body.hidden);
+  if (!next.custom) {
+    if ('name' in next && !next.name) delete next.name; // an emptied name: back to the original one
+    return next;
+  }
+  if ('region' in body) { if (!REGION_IDS().includes(body.region)) throw new Error('Choose a region.'); next.region = body.region; }
   if ('lat' in body || 'lon' in body) Object.assign(next, pointFrom(body));
   if (!next.name) throw new Error('Give the place a name.');
   return next;
@@ -523,7 +530,7 @@ admin.put('/map/places/:id', async (req, res) => {
   await saveDraft(req.admin);
   res.json({ ok: true, straight: !!next.roads?.some((r) => r.straight) });
 });
-// one of the portal's own: deleted; one in the code: back to the photos it ships with
+// one of the portal's own: deleted; one in the code: back to how it ships (photos, wording, shown)
 admin.delete('/map/places/:id', async (req, res) => {
   delete mapOf().places[req.params.id];
   await saveDraft(req.admin);

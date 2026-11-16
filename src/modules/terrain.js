@@ -303,7 +303,7 @@ function driveThrough(g, net, seq, outlines, extraTowns) {
   // other places on the way, with their photos: the map names them as you pass
   const picked = new Set(seq);
   for (const p of PLACES) {
-    if (picked.has(p.id) || p.id === 'kampala') continue;
+    if (picked.has(p.id) || p.id === 'kampala' || p.hidden) continue;
     const q = near(p.lat, p.lon);
     if (q.d < 5) ev.push({ km: +q.km.toFixed(1), type: 'sight', name: p.name, note: p.note, addon: !!p.addon, off: +q.d.toFixed(1), lat: p.lat, lon: p.lon, photos: p.photos, web: p.web });
   }
@@ -444,21 +444,22 @@ export function initTerrain() {
     RD[DT] = prepare(DYN, driveThrough(G, NET, seq, outlines, towns));
     view?.rebuildDyn(outlines);
   }
-  async function explore(regionId, focus) {
+  // fromKampala: the whole drive there from Kampala, then around the region in the order that drives best
+  async function explore(regionId, focus, fromKampala = false) {
     stop();
     const reg = regionById[regionId];
-    DYN.kind = 'explore'; DYN.region = regionId;
-    const ids = PLACES.filter((p) => p.region === regionId).map((p) => p.id);
+    DYN.kind = 'explore'; DYN.region = regionId; DYN.fromKampala = fromKampala;
+    const ids = PLACES.filter((p) => p.region === regionId && !p.hidden && p.id !== 'kampala').map((p) => p.id);
     await network();
     // it starts from its hub, or its first place if the hub isn't one of them any more
-    const seq = order(G, ids.includes(reg.hub) ? reg.hub : ids[0], ids);
+    const seq = fromKampala ? order(G, 'kampala', ['kampala', ...ids]) : order(G, ids.includes(reg.hub) ? reg.hub : ids[0], ids);
     await setRoute(seq, reg.name, reg.color);
     // from the gallery: straight to that place, its region's tour around it
     show(DT, focus ? seq.indexOf(focus) : -1);
   }
   async function buildRoute() {
     stop();
-    const picks = [...DYN.picks].filter((id) => id !== 'kampala');
+    const picks = [...DYN.picks].filter((id) => id !== 'kampala' && placeById[id] && !placeById[id].hidden);
     if (!picks.length) return;
     await network();
     await setRoute(order(G, 'kampala', ['kampala', ...picks]), 'Your route', '#a9c47f');
@@ -466,13 +467,17 @@ export function initTerrain() {
   }
   function mode(kind) {
     stop();
-    DYN.kind = kind; DYN.built = false; DYN.stops = []; DYN.region = null;
+    DYN.kind = kind; DYN.built = false; DYN.stops = []; DYN.region = null; DYN.fromKampala = false;
     if (kind === 'build') myPlaces.forEach((id) => DYN.picks.add(id));
     if (RD) RD[DT] = null;
     view?.rebuildDyn();
     show(DT, -1);
     network().catch(() => {}); // warm up while they choose
   }
+  // a region's tour on its own, or the whole drive to it from Kampala (it plays straight away)
+  const fromKampalaBtn = (t) => (t.fromKampala
+    ? '<button type="button" class="btn btn--small" data-from-kampala="0" data-cursor="hover">Just the region</button>'
+    : `<button type="button" class="btn btn--small" data-from-kampala="1" data-cursor="hover">Drive from Kampala ${icon('play')}</button>`);
   const routeText = () => DYN.stops.map((st) => st.name).join(' → ') + (R() ? ` (about ${fmtKm(R().total)} km)` : '');
 
   // ---- the card: what you're looking at, how you get there, and what to do next
@@ -587,8 +592,8 @@ export function initTerrain() {
         <div class="eyebrow">Explore a region</div>
         <h3>See every place <em>in one area</em></h3>
         <p>Pick a region and drive around all of it — the places we've been, with our photos, and the ones we haven't yet.</p>
-        <div class="journey__pick">${REGIONS.filter((g) => !g.hidden && PLACES.some((p) => p.region === g.id)).map((g) => {
-          const ids = PLACES.filter((p) => p.region === g.id).map((p) => p.id);
+        <div class="journey__pick">${REGIONS.filter((g) => !g.hidden && PLACES.some((p) => p.region === g.id && !p.hidden)).map((g) => {
+          const ids = PLACES.filter((p) => p.region === g.id && !p.hidden).map((p) => p.id);
           return `<button type="button" data-region="${g.id}" style="--c:${g.color}" data-cursor="hover"><i></i>
             <span><b>${g.name}</b><small>${plural(ids.length, 'place')}, ${plural(photoCount(ids), 'photo')}</small></span><em aria-hidden="true">${icon('arrowRight')}</em></button>`;
         }).join('')}</div>
@@ -602,7 +607,7 @@ export function initTerrain() {
         <h3>Pick the places, <em>we'll drive it</em></h3>
         <p>Tick what you want to see. The map starts in Kampala and drives to them in the best order${fromExp ? ` — ${fromExp} already ticked from the experiences you added` : ''}.</p>
         <div class="journey__picker">${REGIONS.filter((g) => !g.hidden).concat(REGIONS.filter((g) => g.hidden)).map((g) => {
-          const list = PLACES.filter((p) => p.region === g.id && p.id !== 'kampala');
+          const list = PLACES.filter((p) => p.region === g.id && p.id !== 'kampala' && !p.hidden);
           return list.length ? `<fieldset style="--c:${g.color}"><legend class="eyebrow">${g.name}</legend>${list.map((p) => `
             <label class="journey__place"><input type="checkbox" data-place="${p.id}"${t.picks.has(p.id) ? ' checked' : ''} />
               <span>${p.name}${p.addon ? ' <i>add-on</i>' : ''}</span>${p.photos ? `<small>${p.photos.length} photo${p.photos.length === 1 ? '' : 's'}</small>` : ''}</label>`).join('')}</fieldset>` : '';
@@ -622,14 +627,14 @@ export function initTerrain() {
       const cover = t.stops.find((st) => st.photos)?.photos[0];
       return `${cover ? `<div class="journey__card-media"><img src="${still(cover)}" alt="" /></div>` : ''}
         <div class="journey__card-body" style="--c:${color}">
-          <div class="eyebrow">${t.kind === 'explore' ? 'Explore a region' : 'Built by you'}${pos >= n ? ': the whole route' : ''}</div>
+          <div class="eyebrow">${t.kind === 'explore' ? (t.fromKampala ? 'From Kampala' : 'Explore a region') : 'Built by you'}${pos >= n ? ': the whole route' : ''}</div>
           <h3>${t.kind === 'explore' ? reg.name : 'Your route'}</h3>
           <p>${t.kind === 'explore' ? reg.blurb : 'Every place you picked, in the order that drives best. We can turn it into a trip.'}</p>
           <p class="journey__facts">${plural(n, 'place')}${r && r.total >= 0.1 ? `, ${fmtKm(r.total)} km` : ''}. ${!withPhotos ? 'No photos of ours yet.' : n === 1 ? 'With our photos.' : `Our photos from ${withPhotos} of them.`}</p>
           <div class="journey__through journey__plan"><span class="eyebrow">In order</span>${t.stops.map((st) => `${st.photos ? '' : `${icon('noPhoto')} `}${st.name}`).join(', ')}</div>
           <div class="journey__actions">${pos < 0
-            ? `<button type="button" class="btn btn--small btn--solid" data-play data-cursor="hover">Drive it ${icon('play')}</button><button type="button" class="btn btn--small" data-mode="${t.kind}" data-cursor="hover">${t.kind === 'explore' ? 'Another region' : 'Change places'}</button>`
-            : `${send}<button type="button" class="btn btn--small" data-play data-cursor="hover">Drive it again</button>`}</div>
+            ? `<button type="button" class="btn btn--small btn--solid" data-play data-cursor="hover">Drive it ${icon('play')}</button>${t.kind === 'explore' ? fromKampalaBtn(t) : ''}<button type="button" class="btn btn--small" data-mode="${t.kind}" data-cursor="hover">${t.kind === 'explore' ? 'Another region' : 'Change places'}</button>`
+            : `${send}<button type="button" class="btn btn--small" data-play data-cursor="hover">Drive it again</button>${t.kind === 'explore' ? fromKampalaBtn(t) : ''}`}</div>
           ${nav}
         </div>`;
     }
@@ -892,6 +897,8 @@ export function initTerrain() {
     const g = e.target.closest('[data-go]');
     if (g) { stop(); step(+g.dataset.go); return; }
     if (e.target.closest('[data-play]')) { play(); return; }
+    const fk = e.target.closest('[data-from-kampala]');
+    if (fk) { const go = fk.dataset.fromKampala === '1'; explore(DYN.region, null, go).then(() => { if (go) play(); }); return; }
     if (e.target.closest('[data-skip]')) { driveTw?.progress(1); return; }
     const dm = e.target.closest('[data-drive-more]');
     if (dm) {
@@ -910,7 +917,7 @@ export function initTerrain() {
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-map-place]');
     const p = el && placeById[el.dataset.mapPlace];
-    if (p && !regionById[p.region]?.hidden) explore(p.region, p.id);
+    if (p && !p.hidden && !regionById[p.region]?.hidden) explore(p.region, p.id);
   });
   // "See the route" links elsewhere on the page open the map on that trip
   document.addEventListener('click', (e) => {

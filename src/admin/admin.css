@@ -299,6 +299,9 @@ button.card__img:hover .card__replace, button.card__img:focus-visible .card__rep
 .maprows { display: grid; gap: 10px; }
 .maprow { display: grid; gap: 10px; padding: 14px 16px; border-radius: var(--r-md); background: var(--card); border: 0.5px solid var(--line); }
 .maprow--custom { border-color: var(--gold-7); background: var(--gold-2); }
+.maprow--off .maprow__media { opacity: 0.5; }
+.maprow__about { grid-column: span 2; }
+@media (max-width: 640px) { .maprow__about { grid-column: auto; } }
 .maprow__head { display: flex; align-items: baseline; gap: 6px 10px; flex-wrap: wrap; }
 .maprow__head small { flex: 1 1 100%; color: var(--ink-2); font-size: var(--t-sm); }
 .maprow__head .link { font-size: var(--t-sm); }

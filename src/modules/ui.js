@@ -290,7 +290,7 @@ function bindItinerary() {
 const placeOfPhoto = new Map();
 function indexPlacePhotos() {
   placeOfPhoto.clear();
-  places.forEach((p) => { if (!regions.find((r) => r.id === p.region)?.hidden) p.photos?.forEach((k) => placeOfPhoto.set(k, p)); });
+  places.forEach((p) => { if (!p.hidden && !regions.find((r) => r.id === p.region)?.hidden) p.photos?.forEach((k) => placeOfPhoto.set(k, p)); });
 }
 
 // ---------------------------------------------------------------- lightbox

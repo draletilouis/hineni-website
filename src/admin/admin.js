@@ -854,8 +854,11 @@ function mapItems() {
   const regions = allRegions().map((r) => ({
     r,
     list: mapPlaces.filter((p) => p.region === r.id).map((p) => {
-      const own = m.places?.[p.id]?.photos;
-      return { kind: 'place', id: p.id, name: p.name, sub: p.note, list: own || p.photos || [], changed: !!own, web: !own && !p.photos && !!p.web };
+      const o = m.places?.[p.id] || {};
+      const own = o.photos;
+      // the place as the website shows it: its own wording unless the portal changed it
+      const s = { name: o.name || p.name, note: typeof o.note === 'string' ? o.note : p.note || '', addon: 'addon' in o ? !!o.addon : !!p.addon, hidden: !!o.hidden };
+      return { kind: 'place', id: p.id, builtIn: true, name: s.name, s, list: own || p.photos || [], changed: !!m.places?.[p.id], web: !own && !p.photos && !!p.web };
     }).concat(Object.entries(m.places || {}).filter(([, p]) => p.custom && p.region === r.id)
       .map(([id, p]) => ({ kind: 'place', id, custom: true, name: p.name, s: p, list: p.photos || [] }))),
   }));
@@ -905,6 +908,19 @@ function mapRow(it) {
         <button type="button" class="link link--danger" data-place-delete>Delete this place</button>
       </div>
       ${straight ? '<p class="maprow__warn">The road to it couldn\'t be looked up, so the map draws a straight line there for now. Change its position (or paste it again) to try again.</p>' : ''}
+      ${mapMedia(it)}</article>`;
+  }
+  // one of the website's own places: its wording, paid extra and whether it's on the map (not where it is)
+  if (it.builtIn) {
+    return `<article class="maprow${it.s.hidden ? ' maprow--off' : ''}" data-map="place" data-id="${esc(it.id)}">
+      <div class="maprow__fields">
+        <label class="field field--small">Name<input data-sf="name" maxlength="60" value="${esc(it.s.name)}" /></label>
+        <label class="field field--small maprow__about">About it<input data-sf="note" maxlength="200" value="${esc(it.s.note)}" /></label>
+        <label class="switch"><input type="checkbox" data-sf="addon"${it.s.addon ? ' checked' : ''} /><span>A paid extra, not in a trip price</span></label>
+        <label class="switch"><input type="checkbox" data-sf="show"${it.s.hidden ? '' : ' checked'} /><span>Show on the map</span></label>
+        ${it.changed ? '<button type="button" class="link" data-map-reset>Back to the original</button>' : ''}
+      </div>
+      ${it.s.hidden ? '<p class="maprow__warn">Off the map: Explore, Build your own and the drives leave it out.</p>' : ''}
       ${mapMedia(it)}</article>`;
   }
   const head = it.custom
@@ -1032,7 +1048,7 @@ $('#mapList').addEventListener('change', async (e) => {
   if (!input) return;
   const row = input.closest('[data-map]');
   const kind = row.dataset.map === 'place' ? 'places' : 'stopovers';
-  let body = { [input.dataset.sf]: input.type === 'checkbox' ? input.checked : input.value };
+  let body = input.dataset.sf === 'show' ? { hidden: !input.checked } : { [input.dataset.sf]: input.type === 'checkbox' ? input.checked : input.value };
   if (input.dataset.sf === 'pos') {
     const p = parsePos(input.value);
     if (!p) { toast(BAD_POS, 'error'); return; }

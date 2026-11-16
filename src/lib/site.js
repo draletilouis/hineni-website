@@ -60,12 +60,20 @@ export function applySite(site) {
   for (const [id, m] of Object.entries(site.map?.places || {})) {
     if (m.custom && !regions.some((r) => r.id === m.region)) continue;
     if (!m.custom || places.some((x) => x.id === id) || !Number.isFinite(m.lat) || !Number.isFinite(m.lon) || !m.name) continue;
-    places.push({ id, custom: true, name: m.name, region: m.region, lat: m.lat, lon: m.lon, note: m.note || '', addon: !!m.addon, photos: [] });
+    places.push({ id, custom: true, name: m.name, region: m.region, lat: m.lat, lon: m.lon, note: m.note || '', addon: !!m.addon, hidden: !!m.hidden, photos: [] });
     if (Array.isArray(m.roads)) mapExtras.roads.push(...m.roads);
   }
   for (const [id, m] of Object.entries(site.map?.places || {})) {
     const p = places.find((x) => x.id === id);
-    if (!p || !Array.isArray(m.photos)) continue;
+    if (!p) continue;
+    // the code's places: their wording as the portal changed it, and whether they're on the map at all
+    if (!p.custom) {
+      if (typeof m.name === 'string' && m.name) p.name = m.name;
+      if (typeof m.note === 'string') p.note = m.note;
+      if ('addon' in m) p.addon = !!m.addon;
+      if ('hidden' in m) p.hidden = !!m.hidden;
+    }
+    if (!Array.isArray(m.photos)) continue;
     p.photos = m.photos.filter(known);
     if (!p.photos.length) delete p.photos;
   }
