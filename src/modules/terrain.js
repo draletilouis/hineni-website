@@ -423,12 +423,17 @@ export function initTerrain() {
   const longest = (ti) => routeTrips[ti].stops.map((s, i) => [s, i]).filter(([s]) => s.leg && !s.leg.extra)
     .sort((a, b) => legKm(ti, b[1]) - legKm(ti, a[1]))[0]?.[0];
 
-  tripsEl.innerHTML = '<button type="button" class="journey__chip" data-trip="-1">All trips</button>' + routeTrips.map((t, i) => `
-    <button type="button" class="journey__chip" data-trip="${i}" style="--c:${t.color}"><i></i>${t.label}</button>`).join('')
-    + '<button type="button" class="journey__chip journey__chip--more" data-more aria-expanded="false" aria-controls="journeyMore">More</button>'
-    + '<span class="journey__more" id="journeyMore" hidden>'
-    + '<button type="button" class="journey__chip journey__chip--mode" data-mode="explore">Explore a region</button>'
-    + '<button type="button" class="journey__chip journey__chip--mode" data-mode="build">Build your own</button></span>';
+  // the map's three ways in, always in view: our trips, a region to explore, or a route of your own.
+  // The trips' own chips sit under the switch, and only while "Our trips" is on.
+  tripsEl.innerHTML = `<div class="journey__modes" role="group" aria-label="What the map shows">
+      <button type="button" data-seg="trips">Our trips</button>
+      <button type="button" data-seg="explore" data-mode="explore">Explore<span> Uganda</span></button>
+      <button type="button" data-seg="build" data-mode="build">Build<span> your own</span></button>
+    </div>
+    <div class="journey__tripchips" role="group" aria-label="Show a trip on the map">
+      <button type="button" class="journey__chip" data-trip="-1">All</button>${routeTrips.map((t, i) => `
+      <button type="button" class="journey__chip" data-trip="${i}" style="--c:${t.color}"><i></i>${t.label}</button>`).join('')}
+    </div>`;
 
   // ---- Explore / Build your own: load the road network once, then turn a list of places into a drive
   async function network() {
@@ -707,7 +712,7 @@ export function initTerrain() {
       const key = `${Math.round(sim.odo * 10)}|${d}`;
       if (key !== hudKey) { hudKey = key; coordEl.innerHTML = `<b>${fmtKm(sim.odo)} km</b> from ${T().stops[0]?.name || 'Kampala'}${d ? `<br />${districtName(d)}` : ''}`; }
     }
-    if (!driving || !live) return;
+    if (!driving || !live || !r) return; // no route for a moment while the mode changes mid-drive
     const r2 = R(), to = r2.stopKm[pos], from = pos ? r2.stopKm[pos - 1] : 0;
     setOdo(live.odo, sim.odo);
     live.bar.style.setProperty('--p', Math.max(0, Math.min(1, (sim.odo - from) / (to - from || 1))).toFixed(4));
@@ -743,7 +748,10 @@ export function initTerrain() {
   }
 
   function renderHUD() {
-    [...tripsEl.children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode ? trip === DT && DYN.kind === b.dataset.mode : +b.dataset.trip === trip)));
+    const seg = trip === DT ? DYN.kind : 'trips';
+    tripsEl.querySelectorAll('[data-seg]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.seg === seg)));
+    tripsEl.querySelectorAll('[data-trip]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.trip === trip)));
+    tripsEl.querySelector('.journey__tripchips').hidden = seg !== 'trips';
     stage.dataset.active = trip < 0 ? 'all' : T().id;
     stage.classList.toggle('is-driving', driving);
     // a whole trip on screen (its intro and end): the card says it all, the stop list steps aside
@@ -848,13 +856,7 @@ export function initTerrain() {
   }
 
   tripsEl.addEventListener('click', (e) => {
-    const more = e.target.closest('[data-more]');
-    if (more) {
-      const open = more.getAttribute('aria-expanded') !== 'true';
-      more.setAttribute('aria-expanded', open);
-      document.getElementById('journeyMore').hidden = !open;
-      return;
-    }
+    if (e.target.closest('[data-seg="trips"]')) { if (trip === DT) { stop(); show(-1, -1); } return; }
     const m = e.target.closest('[data-mode]');
     if (m) { mode(m.dataset.mode); return; }
     const b = e.target.closest('[data-trip]');
