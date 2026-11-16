@@ -46,6 +46,13 @@ const GEO_LABELS = [
   { name: 'Adjumani', lat: 3.378, lon: 31.79, up: 0.15, near: 'laropi' },
   { name: 'Albert Nile', lat: 3.52, lon: 31.86, up: 0.1, near: 'buce' },
   { name: 'Gulu', lat: 2.78, lon: 32.3, up: 0.3 },
+  // the parks from the UWA brochures, seen from altitude
+  { name: 'Bwindi Forest', lat: -1.02, lon: 29.7, up: 0.6 },
+  { name: 'Virunga volcanoes', lat: -1.42, lon: 29.64, up: 1.0 },
+  { name: 'Lake Mburo', lat: -0.66, lon: 30.93, up: 0.3 },
+  { name: 'Semuliki Forest', lat: 0.8, lon: 30.08, up: 0.4 },
+  { name: 'Mt Elgon, 4,321 m', lat: 1.12, lon: 34.53, up: 1.2 },
+  { name: 'Kidepo Valley', lat: 3.86, lon: 33.8, up: 0.5 },
 ];
 
 // ---------------------------------------------------------------- data
@@ -618,7 +625,7 @@ export function initTerrain() {
           <div class="eyebrow">${t.kind === 'explore' ? 'Explore a region' : 'Built by you'}${pos >= n ? ': the whole route' : ''}</div>
           <h3>${t.kind === 'explore' ? reg.name : 'Your route'}</h3>
           <p>${t.kind === 'explore' ? reg.blurb : 'Every place you picked, in the order that drives best. We can turn it into a trip.'}</p>
-          <p class="journey__facts">${plural(n, 'place')}${r && r.total >= 0.1 ? `, ${fmtKm(r.total)} km` : ''}. ${n === 1 ? (withPhotos ? 'With our photos.' : 'No photos of ours yet.') : `Our photos from ${withPhotos} of them.`}</p>
+          <p class="journey__facts">${plural(n, 'place')}${r && r.total >= 0.1 ? `, ${fmtKm(r.total)} km` : ''}. ${!withPhotos ? 'No photos of ours yet.' : n === 1 ? 'With our photos.' : `Our photos from ${withPhotos} of them.`}</p>
           <div class="journey__through journey__plan"><span class="eyebrow">In order</span>${t.stops.map((st) => `${st.photos ? '' : `${icon('noPhoto')} `}${st.name}`).join(', ')}</div>
           <div class="journey__actions">${pos < 0
             ? `<button type="button" class="btn btn--small btn--solid" data-play data-cursor="hover">Drive it ${icon('play')}</button><button type="button" class="btn btn--small" data-mode="${t.kind}" data-cursor="hover">${t.kind === 'explore' ? 'Another region' : 'Change places'}</button>`

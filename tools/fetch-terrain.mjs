@@ -18,8 +18,9 @@ fs.mkdirSync(cache, { recursive: true });
 
 // lat0/lat1 south/north, lon0/lon1 west/east
 const REGIONS = [
+  // the overview reaches 35°E for Mount Elgon on the Kenyan border
   // texture sizes are a GPU-memory budget: Fort Portal is the showcase, the rest stay at 2048
-  { id: 'overview', lat0: -2.0, lat1: 4.6, lon0: 28.1, lon1: 34.1, demZ: 9, satZ: 10, grid: 1024, tex: 2048 },
+  { id: 'overview', lat0: -2.0, lat1: 4.6, lon0: 28.1, lon1: 35.0, demZ: 9, satZ: 10, grid: 1024, tex: 2048 },
   { id: 'fortportal', lat0: 0.3, lat1: 0.82, lon0: 30.0, lon1: 30.52, demZ: 12, satZ: 14, grid: 768, tex: 4096 },
   { id: 'murchison', lat0: 2.05, lat1: 2.45, lon0: 31.3, lon1: 31.85, demZ: 12, satZ: 13, grid: 640, tex: 2048 },
   { id: 'qenp', lat0: -0.32, lat1: 0.12, lon0: 29.78, lon1: 30.22, demZ: 12, satZ: 13, grid: 640, tex: 2048 },

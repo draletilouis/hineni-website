@@ -111,7 +111,11 @@ for (const p of places) {
 // Direct links matter: chaining through a place that sits off the highway (Lake Wamala) would add a detour.
 [['kampala', 'fortportal'], ['kampala', 'gate'], ['kampala', 'paraa'], ['kampala', 'laropi'], ['fortportal', 'kibale'],
   ['kampala', 'wamala'], ['wamala', 'nakayima'], ['nakayima', 'fortportal'], ['kampala', 'ziwa'], ['ziwa', 'gate'], ['gate', 'paraa'], ['gate', 'topfalls'],
-  ['ziwa', 'laropi'], ['laropi', 'paraa'], ['fortportal', 'kasenyi'], ['fortportal', 'nyakalengija'], ['kasenda', 'kasenyi'], ['kibale', 'mpanga']]
+  ['ziwa', 'laropi'], ['laropi', 'paraa'], ['fortportal', 'kasenyi'], ['fortportal', 'nyakalengija'], ['kasenda', 'kasenyi'], ['kibale', 'mpanga'],
+  // the parks from the UWA brochures: south-west via Mbarara, over the Rwenzori to Semuliki, east to Elgon, north-east to Kidepo
+  ['kampala', 'rwonyo'], ['rwonyo', 'kibale'], ['rwonyo', 'kasenyi'], ['rwonyo', 'bunyonyi'], ['bunyonyi', 'ruhija'], ['bunyonyi', 'mutanda'],
+  ['mutanda', 'rushaga'], ['ishasha', 'buhoma'], ['fortportal', 'sempaya'], ['fortportal', 'torosemliki'],
+  ['kampala', 'sipi'], ['kampala', 'wanale'], ['sipi', 'apoka'], ['kampala', 'apoka']]
   .forEach(([a, b]) => link(a, b));
 
 // ---------------------------------------------------------------- the links, on real roads
@@ -146,7 +150,10 @@ try {
   const tj = await overpass(`[out:json][timeout:240];${around(2500, 'node["place"~"^(city|town)$"]')};out;`);
   towns = tj.elements.map((n) => ({ name: n.tags.name, lat: +n.lat.toFixed(4), lon: +n.lon.toFixed(4) }));
 } catch (e) {
-  console.log(`  (districts/towns skipped: ${e.message} — the map falls back to the trips' district outlines)`);
+  // keep the last build's districts and towns rather than none (Overpass is often busy)
+  try { ({ districts, towns } = JSON.parse(fs.readFileSync(out, 'utf8'))); } catch { /* first build */ }
+  console.log(`  (districts/towns skipped: ${e.message} — kept the previous build's ${Object.keys(districts || {}).length} districts and ${(towns || []).length} towns)`);
+  districts ||= {}; towns ||= [];
 }
 
 fs.writeFileSync(out, JSON.stringify({ credit: 'Roads and places © OpenStreetMap contributors (ODbL), routing by OSRM', edges, districts, towns }));

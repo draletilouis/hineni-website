@@ -216,6 +216,19 @@ export const regions = [
     blurb: 'The Nile forced through a seven-metre gap, the river cruise below it and the giraffe plains of the north bank.' },
   { id: 'moyo', name: 'Moyo & the West Nile', color: '#75c7f0', hub: 'laropi',
     blurb: 'The far north-west: the Laropi ferry over the Albert Nile, green hills and the climb up Mt. Buce on the South Sudan border.' },
+  // the national parks from the Uganda Wildlife Authority brochures: places we haven't taken a group to yet
+  { id: 'bwindi', name: 'Bwindi Impenetrable Forest', color: '#7fd18b', hub: 'buhoma',
+    blurb: 'Mountain gorilla country: four trailheads into one of Africa\'s oldest forests, on the edge of the Albertine Rift.' },
+  { id: 'mgahinga', name: 'Mgahinga & the Virunga volcanoes', color: '#b99af2', hub: 'ntebeko',
+    blurb: 'Uganda\'s smallest park, on three volcanoes shared with Rwanda and Congo: gorillas, golden monkeys, summit climbs, and the lakes Mutanda and Bunyonyi.' },
+  { id: 'mburo', name: 'Lake Mburo', color: '#f39ab8', hub: 'rwonyo',
+    blurb: 'A compact park on the way west: zebra, eland and Uganda\'s only impala, a boat on the lake, and safaris on horseback and by bike.' },
+  { id: 'semuliki', name: 'Semuliki & the rift valley floor', color: '#58d0c3', hub: 'sempaya',
+    blurb: 'Over the Rwenzori from Fort Portal: the Congo\'s forest at its eastern edge, boiling hot springs, and the shore of Lake Albert.' },
+  { id: 'elgon', name: 'Mount Elgon & Sipi', color: '#ff7a66', hub: 'sipi',
+    blurb: 'An old volcano on the Kenyan border: Sipi\'s three waterfalls and coffee farms below, forest trails and the climb to a vast caldera above.' },
+  { id: 'kidepo', name: 'Kidepo Valley', color: '#e3b071', hub: 'apoka',
+    blurb: 'One of East Africa\'s last great wildernesses, in the far north-east: buffalo herds, lion and cheetah, ringed by mountains.' },
   { id: 'road', name: 'On the road from Kampala', color: '#adb5b2', hub: 'kampala', hidden: true },
 ];
 export const places = [
@@ -233,13 +246,12 @@ export const places = [
   { id: 'craters', name: 'Kiganywa Hill', region: 'fortportal', lat: 0.6835, lon: 30.2385, photos: ['crater-crew', 'ridge-joy', 'rim-hikers', 'crater-dusk', 'crater-storm'], note: 'A short, steep hike between the crater lakes, with storms rolling off the Rwenzori.' },
   { id: 'saaka', name: 'Lake Saaka', region: 'fortportal', lat: 0.6924, lon: 30.2429, web: ['w-saaka', 'w-saaka-2'], note: 'The crater lake below Kiganywa Hill.' },
   { id: 'kyaninga', name: 'Lake Kyaninga', region: 'fortportal', lat: 0.704, lon: 30.297, photos: ['crater-sweep', 'deck'], note: 'One of the most perfect crater lakes in Africa, with a floating deck for lunch.' },
-  { id: 'sempaya', name: 'Sempaya Hot Springs', region: 'fortportal', lat: 0.8353, lon: 30.1656, addon: true, web: ['w-sempaya', 'w-sempaya-2'], note: 'Boiling springs in the Semuliki forest, over the Rwenzori towards Bundibugyo.' },
   { id: 'topworld', name: 'Top of the World', region: 'fortportal', lat: 0.5146, lon: 30.319, note: 'A ridge-top viewpoint over three crater lakes at once.' },
   { id: 'nkuruba', name: 'Lake Nkuruba', region: 'fortportal', lat: 0.517, lon: 30.303, web: ['w-nkuruba'], note: 'A small crater lake ringed by forest and monkeys.' },
   { id: 'nyabikere', name: 'Lake Nyabikere', region: 'fortportal', lat: 0.4972, lon: 30.3282, web: ['w-nyabikere'], note: 'A crater lake on the road towards Kibale.' },
   { id: 'nyinambuga', name: 'Lake Nyinambuga', region: 'fortportal', lat: 0.4805, lon: 30.2903, note: 'The crater lake below Ndali Lodge.' },
   { id: 'kasenda', name: 'Lake Kasenda', region: 'fortportal', lat: 0.4321, lon: 30.2903, note: 'At the southern end of the crater field.' },
-  { id: 'kibale', name: 'Kibale Forest, Kanyanchu', region: 'fortportal', lat: 0.437, lon: 30.3933, addon: true, photos: ['rainforest'], note: 'Chimpanzee tracking in Kibale Forest.' },
+  { id: 'kibale', name: 'Kibale Forest, Kanyanchu', region: 'fortportal', lat: 0.437, lon: 30.3933, addon: true, photos: ['rainforest'], note: 'Chimpanzee tracking in Kibale Forest, home to Uganda\'s largest chimp population. Walks leave at 8, 11 and 2; from age 16.' },
   { id: 'bigodi', name: 'Bigodi Wetland Sanctuary', region: 'fortportal', lat: 0.404, lon: 30.4113, addon: true, web: ['w-bigodi', 'w-bigodi-2'], note: 'A community-run swamp walk for birds and monkeys, next to Kibale.' },
 
   // Queen Elizabeth & the Rwenzori foothills
@@ -248,25 +260,69 @@ export const places = [
   { id: 'kazinga', name: 'Kazinga Channel', region: 'qenp', lat: -0.165, lon: 29.95, photos: ['elephants-kazinga', 'elephant-line', 'elephants-bank', 'hippo-water', 'hippo-wallow', 'cruise-buffalo', 'kazinga-clouds', 'waterbuck'], note: 'Two hours on the water between Lakes George and Edward: hippos by the hundred, elephant at the edge.' },
   { id: 'equator', name: 'The Equator at Kikorongo', region: 'qenp', lat: 0.0, lon: 29.9992, photos: ['equator', 'equator-couple'], note: 'One foot in each hemisphere.' },
   { id: 'katwecraters', name: 'Katwe–Kikorongo craters', region: 'qenp', lat: -0.0807, lon: 29.9282, web: ['w-katwecraters', 'w-katwecraters-2'], note: 'Explosion craters along the park\'s crater drive.' },
-  { id: 'katwe', name: 'Lake Katwe', region: 'qenp', lat: -0.1286, lon: 29.8704, web: ['w-katwe'], note: 'A crater lake where salt is still dug by hand.' },
+  { id: 'katwe', name: 'Lake Katwe', region: 'qenp', lat: -0.1286, lon: 29.8704, web: ['w-katwe'], note: 'A crater lake where salt has been dug by hand since the 14th century. Local guides take you down into the pans.' },
   { id: 'munyanyange', name: 'Lake Munyanyange', region: 'qenp', lat: -0.1361, lon: 29.8857, web: ['w-munyanyange', 'w-munyanyange-2'], note: 'A shallow lake beside Katwe that flamingos visit in season.' },
   { id: 'mweya', name: 'Mweya Peninsula', region: 'qenp', lat: -0.1907, lon: 29.8996, web: ['w-mweya'], note: 'The lodge and viewpoint between the Kazinga Channel and Lake Edward.' },
-  { id: 'kyambura', name: 'Kyambura Gorge', region: 'qenp', lat: -0.1684, lon: 30.0922, addon: true, web: ['w-kyambura', 'w-kyambura-2'], note: 'A sunken forest gorge with chimpanzees.' },
-  { id: 'maramagambo', name: 'Maramagambo Forest', region: 'qenp', lat: -0.4301, lon: 29.9741, addon: true, note: 'Old forest in the south of the park, with a bat cave.' },
+  { id: 'kyambura', name: 'Kyambura Gorge', region: 'qenp', lat: -0.1684, lon: 30.0922, addon: true, web: ['w-kyambura', 'w-kyambura-2'], note: 'A forest gorge 100 metres deep, sunk into the savanna. Look over the edge, then go down to track chimpanzees.' },
+  { id: 'maramagambo', name: 'Maramagambo Forest', region: 'qenp', lat: -0.4301, lon: 29.9741, addon: true, note: 'Shady forest at the foot of the escarpment: the Bat Cave and its python, the Blue Lake, and crater-lake Nyamusingire.' },
+  { id: 'ishasha', name: 'Ishasha', region: 'qenp', lat: -0.6139, lon: 29.6661, note: 'The park\'s far south, on the road to Bwindi: lions that spend the day up in fig trees, with topi, buffalo and elephant.' },
   { id: 'mpanga', name: 'Mpanga Falls', region: 'qenp', lat: 0.0712, lon: 30.3249, note: 'A waterfall in a deep gorge on the Mpanga River, off the beaten track.' },
-  { id: 'nyakalengija', name: 'Rwenzori Mountains, Nyakalengija', region: 'qenp', lat: 0.3422, lon: 30.0432, addon: true, photos: ['rwenzori'], note: 'The trailhead for the Mountains of the Moon.' },
-  { id: 'kilembe', name: 'Kilembe', region: 'qenp', lat: 0.2069, lon: 29.9961, web: ['w-kilembe', 'w-kilembe-2'], note: 'The old copper mines in the Rwenzori foothills above Kasese.' },
+  { id: 'nyakalengija', name: 'Rwenzori Mountains, Nyakalengija', region: 'qenp', lat: 0.3422, lon: 30.0432, addon: true, photos: ['rwenzori'], note: 'The trailhead for the Mountains of the Moon: a forest day walk, two days to Lake Mahoma, or seven to Margherita Peak (5,109 m).' },
+  { id: 'kilembe', name: 'Kilembe', region: 'qenp', lat: 0.2069, lon: 29.9961, web: ['w-kilembe', 'w-kilembe-2'], note: 'The old copper mines above Kasese, and the start of the Kilembe Trail into the Rwenzori.' },
 
   // Murchison Falls
   { id: 'gate', name: 'Murchison Falls NP gate', region: 'murchison', lat: 1.8534, lon: 31.7098, photos: ['m-gate-dance'], note: 'Park entry, and the first dance of the trip.' },
   { id: 'paraa', name: 'The Victoria Nile at Paraa', region: 'murchison', lat: 2.285, lon: 31.566, photos: ['m-elephant-nile', 'm-group-boat', 'm-croc', 'm-croc-tree', 'm-elephant-face'], note: 'The boat cruise upstream: tuskers in the shallows, crocodiles on the sand.' },
   { id: 'topfalls', name: 'Murchison Falls', region: 'murchison', lat: 2.278, lon: 31.6858, photos: ['m-falls-head', 'm-falls-cliff', 'm-falls-top', 'm-top-sign', 'm-arms-falls', 'm-photographer', 'm-ranger'], note: 'The whole Nile through a gap about seven metres wide — from the boat below and from the top.' },
   { id: 'buligi', name: 'Buligi Plains', region: 'murchison', lat: 2.29, lon: 31.44, photos: ['m-giraffes', 'm-hyena', 'm-hartebeest', 'm-kob-palms', 'm-giraffes-dusk', 'm-elephants-acacia'], note: 'Dawn on the north bank: Rothschild\'s giraffe, hyena and hartebeest in the borassus palms.' },
+  { id: 'delta', name: 'The Nile delta at Lake Albert', region: 'murchison', lat: 2.2533, lon: 31.3852, addon: true, note: 'Where the Nile meets Lake Albert: papyrus channels and islands, and the best chance of a shoebill, by boat from Paraa.' },
+  { id: 'kaniyo', name: 'Kaniyo Pabidi, Budongo Forest', region: 'murchison', lat: 1.918, lon: 31.7193, addon: true, note: 'Chimpanzee tracking in the Budongo forest south of the Nile, and rare forest birds.' },
 
   // Moyo & the West Nile
   { id: 'laropi', name: 'Laropi Ferry', region: 'moyo', lat: 3.551, lon: 31.802, photos: ['y-ferry-sunset', 'y-ferry-clouds', 'y-arms-nile', 'y-canoe', 'y-nile-smile', 'y-nile-dusk'], note: 'Across the Albert Nile at sunset, the hills of Moyo on the far bank.' },
   { id: 'moyo', name: 'Moyo', region: 'moyo', lat: 3.655, lon: 31.722, photos: ['y-grass-cow', 'y-grill', 'y-fire', 'y-mangoes', 'y-dusk-hills'], note: 'A green hill town a few kilometres from South Sudan: mangoes, muchomo and bonfire nights.' },
   { id: 'buce', name: 'Mt. Buce', region: 'moyo', lat: 3.7, lon: 31.84, photos: ['b-summit-joy', 'b-panorama', 'b-elder-nile', 'b-hat-nile', 'b-edge-nile', 'b-summit-crew', 'b-dance', 'b-village-trail'], note: 'A summit hike with local guides on the South Sudan border, the Albert Nile far below.' },
+
+  // The parks below come from the Uganda Wildlife Authority brochures (2018). We haven't taken a group
+  // there yet, so no photos of our own. addon = a permit or activity paid on top (gorilla tracking, climbs, boats).
+  // Bwindi Impenetrable Forest
+  { id: 'buhoma', name: 'Buhoma, Bwindi', region: 'bwindi', lat: -0.9661, lon: 29.614, addon: true, note: 'Bwindi\'s main trailhead, where gorilla tracking began in 1993. Waterfall trails, and village walks with the Batwa and Bakiga.' },
+  { id: 'ruhija', name: 'Ruhija, Bwindi', region: 'bwindi', lat: -1.0532, lon: 29.7786, addon: true, note: 'The high eastern trailhead: gorilla groups, and Bwindi\'s best birding on the Bamboo Trail and in the Mubwindi Swamp.' },
+  { id: 'rushaga', name: 'Rushaga, Bwindi', region: 'bwindi', lat: -1.1275, lon: 29.6923, addon: true, note: 'The southern trailhead with the most gorilla groups, a short drive from Kisoro and Lake Mutanda.' },
+  { id: 'nkuringo', name: 'Nkuringo, Bwindi', region: 'bwindi', lat: -1.0799, lon: 29.6275, addon: true, note: 'A ridge on the forest\'s southern edge, facing the Virunga volcanoes. Gorillas, and a forest walk led by Batwa guides.' },
+
+  // Mgahinga & the Virunga volcanoes
+  { id: 'ntebeko', name: 'Ntebeko, Mgahinga', region: 'mgahinga', lat: -1.354, lon: 29.622, addon: true, note: 'The park headquarters under three volcanoes, where gorilla and golden monkey tracking start. Birds along the stone Buffalo Wall.' },
+  { id: 'garama', name: 'Batwa Trail & Garama Cave', region: 'mgahinga', lat: -1.3573, lon: 29.6315, addon: true, note: 'Batwa guides show their old forest home, ending with music and dance in a lava-tube cave once home to their king.' },
+  { id: 'muhavura', name: 'Mount Muhavura', region: 'mgahinga', lat: -1.383, lon: 29.6779, addon: true, note: '"The guide", 4,127 m, climbed in a day: a small crater lake on top and views along the whole Virunga chain.' },
+  { id: 'sabinyo', name: 'Mount Sabinyo', region: 'mgahinga', lat: -1.3878, lon: 29.592, addon: true, note: '"Old man\'s teeth": a jagged 3,669 m summit, the last part up ladders, where Uganda, Rwanda and Congo meet.' },
+  { id: 'mutanda', name: 'Lake Mutanda', region: 'mgahinga', lat: -1.2148, lon: 29.6655, note: 'A lake dammed by lava, its islands facing the Virunga volcanoes, 15 km north of Mgahinga.' },
+  { id: 'bunyonyi', name: 'Lake Bunyonyi', region: 'mgahinga', lat: -1.2694, lon: 29.9377, note: 'Twenty-odd islands and steep terraced hills on a lake blocked by lava, near Kabale. A good night on the way to the volcanoes.' },
+
+  // Lake Mburo
+  { id: 'rwonyo', name: 'Rwonyo & Lake Mburo', region: 'mburo', lat: -0.6375, lon: 30.953, note: 'The rest camp by the lake: a two-hour boat trip past hippos and crocodiles, and a guided walk to the salt lick.' },
+  { id: 'kazuma', name: 'Kazuma Hill Lookout', region: 'mburo', lat: -0.6608, lon: 31.0063, note: 'A steep track to a hilltop that looks over Lake Mburo and several more lakes.' },
+  { id: 'mihingo', name: 'Horseback at Mihingo', region: 'mburo', lat: -0.603, lon: 31.0479, addon: true, note: 'Ride the grassy ridges among zebra and eland, from the lodge on a rock kopje by the eastern gate.' },
+  { id: 'nshara', name: 'Nshara Gate', region: 'mburo', lat: -0.5321, lon: 31.0174, addon: true, note: 'Mountain biking into the park, past impala, the only ones in Uganda.' },
+
+  // Semuliki & the rift valley floor
+  { id: 'sempaya', name: 'Sempaya Hot Springs', region: 'semuliki', lat: 0.8353, lon: 30.1656, addon: true, web: ['w-sempaya', 'w-sempaya-2'], note: 'The "female" spring spouts boiling water two metres high (bring eggs to cook); the "male" one is an hour\'s walk through the forest.' },
+  { id: 'ntandi', name: 'Semuliki Forest, Ntandi', region: 'semuliki', lat: 0.8088, lon: 30.1482, note: 'The road from Sempaya looks into the canopy of the Congo\'s Ituri forest: hornbills and birds found nowhere else in East Africa.' },
+  { id: 'torosemliki', name: 'Toro-Semliki Wildlife Reserve', region: 'semuliki', lat: 0.9088, lon: 30.356, note: 'Uganda\'s oldest game reserve, on the rift valley floor: game drives, and chimps in the Mugiri River forest.' },
+  { id: 'ntoroko', name: 'Ntoroko, Lake Albert', region: 'semuliki', lat: 1.052, lon: 30.5373, addon: true, note: 'Boats on Lake Albert for shoebill and hippos, and Nkusi Falls plunging off the rift escarpment into the lake.' },
+
+  // Mount Elgon & Sipi
+  { id: 'sipi', name: 'Sipi Falls', region: 'elgon', lat: 1.3363, lon: 34.3772, note: 'Three waterfalls over basalt cliffs just below the park: rock climbing, trout fishing, and tours of the Arabica coffee farms.' },
+  { id: 'kapkwai', name: 'Kapkwai Forest Exploration Centre', region: 'elgon', lat: 1.3352, lon: 34.4116, note: 'Forest walks to caves, waterfalls and viewpoints, and the start of the Sipi Trail to the peaks.' },
+  { id: 'budadiri', name: 'Budadiri, the Sasa Trail', region: 'elgon', lat: 1.1708, lon: 34.3355, addon: true, note: 'The shortest way to the summit: three or four days up and down, starting with the climb of the Mudangi Cliffs.' },
+  { id: 'wagagai', name: 'Wagagai, Mount Elgon', region: 'elgon', lat: 1.1186, lon: 34.5267, addon: true, note: 'The 4,321 m summit, on the rim of a caldera about 8 km across, one of the largest in the world.' },
+  { id: 'wanale', name: 'Wanale Cliffs', region: 'elgon', lat: 1.0451, lon: 34.2257, note: 'Cliffs 700 m high over Mbale, at the end of a lava ridge, with viewpoints along the road through a gap in them.' },
+
+  // Kidepo Valley
+  { id: 'apoka', name: 'Apoka', region: 'kidepo', lat: 3.7355, lon: 33.7273, note: 'The heart of the park: the rest camp and lodges over the Narus Valley, and walks among zebra, hartebeest and reedbuck.' },
+  { id: 'narus', name: 'Narus Valley', region: 'kidepo', lat: 3.7815, lon: 33.6834, note: 'The game drives: buffalo by the hundred in the swamps, giraffe on the slopes, lions on the rocks.' },
+  { id: 'kanangorok', name: 'Kanangorok Hot Springs', region: 'kidepo', lat: 3.9949, lon: 33.7661, note: 'Small hot pools on the South Sudan border, past the dry, sandy Kidepo River. Ostriches and secretary birds on the way.' },
+  { id: 'karenga', name: 'Karamojong homesteads, Karenga', region: 'kidepo', lat: 3.5677, lon: 33.6951, note: 'Visit a manyatta to learn the customs and dances of the Karamojong herders who live around the park.' },
 ];
 // "Add to my trip" on an experience puts these places in "Build your own"
 export const experiencePlaces = {
@@ -328,6 +384,10 @@ export const didYouKnow = [
   { title: 'More than fifty crater lakes', text: 'Old volcanoes around Fort Portal left more than fifty crater lakes. From some ridges you can see three at once.' },
   { title: 'Hippos by the hundred', text: 'The Kazinga Channel joins Lake George to Lake Edward, and its banks hold one of the largest gatherings of hippos in Africa.' },
   { title: 'The kob on the coat of arms', text: 'The Uganda kob, the antelope you see by the thousand on the Kasenyi plains, is on the national coat of arms.' },
+  { title: 'Older than the Ice Age', text: 'Bwindi\'s forest has been growing for some 25,000 years, one of the few in Africa that came through the dry spells of the last Ice Age.' },
+  { title: 'Three countries, one summit', text: 'The jagged top of Mount Sabinyo in Mgahinga is where Uganda, Rwanda and Congo meet. You stand in all three at once.' },
+  { title: 'Taller than Kilimanjaro', text: 'Mount Elgon was once higher than Kilimanjaro. A huge eruption emptied it and the top fell in, leaving a caldera about 8 km across.' },
+  { title: 'Home of the hippo', text: 'Paraa, the hub of Murchison Falls, means "home of the hippo" in the local Luo language. The boat trips leave from there.' },
 ];
 
 // "Have you ever heard of the Ugly 5?": the safari answer to the Big Five, with our own photos. No warthog or
