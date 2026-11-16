@@ -81,6 +81,10 @@ The **Map** tab lists every stop and place on the route map, and the stopovers o
   roads on the map, the place its tour starts from, a line about it for **Explore**, and **Show in Explore**.
   On the website, every region's card in **Explore** also has **Drive from Kampala**: the whole drive there on
   the real roads, with the kilometres and the towns on the way, then around the region.
+- **Stopovers on the drive from Kampala:** under each region, below its places. Add one the same way as a trip's
+  stopover (a name, a time, where it is, a note), then give it photos and clips. It pops up, with its photos, as
+  **Drive from Kampala** passes it, and on the region's own tour when it's on that road. It must be on (or near)
+  the road the map drives: one more than about 10 km off it won't show. Change or delete it any time.
   Changes to the regions the site came with can be undone with **Back to the original**.
 - **Add a region:** at the bottom of the Map tab. Give the region a name, a line about it and a colour, and its
   first place: a name and where it is (a Google Maps link or coordinates, as above). The map finds the roads to
