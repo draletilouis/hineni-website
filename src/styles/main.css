@@ -318,7 +318,7 @@ body.menu-open .mobile-menu { clip-path: inset(0 0 0 0); }
 .journey { position: relative; background: var(--ink); }
 .journey__stage { position: relative; height: 100svh; overflow: hidden; }
 .journey__gl { position: absolute; inset: 0; }
-.journey__head { position: absolute; z-index: 3; top: 100px; left: var(--gutter); max-width: min(800px, 58vw); pointer-events: none; }
+.journey__head { position: absolute; z-index: 3; top: 100px; left: var(--gutter); max-width: min(800px, 62vw); pointer-events: none; }
 .journey__head h2 { margin: 10px 0 0; font-family: var(--f-display); font-weight: 300; font-size: var(--t-lg); line-height: 1; letter-spacing: -0.02em; }
 .journey__head h2 em { font-style: italic; color: var(--accent); }
 /* the map tilts into a pale sky behind the heading: a soft dark halo keeps it readable */
@@ -418,7 +418,11 @@ body.menu-open .mobile-menu { clip-path: inset(0 0 0 0); }
 .journey__steps button.is-active small, .journey__steps button:hover small { opacity: 0.7; }
 .journey__compass { position: absolute; z-index: 3; top: 100px; right: var(--gutter); text-align: right; }
 /* names on the map: trips in the overview, stops once a trip is chosen */
-.pin-label--stop, .pin-label--trip { pointer-events: auto; cursor: pointer; }
+.pin-label--stop, .pin-label--trip, .pin-label--region { pointer-events: auto; cursor: pointer; }
+/* a region's name on the map: tap it to explore the region */
+.pin-label--region { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; font-size: var(--t-sm); color: var(--bone); background: rgb(15 26 20 / 0.6); border-color: rgb(255 255 255 / 0.18); transition: border-color 200ms ease-out, background 200ms ease-out, opacity 250ms ease-out; }
+.pin-label--region i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
+.pin-label--region:hover, .pin-label--region:focus-visible { border-color: var(--c); background: rgb(15 26 20 / 0.88); }
 .pin-label--stop:hover { border-color: var(--bone); }
 .pin-label--trip { display: inline-flex; align-items: center; gap: 8px; border-color: var(--c); color: var(--bone); font-size: var(--t-sm); padding: 7px 12px; }
 .pin-label--trip i { width: 12px; height: 3px; border-radius: 999px; background: var(--c); }

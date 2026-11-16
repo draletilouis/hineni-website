@@ -46,13 +46,6 @@ const GEO_LABELS = [
   { name: 'Adjumani', lat: 3.378, lon: 31.79, up: 0.15, near: 'laropi' },
   { name: 'Albert Nile', lat: 3.52, lon: 31.86, up: 0.1, near: 'buce' },
   { name: 'Gulu', lat: 2.78, lon: 32.3, up: 0.3 },
-  // the parks from the UWA brochures, seen from altitude
-  { name: 'Bwindi Forest', lat: -1.02, lon: 29.7, up: 0.6 },
-  { name: 'Virunga volcanoes', lat: -1.42, lon: 29.64, up: 1.0 },
-  { name: 'Lake Mburo', lat: -0.66, lon: 30.93, up: 0.3 },
-  { name: 'Semuliki Forest', lat: 0.8, lon: 30.08, up: 0.4 },
-  { name: 'Mt Elgon, 4,321 m', lat: 1.12, lon: 34.53, up: 1.2 },
-  { name: 'Kidepo Valley', lat: 3.86, lon: 33.8, up: 0.5 },
 ];
 
 // ---------------------------------------------------------------- data
@@ -1253,6 +1246,22 @@ export function initTerrain() {
       el.addEventListener('click', () => { stop(); show(ti, -1); });
       return { el, P: places.get(t.anchor) };
     });
+    // every region is named on the map from altitude, and the name is a button: it opens that region's tour
+    const regionLabels = REGIONS.filter((g) => !g.hidden).map((g) => {
+      const list = PLACES.filter((p) => p.region === g.id && !p.hidden);
+      const at = list.find((p) => p.id === g.hub) || list[0];
+      if (!at) return null;
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.tabIndex = -1;
+      el.className = 'pin-label pin-label--region is-hidden';
+      el.style.setProperty('--c', g.color);
+      el.innerHTML = `<i></i>${g.name.split(' & ')[0]}`;
+      el.setAttribute('aria-label', `Explore ${g.name}`);
+      labelsEl.appendChild(el);
+      el.addEventListener('click', () => explore(g.id));
+      return { id: g.id, el, v: new THREE.Vector3(toX(at.lon), ground(at.lat, at.lon) + 0.5, toZ(at.lat)) };
+    }).filter(Boolean);
     const geoLabels = GEO_LABELS.map((e) => {
       const el = document.createElement('div');
       el.className = 'pin-label pin-label--geo is-hidden';
@@ -1295,7 +1304,7 @@ export function initTerrain() {
       return { ti, km: e.km, type: e.type, sp, el, v };
     });
     let marks = routeTrips.flatMap((_, ti) => makeMarks(ti));
-    [...places.values()].map((P) => P.el).concat(tripLabels.map((L) => L.el), geoLabels.map((g) => g.el), townLabels.map((g) => g.el), marks.map((M) => M.el))
+    [...places.values()].map((P) => P.el).concat(tripLabels.map((L) => L.el), regionLabels.map((L) => L.el), geoLabels.map((g) => g.el), townLabels.map((g) => g.el), marks.map((M) => M.el))
       .forEach((el) => { el._w = el.offsetWidth; el._h = el.offsetHeight; });
 
     // ---- camera shots
@@ -1369,9 +1378,10 @@ export function initTerrain() {
     // camera, see where the points land on screen, then move and zoom until they fill the free area
     const VIEW = new THREE.Vector3(0.1, 1.0, 0.5).normalize();
     const fitCam = camera.clone(), fp = new THREE.Vector3(), right = new THREE.Vector3(), upv = new THREE.Vector3();
-    function frame(pts) {
+    // must: a few points that have to be in view whatever the sampling keeps (the regions' names)
+    function frame(pts, must = []) {
       const step = Math.max(1, Math.floor(pts.length / 300));
-      const sample = pts.filter((_, i) => i % step === 0);
+      const sample = pts.filter((_, i) => i % step === 0).concat(must);
       const box = new THREE.Box3().setFromPoints(sample);
       const c = box.getCenter(new THREE.Vector3());
       let d = box.getSize(new THREE.Vector3()).length() + 3;
@@ -1439,7 +1449,9 @@ export function initTerrain() {
       apply({ instant = false } = {}) {
         measureHUD(); // the stop list and card have just changed
         const t = trip < 0 ? null : T(), n = t ? t.stops.length : 0;
-        const shot = !t || !routes[trip] ? frame(allPts) : pos < 0 || pos >= n ? frame(routes[trip].pts.concat(marks.filter((M) => M.ti === trip).map((M) => M.v))) : stopShots[trip][pos];
+        // choosing a region in Explore: the whole country, every region's name in view
+        const pickAll = trip === DT && DYN.kind === 'explore' && !DYN.built ? regionLabels.map((L) => L.v) : [];
+        const shot = !t || !routes[trip] ? frame(allPts, pickAll) : pos < 0 || pos >= n ? frame(routes[trip].pts.concat(marks.filter((M) => M.ti === trip).map((M) => M.v))) : stopShots[trip][pos];
         const dur = instant || calm ? 0 : 0.25;
         this.lastFlight = dur;
         flyTo(shot, dur);
@@ -1594,12 +1606,13 @@ export function initTerrain() {
       // card, title or stop list is hidden for this frame
       const taken = hud.slice();
       // nudge: slide a label sideways to stay on screen rather than hide it (trip names in the overview)
-      const place = (el, v, yOff, ok, nudge) => {
+      // dy: pixels to drop the label by (a second try, under its point, when the first spot is taken)
+      const place = (el, v, yOff, ok, nudge, dy = 0) => {
         if (!ok) { el.classList.add('is-hidden'); return; }
         proj.copy(v); proj.y += yOff;
         proj.project(camera);
         let x = (proj.x * 0.5 + 0.5) * w;
-        const y = (-proj.y * 0.5 + 0.5) * h;
+        const y = (-proj.y * 0.5 + 0.5) * h + dy;
         if (nudge) x = Math.max(4 + el._w / 2, Math.min(w - 4 - el._w / 2, x));
         const r = { x: x - el._w / 2, y: y - el._h, w: el._w, h: el._h };
         const hidden = proj.z > 1 || r.x < 4 || r.y < 4 || r.x + r.w > w - 4 || r.y + r.h > h - 4
@@ -1624,6 +1637,14 @@ export function initTerrain() {
       // towns near the vehicle (behind it fade out quickly, ahead of it come up as you approach)
       const win = chase.on ? Math.max(15, chase.ahead * 6) : 12;
       townLabels.forEach((L) => place(L.el, L.v, 0, L.ti === trip && settled && L.km > sim.odo - win * 0.3 && L.km < sim.odo + win));
+      // regions: on the overview and while choosing one in Explore (the trips' own names win a clash)
+      const pickRegion = trip < 0 || (trip === DT && DYN.kind === 'explore' && !DYN.built);
+      regionLabels.forEach((L) => {
+        const ok = pickRegion && settled && !chase.on && dCam > 5 && (trip === DT || reveal > 0.95);
+        place(L.el, L.v, 0, ok, true);
+        // neighbours (Semuliki by Fort Portal, Bwindi by Mgahinga): the second one goes under its point, or above the first
+        for (const dy of [L.el._h + 14, -(L.el._h + 6), 2 * L.el._h + 20]) if (ok && L.el.classList.contains('is-hidden')) place(L.el, L.v, 0, ok, true, dy);
+      });
       geoLabels.forEach((g) => {
         // local names only on the matching close-up; regional names only from altitude
         place(g.el, g.v, 0, settled && !chase.on && (g.near ? g.near === cur && dCam < 6 : dCam > 5));
