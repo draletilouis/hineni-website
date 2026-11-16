@@ -68,9 +68,10 @@ const builtInTrips = ['moyo', 'murchison', 'reptiles', 'fortportal'];
 // ---------------------------------------------------------------- the published site and the draft
 // replaced: old photo or clip key -> the one that now shows wherever it did (src/lib/site.js applies it)
 // map: { regions: { <region id>: { name, blurb, color, hub, hidden, and custom for the portal's own } },
-//        places: { <place id>: { photos, and for the portal's own: custom, region, name, note, lat, lon, addon, roads } },
-//        stopovers: { <trip>~<name>: { photos, and for the portal's own:
-// custom, trip, name, lat, lon, when, note } } }, where photos lists photo and clip keys in order
+//        places: { <place id>: { photos, name, note, addon, hidden, and for the portal's own: custom, region, lat, lon, roads } },
+//        stopovers: { <trip or region>~<name>: { photos, and for the portal's own:
+// custom, trip (a trip's drive) or region (that region's drive from Kampala), name, lat, lon, when, note } } },
+// where photos lists photo and clip keys in order
 const emptySite = () => ({ version: 1, updated: 0, trips: {}, photos: {}, edits: {}, hidden: [], slots: {}, videos: {}, text: {}, replaced: {}, map: { places: {}, stopovers: {} } });
 const readSite = (file) => (fs.existsSync(file) ? { ...emptySite(), ...JSON.parse(fs.readFileSync(file, 'utf8')) } : null);
 const copy = (o) => structuredClone(o);
@@ -589,6 +590,7 @@ admin.delete('/map/regions/:id', async (req, res) => {
   const { id } = req.params;
   if (regionsOf()[id]?.custom) {
     for (const [pid, p] of Object.entries(mapOf().places)) if (p.custom && p.region === id) delete mapOf().places[pid];
+    for (const [sid, s] of Object.entries(mapOf().stopovers)) if (s.custom && s.region === id) delete mapOf().stopovers[sid];
   }
   delete regionsOf()[id];
   await saveDraft(req.admin);
@@ -607,7 +609,9 @@ function stopoverFrom(body, prev = {}) {
   const next = { ...prev };
   if ('photos' in body) { const p = mediaList(body.photos); if (!p) throw new Error('Unknown photo or clip.'); next.photos = p; }
   if (next.custom) {
-    if ('trip' in body) { if (!MAP_TRIPS.includes(body.trip)) throw new Error('Choose a trip.'); next.trip = body.trip; }
+    // on one of the trips' drives, or on a region's drive from Kampala (the map's "Drive from Kampala")
+    if ('trip' in body) { if (!MAP_TRIPS.includes(body.trip)) throw new Error('Choose a trip.'); next.trip = body.trip; delete next.region; }
+    else if ('region' in body) { if (!REGION_IDS().includes(body.region)) throw new Error('Choose a region.'); next.region = body.region; delete next.trip; }
     for (const k of ['name', 'when', 'note']) if (k in body) next[k] = clean(body[k], k === 'note' ? 160 : 60);
     if ('lat' in body || 'lon' in body) Object.assign(next, pointFrom(body));
     if (!next.name) throw new Error('Give the stopover a name.');
@@ -617,8 +621,8 @@ function stopoverFrom(body, prev = {}) {
 admin.post('/map/stopovers', async (req, res) => {
   let stop;
   try { stop = stopoverFrom(req.body, { custom: 1, photos: [] }); } catch (e) { return res.status(400).json({ error: e.message }); }
-  if (stop.lat == null || !stop.trip) return res.status(400).json({ error: 'Give the stopover a trip and a place on the map.' });
-  const id = `${stop.trip}~c-${crypto.randomBytes(3).toString('hex')}`;
+  if (stop.lat == null || !(stop.trip || stop.region)) return res.status(400).json({ error: 'Give the stopover a trip or region and a place on the map.' });
+  const id = `${stop.trip || stop.region}~c-${crypto.randomBytes(3).toString('hex')}`;
   mapOf().stopovers[id] = stop;
   await saveDraft(req.admin);
   res.json({ id, stopover: stop });

@@ -861,8 +861,11 @@ function mapItems() {
       return { kind: 'place', id: p.id, builtIn: true, name: s.name, s, list: own || p.photos || [], changed: !!m.places?.[p.id], web: !own && !p.photos && !!p.web };
     }).concat(Object.entries(m.places || {}).filter(([, p]) => p.custom && p.region === r.id)
       .map(([id, p]) => ({ kind: 'place', id, custom: true, name: p.name, s: p, list: p.photos || [] }))),
+    // stopovers on the region's drive from Kampala
+    stops: Object.entries(m.stopovers || {}).filter(([, s]) => s.custom && s.region === r.id)
+      .map(([id, s]) => ({ kind: 'stop', id, custom: true, name: s.name, s, list: s.photos || [] })),
   }));
-  return { stops, regions, all: [...stops.flatMap((g) => g.list), ...regions.flatMap((g) => g.list)] };
+  return { stops, regions, all: [...stops.flatMap((g) => g.list), ...regions.flatMap((g) => [...g.list, ...g.stops])] };
 }
 const mapItem = (kind, id) => mapItems().all.find((it) => it.kind === kind && it.id === id);
 
@@ -953,7 +956,7 @@ function renderMap() {
         <button class="btn btn--primary" type="submit">Add stopover</button>
       </form>
     </section>`).join('')
-    + regions.map(({ r, list }) => `<section class="group">
+    + regions.map(({ r, list, stops: rstops }) => `<section class="group">
       <h3><i class="region__dot" style="background:${esc(r.color || '#a9c47f')}"></i>${esc(r.name)}${r.custom ? ' <span class="pill">Added here</span>' : r.changed ? ' <span class="pill">Changed</span>' : ''}</h3>
       <p class="group__hint">A region on the map. "Explore" tours all its places; each place's photos and clips show on the map's cards, and "Build your own" drives to them on the roads.</p>
       ${regionPanel(r, list)}
@@ -969,6 +972,20 @@ function renderMap() {
         <p class="panel__hint">The map finds the roads to it from the places around it. Next you can add its photos and clips.</p>
         <button class="btn btn--primary" type="submit">Add place</button>
       </form>
+      ${r.id === 'road' ? '' : `<h3 class="group__sub">Stopovers on the drive from Kampala</h3>
+      <p class="group__hint">On the website, "Drive from Kampala" drives here on the real roads. A stopover on that road (a lunch spot, a viewpoint, a fuel stop) pops up, with its photos, as the drive passes it.</p>
+      <div class="maprows">${rstops.map(mapRow).join('') || '<p class="empty">No stopovers on this drive yet.</p>'}</div>
+      <form class="panel stop-add" data-region="${esc(r.id)}">
+        <h3>Add a stopover on the drive to ${esc(r.name)}</h3>
+        <div class="stop-add__fields">
+          <label class="field">Name<input name="name" maxlength="60" required placeholder="e.g. Lunch in Kitgum" /></label>
+          <label class="field">Time<input name="when" maxlength="60" placeholder="e.g. 13:00, or Day 01" /></label>
+          <label class="field">Where<input name="pos" required placeholder="Paste a Google Maps link, or 3.2783, 32.8867" /></label>
+          <label class="field">Note<input name="note" maxlength="160" placeholder="What happens here" /></label>
+        </div>
+        <p class="panel__hint">It needs to be on (or near) the road the map drives. A place off that road won't show on the drive.</p>
+        <button class="btn btn--primary" type="submit">Add stopover</button>
+      </form>`}
     </section>`).join('')
     + `<section class="group">
       <h3>Add a region</h3>
@@ -1098,10 +1115,10 @@ $('#mapList').addEventListener('submit', async (e) => {
   const ok = await attempt(async () => {
     res = isPlace
       ? await api('POST', '/admin/map/places', { region: f.dataset.region, name: f.name.value, note: f.note.value, addon: f.addon.checked, ...p })
-      : await api('POST', '/admin/map/stopovers', { trip: f.dataset.trip, name: f.name.value, when: f.when.value, note: f.note.value, ...p });
+      : await api('POST', '/admin/map/stopovers', { ...(f.dataset.trip ? { trip: f.dataset.trip } : { region: f.dataset.region }), name: f.name.value, when: f.when.value, note: f.note.value, ...p });
     await refresh();
     renderAll();
-  }, isPlace ? `${f.name.value} is on the map. Now add its photos and clips.` : `Stopover added to ${tripLabel(f.dataset.trip)}. Now add its photos and clips.`);
+  }, isPlace ? `${f.name.value} is on the map. Now add its photos and clips.` : `Stopover added to ${f.dataset.trip ? tripLabel(f.dataset.trip) : `the drive to ${allRegions().find((r) => r.id === f.dataset.region)?.name || 'the region'}`}. Now add its photos and clips.`);
   btn.disabled = false;
   if (!ok || !res?.id) return;
   if (res.straight) toast(`${f.name.value} is on the map.${ROAD_NOTE}`, 'error');

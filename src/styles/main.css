@@ -359,8 +359,8 @@ body.menu-open .mobile-menu { clip-path: inset(0 0 0 0); }
 .journey__price { margin-top: 12px; font-size: var(--t-sm); color: var(--bone-dim); }
 .journey__price b { color: var(--accent); font-weight: 600; }
 /* the two buttons share one row, so the card stays short enough to show whole */
-.journey__actions { display: flex; gap: 8px; margin-top: 16px; }
-.journey__actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 12px; justify-content: center; white-space: nowrap; }
+.journey__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.journey__actions .btn { flex: 1 1 auto; padding-inline: 12px; justify-content: center; white-space: nowrap; }
 .journey__nav { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 0.5px solid var(--line); }
 .journey__nav button { width: 38px; height: 38px; border-radius: 50%; border: 0.5px solid var(--line); font-size: var(--t-md); transition: border-color 250ms ease-out, background 250ms ease-out, opacity 250ms ease-out; }
 .journey__nav button:hover:not([disabled]) { border-color: var(--bone); background: rgb(var(--fg-rgb) / 0.08); }

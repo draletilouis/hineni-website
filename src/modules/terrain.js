@@ -253,7 +253,8 @@ function order(g, start, ids) {
 }
 // a drive through places in order, shaped like a trip in routes.json, so the rest of the map treats it the same:
 // the road, its segments, where each place is, and what's passed on the way (districts, towns, other places)
-function driveThrough(g, net, seq, outlines, extraTowns) {
+// region: the portal's stopovers on that region's drive join the route when they're on its road
+function driveThrough(g, net, seq, outlines, extraTowns, region) {
   const pts = [], segs = [], stops = [];
   const push = (p, mode) => {
     if (pts.length && hav(pts[pts.length - 1], p) < 0.005) return;
@@ -306,6 +307,13 @@ function driveThrough(g, net, seq, outlines, extraTowns) {
     if (picked.has(p.id) || p.id === 'kampala' || p.hidden) continue;
     const q = near(p.lat, p.lon);
     if (q.d < 5) ev.push({ km: +q.km.toFixed(1), type: 'sight', name: p.name, note: p.note, addon: !!p.addon, off: +q.d.toFixed(1), lat: p.lat, lon: p.lon, photos: p.photos, web: p.web });
+  }
+  if (region) {
+    for (const x of Object.values(mapExtras.stopovers)) {
+      if (!x.custom || x.region !== region || !Number.isFinite(x.lat) || !Number.isFinite(x.lon)) continue;
+      const q = near(x.lat, x.lon);
+      if (q.d < 10) ev.push({ km: +q.km.toFixed(1), type: 'stopover', name: x.name, when: x.when, note: x.note, lat: x.lat, lon: x.lon, photos: x.photos?.length ? x.photos : undefined });
+    }
   }
   for (let i = 0; i < pts.length - 1; i++) {
     if (Math.sign(pts[i][0]) !== Math.sign(pts[i + 1][0]) && pts[i + 1][0] !== 0) ev.push({ km: +(K[i] + (K[i + 1] - K[i]) * (pts[i][0] / (pts[i][0] - pts[i + 1][0]))).toFixed(1), type: 'equator', name: 'The Equator' });
@@ -441,7 +449,7 @@ export function initTerrain() {
     DYN.label = label; DYN.color = color; DYN.built = true;
     DYN.stops.forEach((st) => { if (st.photo) { const im = new Image(); im.src = photo(st.photo, 900); } });
     RD = RD || [];
-    RD[DT] = prepare(DYN, driveThrough(G, NET, seq, outlines, towns));
+    RD[DT] = prepare(DYN, driveThrough(G, NET, seq, outlines, towns, DYN.kind === 'explore' ? DYN.region : null));
     view?.rebuildDyn(outlines);
   }
   // fromKampala: the whole drive there from Kampala, then around the region in the order that drives best
